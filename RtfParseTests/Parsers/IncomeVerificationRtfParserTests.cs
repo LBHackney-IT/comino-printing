@@ -17,19 +17,18 @@ namespace RtfParseTests
         {
             _parser = new IncomeVerificationRtfParser();
             _testFixtureDirectory = new DirectoryInfo("./../../../ExampleLettersHtml");
-
-
         }
 
-        [Test]
-        public void ExecuteReturnsCorrectTitleAndClaimNumber()
+        [TestCase(0, "60065142")]
+        [TestCase(1, "50314947")]
+        public void ExecuteReturnsCorrectTitleAndClaimNumber(int fileNo, string claimNumber)
         {
-            var fileInfo = _testFixtureDirectory.GetFiles().FirstOrDefault();
+            var fileInfo = _testFixtureDirectory.GetFiles().ElementAt(fileNo);
 
             _parser.Execute(fileInfo).Should().BeEquivalentTo(new IncomeVerificationTemplate
             {
                 Title = "BENEFIT INCOME VERIFICATION DOCUMENT",
-                ClaimNumber = "60065142"
+                ClaimNumber = claimNumber
             });
         }
     }
