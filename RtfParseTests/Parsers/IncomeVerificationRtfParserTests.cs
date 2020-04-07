@@ -3,35 +3,34 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using RtfParseSpike.Parsers;
+using RtfParseSpike.Templates;
 
 namespace RtfParseTests
 {
     public class IncomeVerificationRtfParserTests
     {
+        private DirectoryInfo _testFixtureDirectory;
+        private IncomeVerificationRtfParser _parser;
+
         [SetUp]
         public void Setup()
         {
+            _parser = new IncomeVerificationRtfParser();
+            _testFixtureDirectory = new DirectoryInfo("./../../../ExampleLettersHtml");
+
+
         }
 
         [Test]
-        public void ExecuteReturnsNull()
+        public void ExecuteReturnsCorrectTitleAndClaimNumber()
         {
-            var directory = new DirectoryInfo("./../../../ExampleLettersHtml");
-            var fileInfo = directory.GetFiles().FirstOrDefault();
+            var fileInfo = _testFixtureDirectory.GetFiles().FirstOrDefault();
 
-            var parser = new IncomeVerificationRtfParser();
-
-            parser.Execute(fileInfo).Should().BeEquivalentTo(new IncomeVerificationTemplate
+            _parser.Execute(fileInfo).Should().BeEquivalentTo(new IncomeVerificationTemplate
             {
                 Title = "BENEFIT INCOME VERIFICATION DOCUMENT",
                 ClaimNumber = "60065142"
             });
         }
-    }
-
-    public class IncomeVerificationTemplate
-    {
-        public string Title { get; set; }
-        public string ClaimNumber { get; set; }
     }
 }
