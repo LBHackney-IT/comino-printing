@@ -1,13 +1,12 @@
-using System;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using RtfParseSpike;
+using RtfParseSpike.Parsers;
 
 namespace RtfParseTests
 {
-    public class RtfParseTests
+    public class IncomeVerificationRtfParserTests
     {
         [SetUp]
         public void Setup()
@@ -17,10 +16,12 @@ namespace RtfParseTests
         [Test]
         public void ExecuteReturnsNull()
         {
-            var file = File.Open("./../../../ExampleLettersHtml/40712646.html", FileMode.Open);
+            var directory = new DirectoryInfo("./../../../ExampleLettersHtml");
+            var fileInfo = directory.GetFiles().FirstOrDefault();
 
-            var spike = new RtfParse(file);
-            spike.Execute().Should().BeEquivalentTo(new IncomeVerificationTemplate
+            var parser = new IncomeVerificationRtfParser();
+
+            parser.Execute(fileInfo).Should().BeEquivalentTo(new IncomeVerificationTemplate
             {
                 Title = "BENEFIT INCOME VERIFICATION DOCUMENT",
                 ClaimNumber = "60065142"
