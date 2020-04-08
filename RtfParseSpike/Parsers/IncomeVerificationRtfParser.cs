@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -19,12 +20,20 @@ namespace RtfParseSpike.Parsers
             var title = documentNode.SelectSingleNode("/div/p[1]/strong").InnerText;
             var claimNumber = documentNode.SelectSingleNode("/div/p[3]").InnerText;
             var addresseeName = documentNode.SelectSingleNode("/div/p[4]").InnerText;
+            var address = documentNode.SelectNodes("/div/p").ToList().GetRange(4, 3).Select(node => node.InnerText);
+            var postcode = documentNode.SelectSingleNode("/div/p[8]").InnerText;
+            var periodStartDate = documentNode.SelectNodes("/div/table[1]/tr/td").Select(node => node.InnerText);
+            var reasonForAssessment = documentNode.SelectSingleNode("/div/table[2]/tr/td").InnerHtml.Replace("</p>", "\n").Replace("<p style=\"margin:0;\">", "\n").TrimEnd('\n');
 
             return new IncomeVerificationTemplate
             {
                 Title = title,
                 ClaimNumber = claimNumber,
-                Name = addresseeName
+                Name = addresseeName,
+                Address = address.ToList(),
+                Postcode = postcode,
+                PeriodStartDateTable = new List<List<string>> {periodStartDate.ToList()},
+                ReasonForAssessmentTable = new List<List<string>> {new List<string>{reasonForAssessment}}
             };
         }
 
