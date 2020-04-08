@@ -1,6 +1,8 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using RtfParseSpike.Parsers;
 using RtfParseSpike.Templates;
@@ -11,34 +13,30 @@ namespace RtfParseTests
     {
         private DirectoryInfo _testFixtureDirectory;
         private IncomeVerificationRtfParser _parser;
+        private DirectoryInfo _testResultsDirectory;
 
         [SetUp]
         public void Setup()
         {
             _parser = new IncomeVerificationRtfParser();
             _testFixtureDirectory = new DirectoryInfo("./../../../ExampleLettersHtml");
+            _testResultsDirectory = new DirectoryInfo("./../../../JSONTestResults");
         }
 
-        [TestCase(0, "Claim Number 60065142")]
-        [TestCase(1, "Claim Number 50314947")]
-        [TestCase(2, "Claim Number 60617734")]
-        public void ExecuteReturnsCorrectTitleAndClaimNumber(int fileNo, string claimNumber)
+        [Test]
+        public void ExecuteReturnsCorrectTitleAndClaimNumber()
         {
-            var fileInfo = _testFixtureDirectory.GetFiles().ElementAt(fileNo);
-            
-            _parser.Execute(fileInfo).Title.Should().Be("BENEFIT INCOME VERIFICATION DOCUMENT");
-            _parser.Execute(fileInfo).ClaimNumber.Should().Be(claimNumber);
-        }
-        
-        [TestCase(0, "Mr Richard Bruno")]
-        [TestCase(1, "Mr Wentworth Blackstock")]
-        [TestCase(2, "Ms Kazi Ayesha")]
-        
-        public void ExecuteReturnsCorrectAddresseeName(int fileNo, string name)
-        {
-            var fileInfo = _testFixtureDirectory.GetFiles().ElementAt(fileNo);
+            _testFixtureDirectory.GetFiles().ToList().ForEach(fileInfo =>
+            {
+                var fileName = fileInfo.Name.Split(".").First();
+                var testResultsPath = _testResultsDirectory + "/" + fileName + ".json";
+                var expectedResults = JsonConvert.DeserializeObject<IncomeVerificationTemplate>(
+                    File.ReadAllText(testResultsPath));
 
-            _parser.Execute(fileInfo).Name.Should().Be(name);
+                _parser.Execute(fileInfo).Title.Should().Be(expectedResults.Title);
+                _parser.Execute(fileInfo).ClaimNumber.Should().Be(expectedResults.ClaimNumber);
+                _parser.Execute(fileInfo).Name.Should().Be(expectedResults.Name);
+            });
         }
     }
 }
