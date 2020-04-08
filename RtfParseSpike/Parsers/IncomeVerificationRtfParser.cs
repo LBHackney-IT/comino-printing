@@ -1,8 +1,10 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using HtmlAgilityPack;
 using RtfParseSpike.Templates;
+using RtfPipe;
 
 namespace RtfParseSpike.Parsers
 {
@@ -10,23 +12,35 @@ namespace RtfParseSpike.Parsers
     {
         public IncomeVerificationTemplate Execute(FileInfo fileInfo)
         {
+            var html = GetHTMLFromFilePath(fileInfo);
 
-            var doc = new HtmlDocument();
-            doc.Load(fileInfo.ToString());
-            var linesOfText = doc.DocumentNode.SelectSingleNode("/html[1]").InnerText.Split("\n");
+            var documentNode = GetDocumentNode(html);
+
+            var title = documentNode.SelectSingleNode("/div/p[1]/strong").InnerText;
+            var claimNumber = documentNode.SelectSingleNode("/div/p[3]").InnerText;
+            var addresseeName = documentNode.SelectSingleNode("/div/p[4]").InnerText;
 
             return new IncomeVerificationTemplate
             {
-                Title = "BENEFIT INCOME VERIFICATION DOCUMENT",
-                ClaimNumber = linesOfText.ElementAt(8),
-                Name = linesOfText.ElementAt(9)
+                Title = title,
+                ClaimNumber = claimNumber,
+                Name = addresseeName
             };
         }
-        private string[] GetLinesInHtmlFile(FileInfo fileInfo)
+
+        private static HtmlNode GetDocumentNode(string html)
         {
-            var webClient = new WebClient();
-            var parsedHtml = webClient.DownloadString(fileInfo.ToString());
-            return parsedHtml.Split("\n");
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            return doc.DocumentNode;
+        }
+
+        private static string GetHTMLFromFilePath(FileInfo fileInfo)
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            var letter = File.ReadAllText(fileInfo.ToString(), Encoding.UTF8);
+            return Rtf.ToHtml(letter);
         }
     }
 

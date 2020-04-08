@@ -19,7 +19,7 @@ namespace RtfParseTests
         public void Setup()
         {
             _parser = new IncomeVerificationRtfParser();
-            _testFixtureDirectory = new DirectoryInfo("./../../../ExampleLettersHtml");
+            _testFixtureDirectory = new DirectoryInfo("./../../../ExampleLettersRtf");
             _testResultsDirectory = new DirectoryInfo("./../../../JSONTestResults");
         }
 
