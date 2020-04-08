@@ -17,29 +17,36 @@ namespace RtfParseSpike.Parsers
 
             var documentNode = GetDocumentNode(html);
 
-            var title = documentNode.SelectSingleNode("/div/p[1]/strong").InnerText;
-            var claimNumber = documentNode.SelectSingleNode("/div/p[3]").InnerText;
-            var addresseeName = documentNode.SelectSingleNode("/div/p[4]").InnerText;
-            var address = documentNode.SelectNodes("/div/p").ToList().GetRange(4, 3).Select(node => node.InnerText);
-            var postcode = documentNode.SelectSingleNode("/div/p[8]").InnerText;
-            var periodStartDate = documentNode.SelectNodes("/div/table[1]/tr/td").Select(node => node.InnerText);
-            var reasonForAssessmentNode = documentNode.SelectSingleNode("/div/table[2]/tr/td");
-            var reasonForAssessment = AddNewLinesToTextForParagraphTags(reasonForAssessmentNode).TrimEnd('\n');
-
-            var incomeDetailsTable = documentNode.SelectNodes("/div/table[3]/tr")
-                .Select(row => row.ChildNodes.Select(cell => AddNewLinesToTextForParagraphTags(cell).TrimEnd('\n')).ToList());
-
             return new IncomeVerificationTemplate
             {
-                Title = title,
-                ClaimNumber = claimNumber,
-                Name = addresseeName,
-                Address = address.ToList(),
-                Postcode = postcode,
-                PeriodStartDateTable = new List<List<string>> {periodStartDate.ToList()},
-                ReasonForAssessmentTable = new List<List<string>> {new List<string>{reasonForAssessment}},
-                IncomeDetailsTable = incomeDetailsTable.ToList()
+                Title = ParseSingleNode(documentNode, "/div/p[1]/strong"),
+                ClaimNumber = ParseSingleNode(documentNode, "/div/p[3]"),
+                Name = ParseSingleNode(documentNode, "/div/p[4]"),
+                Address = ParseAddress(documentNode),
+                Postcode = ParseSingleNode(documentNode, "/div/p[8]"),
+                PeriodStartDateTable = ParseTable(documentNode, "/div/table[1]/tr"),
+                ReasonForAssessmentTable = ParseTable(documentNode,"/div/table[2]/tr" ),
+                IncomeDetailsTable = ParseTable(documentNode, "/div/table[3]/tr"),
+                OverpaymentTableHeaders = ParseSingleNode(documentNode, "/div/p[13]"),
+                OverpaymentTable = ParseTable(documentNode, "/div/table[4]/tr"),
+                AdditionalCommentTable = ParseTable(documentNode, "/div/table[5]/tr")
             };
+        }
+
+        private static List<string> ParseAddress(HtmlNode documentNode)
+        {
+            return documentNode.SelectNodes("/div/p").ToList().GetRange(4, 3).Select(node => node.InnerText).ToList();
+        }
+
+        private static string ParseSingleNode(HtmlNode documentNode, string xpath)
+        {
+            return documentNode.SelectSingleNode(xpath).InnerText;
+        }
+
+        private static List<List<string>> ParseTable(HtmlNode documentNode, string xpath)
+        {
+            return documentNode.SelectNodes(xpath)
+                .Select(row => row.ChildNodes.Select(AddNewLinesToTextForParagraphTags).ToList()).ToList();
         }
 
         private static string AddNewLinesToTextForParagraphTags(HtmlNode html)
@@ -52,7 +59,7 @@ namespace RtfParseSpike.Parsers
                 }
 
                 return agg + node.InnerText;
-            });
+            }).TrimEnd('\n');
         }
 
         private static HtmlNode GetDocumentNode(string html)
