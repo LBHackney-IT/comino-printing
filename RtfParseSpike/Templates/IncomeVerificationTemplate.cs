@@ -4,5 +4,6 @@ namespace RtfParseSpike.Templates
     {
         public string Title { get; set; }
         public string ClaimNumber { get; set; }
+        public string Name { get; set; }
     }
 }

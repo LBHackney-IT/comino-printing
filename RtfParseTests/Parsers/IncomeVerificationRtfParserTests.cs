@@ -1,6 +1,8 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using RtfParseSpike.Parsers;
 using RtfParseSpike.Templates;
@@ -11,25 +13,30 @@ namespace RtfParseTests
     {
         private DirectoryInfo _testFixtureDirectory;
         private IncomeVerificationRtfParser _parser;
+        private DirectoryInfo _testResultsDirectory;
 
         [SetUp]
         public void Setup()
         {
             _parser = new IncomeVerificationRtfParser();
             _testFixtureDirectory = new DirectoryInfo("./../../../ExampleLettersHtml");
+            _testResultsDirectory = new DirectoryInfo("./../../../JSONTestResults");
         }
-
-        [TestCase(0, "60065142")]
-        [TestCase(1, "50314947")]
-        public void ExecuteReturnsCorrectTitleAndClaimNumber(int fileNo, string claimNumber)
+        
+        [Test]
+        public void ExecuteReturnsCorrectTitleAndClaimNumber()
         {
-            var fileInfo = _testFixtureDirectory.GetFiles().ElementAt(fileNo);
-
-            _parser.Execute(fileInfo).Should().BeEquivalentTo(new IncomeVerificationTemplate
+            _testFixtureDirectory.GetFiles().ToList().ForEach(fileInfo =>
             {
-                Title = "BENEFIT INCOME VERIFICATION DOCUMENT",
-                ClaimNumber = claimNumber
+                var fileName = fileInfo.Name.Split(".").First();
+                var testResultsPath = _testResultsDirectory + "/" + fileName + ".json";
+                var expectedResults = JsonConvert.DeserializeObject<IncomeVerificationTemplate>(
+                    File.ReadAllText(testResultsPath));
+            
+                _parser.Execute(fileInfo).Title.Should().Be(expectedResults.Title);
+                _parser.Execute(fileInfo).ClaimNumber.Should().Be(expectedResults.ClaimNumber);
+                _parser.Execute(fileInfo).Name.Should().Be(expectedResults.Name);
             });
-        }
+        } 
     }
 }
