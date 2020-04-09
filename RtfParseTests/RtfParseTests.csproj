@@ -17,4 +17,8 @@
       <ProjectReference Include="..\RtfParseSpike\RtfParseSpike.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="TestFixtures\IncomeVerification" />
+    </ItemGroup>
+
 </Project>
