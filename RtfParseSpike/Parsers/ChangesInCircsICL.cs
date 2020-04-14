@@ -13,45 +13,21 @@ namespace RtfParseSpike.Parsers
         {
             var html = GetHTMLFromFilePath(fileInfo);
             var documentNode = GetDocumentNode(html);
+
             var address = ParseAddress(documentNode);
             var rightSideOfHeader = ParseSenderAddress(documentNode) + ContactDetails(documentNode);
-            // add overflow hidden to everything
-            var headerTable = FormatHeaderTable(address, rightSideOfHeader);
 
             var mainBody = documentNode.SelectSingleNode("html/body");
             mainBody.RemoveChild(mainBody.SelectSingleNode("table[1]"));
+
             var templateSpecificCss = documentNode.SelectSingleNode("html/head/style").InnerText;
 
             return new ChangesInCircsICLTemplate
             {
                 TemplateSpecificCss = templateSpecificCss,
-                Header = headerTable,
+                Header = ParsingHelpers.FormatLetterHeader(address, rightSideOfHeader),
                 MainBody = mainBody.OuterHtml,
             };
-        }
-
-        private static string FormatHeaderTable(string address, string rightSideHeader)
-        {
-            var addressTable = "<table class=\"address-table\" >" +
-                              "<col width=\"9.6mm\" />" +
-                              "<col width=\"95.4mm\" />" +
-                              "<col width=\"5mm\" />" +
-                              "<tr> <td>&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> </tr>" +
-                              "<tr> <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>" +
-                              "<tr><td>&nbsp;</td>" +
-                              "<td>" +
-                              address +
-                              "</td>" +
-                              "<td></td></tr>" +
-                              "<tr ><td></td><td></td><td></td></tr>" +
-                              "</table>";
-            var rightHandHeaderSpace = "<div class=\"header-right\">"+ rightSideHeader +"</div>";
-            return "<table class=\"header-table\">" +
-                   "<tr>" +
-                   "<td>" + addressTable + "</td>" +
-                   "<td>" + rightHandHeaderSpace + "</td>" +
-                   "</tr>" +
-                   "</table>";
         }
 
         private static string ParseSenderAddress(HtmlNode documentNode)
