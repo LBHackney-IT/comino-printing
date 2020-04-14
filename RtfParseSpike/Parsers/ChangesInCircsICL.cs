@@ -26,8 +26,16 @@ namespace RtfParseSpike.Parsers
             {
                 TemplateSpecificCss = templateSpecificCss,
                 Header = ParsingHelpers.FormatLetterHeader(address, rightSideOfHeader),
-                MainBody = mainBody.OuterHtml,
+                MainBody = AddLineBreaks(mainBody).OuterHtml,
             };
+        }
+
+        private static HtmlNode AddLineBreaks(HtmlNode body)
+        {
+            var startOfPage2 = body.ChildNodes.ToList()
+                .Find(node => node.InnerText == "Revenues &amp; Benefits Service");
+            startOfPage2.Attributes.Add("style", "page-break-before: always;");
+            return body;
         }
 
         private static string ParseSenderAddress(HtmlNode documentNode)
