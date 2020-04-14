@@ -22,7 +22,7 @@ namespace RtfParseTests
             _testBlankBenefitsDirectory = new DirectoryInfo("./../../../BlankBenefitsRtf");
             _testResultsDirectory = new DirectoryInfo("./../../../JSONTestResults");
         }
-        
+
         [Test]
         public void ExecuteReturnsBlankBenefitsLetterDetails()
         {
@@ -33,10 +33,6 @@ namespace RtfParseTests
                 var expectedResults = JsonConvert.DeserializeObject<BlankBenefitsTemplate>(
                     File.ReadAllText(testResultsPath));
 
-                _bbparser.Execute(fileInfo).AddressFields.Should().BeEquivalentTo(expectedResults.AddressFields);
-                _bbparser.Execute(fileInfo).Greeting.Should().Be(expectedResults.Greeting);
-                _bbparser.Execute(fileInfo).LetterBody.Should().Be(expectedResults.LetterBody);
-                _bbparser.Execute(fileInfo).LetterClosing.Should().BeEquivalentTo(expectedResults.LetterClosing);
             });
         }
     }

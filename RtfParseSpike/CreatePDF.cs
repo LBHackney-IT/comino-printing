@@ -6,7 +6,7 @@ namespace RtfParseSpike
 {
     public class CreatePDF
     {
-        public byte[] Execute(ChangesInCircsICLTemplate htmlInput)
+        public byte[] Execute(LetterTemplate htmlInput)
         {
             var css = CompileCss(htmlInput);
 
@@ -30,7 +30,7 @@ namespace RtfParseSpike
             return pdf.BinaryData;
         }
 
-        private static string CompileCss(ChangesInCircsICLTemplate htmlInput)
+        private static string CompileCss(LetterTemplate htmlInput)
         {
             return $@"@media print {{
                 body {{ font-family: Helvetica, sans-serif; }}

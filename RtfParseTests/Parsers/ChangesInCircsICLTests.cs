@@ -19,8 +19,8 @@ namespace RtfParseTests.Parsers
         public void Setup()
         {
             _parser = new ChangesInCircsICL();
-            _testFixtureDirectory = new DirectoryInfo("./../../../TestFixtures/ChangesInCircsICL/ExampleLettersRtf");
-            _testResultsDirectory = new DirectoryInfo("./../../../TestFixtures/ChangesInCircsICL/JSONTestResults");
+            _testFixtureDirectory = new DirectoryInfo("./../../../TestFixtures/BlankBenefitsTemplate.cs/ExampleLettersRtf");
+            _testResultsDirectory = new DirectoryInfo("./../../../TestFixtures/BlankBenefitsTemplate.cs/JSONTestResults");
         }
 
         [Test]
@@ -30,7 +30,7 @@ namespace RtfParseTests.Parsers
             {
                 var fileName = fileInfo.Name.Split(".").First();
                 var testResultsPath = _testResultsDirectory + "/" + fileName + ".json";
-                var expectedResults = JsonConvert.DeserializeObject<ChangesInCircsICLTemplate>(
+                var expectedResults = JsonConvert.DeserializeObject<LetterTemplate>(
                     File.ReadAllText(testResultsPath));
             });
         }

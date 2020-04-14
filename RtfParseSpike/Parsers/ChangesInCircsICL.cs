@@ -9,7 +9,7 @@ namespace RtfParseSpike.Parsers
 {
     public class ChangesInCircsICL
     {
-        public ChangesInCircsICLTemplate Execute(FileInfo fileInfo)
+        public LetterTemplate Execute(FileInfo fileInfo)
         {
             var html = GetHTMLFromFilePath(fileInfo);
             var documentNode = GetDocumentNode(html);
@@ -22,7 +22,7 @@ namespace RtfParseSpike.Parsers
 
             var templateSpecificCss = documentNode.SelectSingleNode("html/head/style").InnerText;
 
-            return new ChangesInCircsICLTemplate
+            return new LetterTemplate
             {
                 TemplateSpecificCss = templateSpecificCss,
                 Header = ParsingHelpers.FormatLetterHeader(address, rightSideOfHeader),
@@ -73,8 +73,6 @@ namespace RtfParseSpike.Parsers
 
         private static string GetHTMLFromFilePath(FileInfo fileInfo)
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
             return File.ReadAllText(fileInfo.ToString(), Encoding.UTF8);
         }
     }
