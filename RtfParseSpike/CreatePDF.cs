@@ -32,44 +32,47 @@ namespace RtfParseSpike
             return $@"@media print {{
                 body {{ font-family: Helvetica, sans-serif; }}
                 .header-table {{
-                    width: 110mm,
-                    height: 90mm,
-                    table-layout:fixed,
-                    td {{
+                    width: 180mm;
+                    height: 90mm;
+                    table-layout:fixed;
+                    overflow: hidden;
+                    tr td {{
                         :nth-child(1) {{
-                            width: 110mm
-                            height: 90mm
+                            width: 110mm;
+                            height: 90mm;
                         }}
                         :nth-child(2) {{
-                            width: 70mm
-                            height: 90mm
+                            width: 70mm;
+                            height: 90mm;
                         }}
+                        overflow: hidden;
                     }}
                 }}
                 .address-table {{
-                    width: 110mm,
-                    height: 90mm,
-                    table-layout: fixed,
+                    width: 110mm;
+                    height: 90mm;
+                    overflow: hidden;
+                    table-layout: fixed;
                     col {{
                         :nth-child(1) {{
-                            width: 9.6mm
+                            width: 9.6mm;
                         }},
                         :nth-child(2) {{
-                            width: 95.4mm
+                            width: 95.4mm;
                         }},
                         :nth-child(3) {{
-                            width: 5mm
-                        }},
-                    }},
+                            width: 5mm;
+                        }}
+                    }}
                     tr {{
                         :nth-child(1) {{
                             td {{
-                                height: 25mm
+                                height: 25mm;
                             }}
                         }},
                         :nth-child(2) {{
                             td {{
-                                height: 4.5mm
+                                height: 4.5mm;
                             }}
                         }},
                         :nth-child(3) {{
@@ -82,11 +85,16 @@ namespace RtfParseSpike
                                 height: 28.7mm
                             }}
                         }}
+
+                        td {{
+                            overflow: hidden;
+                        }}
                     }}
                 }}
                 .header-right {{
-                    width:70mm,
-                    height: 90mm
+                    width:70mm;
+                    height: 90mm;
+                    x-overflow: hidden;
                 }}
                 {htmlInput.TemplateSpecificCss}
               }}";
