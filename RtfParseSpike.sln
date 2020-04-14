@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtfParseSpike", "RtfParseSp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RtfParseTests", "RtfParseTests\RtfParseTests.csproj", "{F55026F4-9EFD-47AF-8AEA-54502485F7EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetDocumentsFromComino", "GetDocumentsFromComino\GetDocumentsFromComino.csproj", "{1E8AFA83-6871-46D2-BC5C-95EC4FC925DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{F55026F4-9EFD-47AF-8AEA-54502485F7EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F55026F4-9EFD-47AF-8AEA-54502485F7EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F55026F4-9EFD-47AF-8AEA-54502485F7EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E8AFA83-6871-46D2-BC5C-95EC4FC925DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E8AFA83-6871-46D2-BC5C-95EC4FC925DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E8AFA83-6871-46D2-BC5C-95EC4FC925DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E8AFA83-6871-46D2-BC5C-95EC4FC925DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
