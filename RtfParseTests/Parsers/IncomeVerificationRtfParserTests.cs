@@ -2,12 +2,11 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 using RtfParseSpike.Parsers;
 using RtfParseSpike.Templates;
 
-namespace RtfParseTests
+namespace RtfParseTests.Parsers
 {
     public class IncomeVerificationRtfParserTests
     {
@@ -19,8 +18,8 @@ namespace RtfParseTests
         public void Setup()
         {
             _parser = new IncomeVerificationRtfParser();
-            _testFixtureDirectory = new DirectoryInfo("./../../../ExampleLettersRtf");
-            _testResultsDirectory = new DirectoryInfo("./../../../JSONTestResults");
+            _testFixtureDirectory = new DirectoryInfo("./../../../TestFixtures/IncomeVerification/ExampleLettersRtf");
+            _testResultsDirectory = new DirectoryInfo("./../../../TestFixtures/IncomeVerification/JSONTestResults");
         }
 
         [Test]
