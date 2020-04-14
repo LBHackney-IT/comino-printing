@@ -10,9 +10,12 @@ namespace RtfParseSpike
         {
             var css = CompileCss(htmlInput);
 
-            var fullHtml = "<!DOCTYPE html><html><head><style>" +
-                           css + "</style></head><body>" + htmlInput.Header
-                           + htmlInput.MainBody + "</body></html>";
+            var fullHtml = "<!DOCTYPE html><html><head><style>"
+                           + css
+                           + "</style></head><body>"
+                           + htmlInput.Header
+                           + htmlInput.MainBody
+                           + "</body></html>";
 
             var renderer = new HtmlToPdf {PrintOptions =
             {
@@ -33,68 +36,51 @@ namespace RtfParseSpike
                 body {{ font-family: Helvetica, sans-serif; }}
                 .header-table {{
                     width: 180mm;
-                    height: 90mm;
+                    min-height: 90mm;
                     table-layout:fixed;
                     overflow: hidden;
-                    tr td {{
-                        :nth-child(1) {{
-                            width: 110mm;
-                            height: 90mm;
-                        }}
-                        :nth-child(2) {{
-                            width: 70mm;
-                            height: 90mm;
-                        }}
-                        overflow: hidden;
-                    }}
+                }}
+                .header-table tr td:nth-child(1) {{
+                    width: 110mm;
+                    min-height: 90mm;
+                }}
+                .header-table tr td:nth-child(2) {{
+                    width: 70mm;
+                    min-height: 90mm;
                 }}
                 .address-table {{
                     width: 110mm;
-                    height: 90mm;
+                    min-height: 90mm;
                     overflow: hidden;
                     table-layout: fixed;
-                    col {{
-                        :nth-child(1) {{
-                            width: 9.6mm;
-                        }},
-                        :nth-child(2) {{
-                            width: 95.4mm;
-                        }},
-                        :nth-child(3) {{
-                            width: 5mm;
-                        }}
-                    }}
-                    tr {{
-                        :nth-child(1) {{
-                            td {{
-                                height: 25mm;
-                            }}
-                        }},
-                        :nth-child(2) {{
-                            td {{
-                                height: 4.5mm;
-                            }}
-                        }},
-                        :nth-child(3) {{
-                            td {{
-                                height: 26.8mm
-                            }}
-                        }},
-                        :nth-child(4) {{
-                            td {{
-                                height: 28.7mm
-                            }}
-                        }}
-
-                        td {{
-                            overflow: hidden;
-                        }}
-                    }}
+                }}
+                .address-table col  :nth-child(1) {{
+                    width: 9.6mm;
+                }}
+                .address-table col  :nth-child(2) {{
+                    width: 95.4mm;
+                }}
+                .address-table col  :nth-child(3) {{
+                    width: 5mm;
+                }}
+                .address-table tr:nth-child(1) td {{
+                    height: 25mm;
+                }}
+                .address-table tr:nth-child(2) td {{
+                    height: 4.5mm;
+                }}
+                .address-table tr:nth-child(3) td {{
+                    height: 26.8mm
+                }}
+                .address-table tr:nth-child(4) td {{
+                    min-height: 28.7mm
                 }}
                 .header-right {{
                     width:70mm;
-                    height: 90mm;
-                    x-overflow: hidden;
+                    min-height: 90mm;
+                }}
+                td {{
+                    overflow: hidden;
                 }}
                 {htmlInput.TemplateSpecificCss}
               }}";
