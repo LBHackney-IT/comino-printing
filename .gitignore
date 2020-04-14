@@ -8,3 +8,5 @@ ExampleLettersRtf
 RtfParseTests/JSONTestResults
 BlankBenefitsRtf
 BlankBenefitsHtml
+RtfParseTests/BlankBenefitsHtml/
+RtfParseTests/BlankBenefitsRtf/
