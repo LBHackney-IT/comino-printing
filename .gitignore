@@ -5,3 +5,5 @@ RtfParseTests/ExampleLettersHtml
 RtfParseTests/ExampleLettersRtf
 ExampleLettersRtf
 RtfParseTests/JSONTestResults
+RtfParseTests/BlankBenefitsHtml/
+RtfParseTests/BlankBenefitsRtf/
