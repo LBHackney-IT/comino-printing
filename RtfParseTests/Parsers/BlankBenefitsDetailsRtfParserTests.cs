@@ -30,7 +30,7 @@ namespace RtfParseTests
             {
                 var fileName = fileInfo.Name.Split(".").First();
                 var testResultsPath = _testResultsDirectory + "/" + fileName + ".json";
-                var expectedResults = JsonConvert.DeserializeObject<BlankBenefitsTemplate>(
+                var expectedResults = JsonConvert.DeserializeObject<LetterTemplate>(
                     File.ReadAllText(testResultsPath));
 
             });

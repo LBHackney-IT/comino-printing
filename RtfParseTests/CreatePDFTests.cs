@@ -16,8 +16,8 @@ namespace RtfParseTests
         [SetUp]
         public void SetUp()
         {
-            htmlLetters = new DirectoryInfo("./../../../TestFixtures/ChangesInCircsICL/ExampleLettersHTML");
-            _pdfResults = new DirectoryInfo("./../../../TestFixtures/ChangesInCircsICL/PdfResults");
+            htmlLetters = new DirectoryInfo("./../../../TestFixtures/BenefitsBlankLetter/ExampleLettersHTML");
+            _pdfResults = new DirectoryInfo("./../../../TestFixtures/BenefitsBlankLetter/PdfResults");
 
             _subject = new CreatePDF();
         }
@@ -28,8 +28,9 @@ namespace RtfParseTests
             htmlLetters.GetFiles().ToList().ForEach(fileInfo =>
             {
                 var fileName = fileInfo.Name.ToString().Split('.').First();
+                if(fileName == "") { return; }
 
-                var templateConverts = new ChangesInCircsICL();
+                var templateConverts = new BlankBenefitsRtfParser();
                 var htmlInput = templateConverts.Execute(fileInfo);
                 var pdfBytes = _subject.Execute(htmlInput);
 
