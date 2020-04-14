@@ -9,22 +9,19 @@ namespace RtfParseTests
 {
     public class CreatePDFTests
     {
-        private DirectoryInfo htmlLetters;
         private CreatePDF _subject;
-        private DirectoryInfo _pdfResults;
 
         [SetUp]
         public void SetUp()
         {
-            htmlLetters = new DirectoryInfo("./../../../TestFixtures/BenefitsBlankLetter/ExampleLettersHTML");
-            _pdfResults = new DirectoryInfo("./../../../TestFixtures/BenefitsBlankLetter/PdfResults");
-
             _subject = new CreatePDF();
         }
 
         [Test]
-        public void ConvertsToPDF()
+        public void ConvertsBenefitsBlankLetterToPDF()
         {
+            var htmlLetters = new DirectoryInfo("./../../../TestFixtures/BenefitsBlankLetter/ExampleLettersHTML");
+            var pdfResults = new DirectoryInfo("./../../../TestFixtures/BenefitsBlankLetter/PdfResults");
             htmlLetters.GetFiles().ToList().ForEach(fileInfo =>
             {
                 var fileName = fileInfo.Name.ToString().Split('.').First();
@@ -34,8 +31,28 @@ namespace RtfParseTests
                 var htmlInput = templateConverts.Execute(fileInfo);
                 var pdfBytes = _subject.Execute(htmlInput);
 
-                File.WriteAllBytesAsync(_pdfResults.ToString() + $"/{fileName}.pdf", pdfBytes);
-                File.Exists(_pdfResults.ToString() + $"/{fileName}.pdf").Should().BeTrue();
+                File.WriteAllBytesAsync(pdfResults.ToString() + $"/{fileName}.pdf", pdfBytes);
+                File.Exists(pdfResults.ToString() + $"/{fileName}.pdf").Should().BeTrue();
+            });
+        }
+
+        [Test]
+        public void ConvertsChangeInCircLettersToPDF()
+        {
+            var htmlLetters = new DirectoryInfo("./../../../TestFixtures/ChangesInCircsICL/ExampleLettersHTML");
+            var pdfResults = new DirectoryInfo("./../../../TestFixtures/ChangesInCircsICL/PdfResults");
+
+            htmlLetters.GetFiles().ToList().ForEach(fileInfo =>
+            {
+                var fileName = fileInfo.Name.ToString().Split('.').First();
+                if(fileName == "") { return; }
+
+                var templateConverts = new ChangesInCircsICL();
+                var htmlInput = templateConverts.Execute(fileInfo);
+                var pdfBytes = _subject.Execute(htmlInput);
+
+                File.WriteAllBytesAsync(pdfResults.ToString() + $"/{fileName}.pdf", pdfBytes);
+                File.Exists(pdfResults.ToString() + $"/{fileName}.pdf").Should().BeTrue();
             });
         }
     }
