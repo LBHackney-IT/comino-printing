@@ -24,13 +24,9 @@ namespace RtfParseSpike.Parsers
 
             var greeting = documentNode.SelectSingleNode("/div/p[4]").InnerText;
 
-            var letterBody = documentNode
-                .SelectNodes("/div/p")
-                .ToList()
-                .GetRange(4, 38)
-                .Select(EditHtmlStringBasedOnTags).ToList();
+            var letterBody = documentNode.SelectNodes("/div/p").ToList().GetRange(4, 38).Select(node => node.OuterHtml).ToList();
             
-            var letterBodyString = String.Join("\n", letterBody);
+            var letterBodyHtmlString = String.Join("", letterBody);
 
             var letterClosing = documentNode.SelectNodes("/div/p").ToList().GetRange(42, 5).Select(EditHtmlStringBasedOnTags);
             
@@ -40,7 +36,7 @@ namespace RtfParseSpike.Parsers
             {
                 AddressFields = addressFields,
                 Greeting = greeting,
-                LetterBody = letterBodyString,
+                LetterBody = letterBodyHtmlString,
                 LetterClosing = letterClosingString
             };
         }
