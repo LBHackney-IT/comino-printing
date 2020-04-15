@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Usecases.GatewayInterfaces;
+using UseCases.GatewayInterfaces;
 
 namespace Gateways
 {

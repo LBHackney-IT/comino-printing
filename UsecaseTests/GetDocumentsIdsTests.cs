@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using AutoFixture;
 using Moq;
 using NUnit.Framework;
-using Usecases;
-using Usecases.GatewayInterfaces;
+using UseCases;
+using UseCases.GatewayInterfaces;
 
 namespace UnitTests
 {
