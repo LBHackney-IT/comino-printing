@@ -1,20 +1,23 @@
 ﻿using System;
-using Usecases.GatewayInterfaces;
+using UseCases.GatewayInterfaces;
 
-namespace Usecases
+namespace UseCases
 {
     public class GetDocumentsIds
     {
-        private ICominoGateway _cominoGateway;
-        
-        public GetDocumentsIds(ICominoGateway cominoGateway)
+        private readonly ICominoGateway _cominoGateway;
+        private ISqsGateway _sqsGateway;
+
+        public GetDocumentsIds(ICominoGateway cominoGateway, ISqsGateway sqsGateway)
         {
             _cominoGateway = cominoGateway;
+            _sqsGateway = sqsGateway;
         }
 
         public void Execute()
         {
-            _cominoGateway.GetDocumentsAfterStartDate(DateTime.Now.AddMinutes(-1));
+            var receivedDocumentIds = _cominoGateway.GetDocumentsAfterStartDate(DateTime.Now.AddMinutes(-1));
+            _sqsGateway.AddDocumentIdsToQueue(receivedDocumentIds);
         }
     }
 }

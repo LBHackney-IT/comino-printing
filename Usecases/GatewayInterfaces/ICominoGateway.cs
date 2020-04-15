@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Usecases.GatewayInterfaces
+namespace UseCases.GatewayInterfaces
 {
     public interface ICominoGateway
     {

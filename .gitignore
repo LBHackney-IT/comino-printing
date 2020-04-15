@@ -1,6 +1,7 @@
 */bin/
 */obj/
 .idea/
+RtfParseTests/TestFixtures
 RtfParseTests/ExampleLettersHtml
 RtfParseTests/ExampleLettersRtf
 ExampleLettersRtf
