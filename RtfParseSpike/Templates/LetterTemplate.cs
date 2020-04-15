@@ -1,7 +1,7 @@
 
 namespace RtfParseSpike.Templates
 {
-    public class ChangesInCircsICLTemplate
+    public class LetterTemplate
     {
         public string Header { get; set; }
         public string MainBody { get; set; }
