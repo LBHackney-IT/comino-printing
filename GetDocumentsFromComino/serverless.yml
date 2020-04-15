@@ -53,7 +53,7 @@ package:
 
 functions:
   hello:
-    handler: CsharpHandlers::AwsDotnetCsharp.Handler::Hello
+    getdocuments: CsharpHandlers::AwsDotnetCsharp.GetDocuments::Hello
 
     # you can add packaging information here
     package:

@@ -5,7 +5,7 @@ using System;
 
 namespace AwsDotnetCsharp
 {
-    public class Handler
+    public class GetDocuments
     {
        public Response Hello(Request request)
        {
