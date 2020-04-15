@@ -1,6 +1,9 @@
-namespace Usecases.GatewayInterfaces
+using System.Collections.Generic;
+
+namespace UseCases.GatewayInterfaces
 {
-    internal interface ISqsGateway
+    public interface ISqsGateway
     {
+        void AddDocumentIdsToQueue(List<string> documentsIds);
     }
 }
