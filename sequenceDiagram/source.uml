@@ -1,0 +1,29 @@
+@startuml
+actor "Officer (CT/HB)"
+database Comino
+actor "Officer (Business Services)"
+"Officer (CT/HB)" -> Comino : Searches for a particular claim and selects 'Generate Letter'
+"Officer (CT/HB)" -> Comino : Selects from possible addresses for the letter
+"Officer (CT/HB)" -> Comino : Selects the relevant department and chooses letter type ("Out-Going")
+"Officer (CT/HB)" -> Comino : Selects document content sections according to options available
+"Officer (CT/HB)" -> Comino : Previews document, may manually edit layout and/or content as needed
+alt Send document as email
+  "Officer (CT/HB)" -> Comino : Copies and pastes document contents into email
+  "Officer (CT/HB)" -> Comino : Exits document creation process
+  "Officer (CT/HB)" -> Comino : Creates and saves a record of the sent email instead
+else Send document by post
+  "Officer (CT/HB)" -> Comino : Saves document to Batch Print
+end
+"Officer (Business Services)" -> Comino : Selects 'Utilities' from the main menu
+"Officer (Business Services)" -> Comino : Selects 'Batch Printing' to view list of documents to print
+"Officer (Business Services)" -> Comino : May optionally click 'Refresh' to refresh document list
+"Officer (Business Services)" -> Comino : Clicks 'Select All' to highlight all listed documents
+"Officer (Business Services)" -> Comino : Clicks 'PrintToNoDelete' and selects local printer
+"Officer (Business Services)" -> Comino : Waits for printing to complete
+"Officer (Business Services)" -> Comino : Checks each printed letter individually
+alt If printed letter is correct
+  "Officer (Business Services)" -> Comino : Deletes that document from the list
+else If printed letter is not correct
+  "Officer (Business Services)" -> "Officer (CT/HB)" : Contacts the officer responsible for the letter
+end
+@enduml
