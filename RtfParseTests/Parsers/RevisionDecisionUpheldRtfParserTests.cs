@@ -20,7 +20,7 @@ namespace RtfParseTests
         public void Setup()
         {
             _parser = new RevisionDecisionUpheldRtfParser();
-            _testFixtureDirectory = new DirectoryInfo("./../../../ExampleLettersRtf/RevisionDecisionUpheld");
+            _testFixtureDirectory = new DirectoryInfo("./../../../TestFixtures/RevisionDecisionUpheld/ExampleLettersHtml");
             _testResultsDirectory = new DirectoryInfo("./../../../JSONTestResults/RevisionDecisionUpheld");
         }
 
