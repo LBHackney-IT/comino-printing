@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
 
         <IsPackable>false</IsPackable>
-
-        <RootNamespace>UnitTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Usecases\Usecases.csproj" />
+      <ProjectReference Include="..\..\src\Lambda\Lambda.csproj" />
     </ItemGroup>
 
 </Project>
