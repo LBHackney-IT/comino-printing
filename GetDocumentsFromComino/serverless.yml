@@ -52,16 +52,14 @@ package:
   individually: true
 
 functions:
-  hello:
-    getdocuments: CsharpHandlers::AwsDotnetCsharp.GetDocuments::Hello
+  fetchdocumentids:
+    handler: GetDocumentsFromComino::AwsDotnetCsharp.GetDocuments::FetchDocumentIds
     events:
-      - http:
-          path: /hello
-          method: get
-
+      - schedule: rate(1 minute)
+        
     # you can add packaging information here
     package:
-      artifact: bin/release/netcoreapp2.1/hello.zip
+      artifact: bin/release/netcoreapp2.1/fetchdocumentids.zip
     #  exclude:
     #    - exclude-me.js
     #    - exclude-me-dir/**
