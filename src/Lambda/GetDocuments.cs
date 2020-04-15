@@ -20,7 +20,7 @@ namespace AwsDotnetCsharp
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             serviceCollection.BuildServiceProvider();
-            DotNetEnv.Env.Load("./path/to/.env");
+            DotNetEnv.Env.Load("./.env");
 
         }
 
