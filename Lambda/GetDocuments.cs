@@ -10,8 +10,8 @@ namespace AwsDotnetCsharp
 {
     public class GetDocuments
     {
-        private IGetDocumentsIds _getDocumentsIds;
-        
+        private readonly IGetDocumentsIds _getDocumentsIds;
+
         public GetDocuments(IGetDocumentsIds getDocumentsIds)
         {
             _getDocumentsIds = getDocumentsIds;

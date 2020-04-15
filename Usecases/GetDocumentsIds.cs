@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using AwsDotnetCsharp.UsecaseInterfaces;
 using UseCases.GatewayInterfaces;
 
 namespace UseCases
 {
-    public class GetDocumentsIds
+    public class GetDocumentsIds : IGetDocumentsIds
     {
         private readonly ICominoGateway _cominoGateway;
 
@@ -12,9 +14,9 @@ namespace UseCases
             _cominoGateway = cominoGateway;
         }
 
-        public void Execute()
+        public List<string> Execute()
         {
-            var receivedDocumentIds = _cominoGateway.GetDocumentsAfterStartDate(DateTime.Now.AddMinutes(-1));
+            return _cominoGateway.GetDocumentsAfterStartDate(DateTime.Now.AddMinutes(-1));
         }
     }
 }

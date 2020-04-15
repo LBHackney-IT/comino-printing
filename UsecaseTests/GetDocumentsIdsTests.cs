@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using UseCases;
@@ -33,14 +34,17 @@ namespace UnitTests
         }
 
         [Test]
-        public void ExecuteQueriesCominoForNewDocumentsWithCorrectTime()
+        public void ExecuteQueriesAndReturnsCominoForNewDocumentsWithCorrectTime()
         {
             var startDate = DateTime.Now.AddMinutes(-1);
-
-            _getDocumentsIds.Execute();
-
+            var documentIds = _fixture.CreateMany<string>().ToList();
             _gatewayMock
-                .Verify(x => x.GetDocumentsAfterStartDate(CheckDateWithinASecond(startDate)), Times.Once);
+                .Setup(x => x.GetDocumentsAfterStartDate(CheckDateWithinASecond(startDate)))
+                .Returns(documentIds)
+                .Verifiable();
+            _getDocumentsIds.Execute().Should().BeEquivalentTo(documentIds);
+
+            _gatewayMock.Verify();
         }
 
         private static DateTime CheckDateWithinASecond(DateTime startDate)
