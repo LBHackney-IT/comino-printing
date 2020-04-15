@@ -10,7 +10,7 @@ You do not need to create a serverless dashboard account to invoke these lambda 
 
 ## Invoking lambda functions locally
 
-- `cd` into `GetDocumentsFromComino` folder.
+- `cd` into `Lambda` folder.
 
 - Run the `build.sh` file locally on your machine to make sure the project can build on your local machine.
 
