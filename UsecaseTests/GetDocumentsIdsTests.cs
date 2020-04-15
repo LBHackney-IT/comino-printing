@@ -13,15 +13,13 @@ namespace UnitTests
     {
         private Mock<ICominoGateway> _gatewayMock;
         private GetDocumentsIds _getDocumentsIds;
-        private Mock<ISqsGateway> _sqsGatewayMock;
         private Fixture _fixture;
 
         [SetUp]
         public void Setup()
         {
             _gatewayMock = new Mock<ICominoGateway>();
-            _sqsGatewayMock = new Mock<ISqsGateway>();
-            _getDocumentsIds = new GetDocumentsIds(_gatewayMock.Object, _sqsGatewayMock.Object);
+            _getDocumentsIds = new GetDocumentsIds(_gatewayMock.Object);
             _fixture = new Fixture();
         }
 
@@ -43,18 +41,6 @@ namespace UnitTests
 
             _gatewayMock
                 .Verify(x => x.GetDocumentsAfterStartDate(CheckDateWithinASecond(startDate)), Times.Once);
-        }
-
-        [Test]
-        public void ExecutePassesDocumentIdsFromGatewayToSqs()
-        {
-            var startDate = DateTime.Now.AddMinutes(-1);
-            var documentsIds = _fixture.CreateMany<string>().ToList();
-            _gatewayMock.Setup(x => x.GetDocumentsAfterStartDate(CheckDateWithinASecond(startDate))).Returns(documentsIds);
-
-            _getDocumentsIds.Execute();
-
-            _sqsGatewayMock.Verify(x => x.AddDocumentIdsToQueue(documentsIds), Times.Once);
         }
 
         private static DateTime CheckDateWithinASecond(DateTime startDate)

@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateways", "Gateways\Gatewa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GatewayTests", "GatewayTests\GatewayTests.csproj", "{A063B900-12C3-43CD-A39F-C71562B8B15F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaTests", "LambdaTests\LambdaTests.csproj", "{46869836-2858-4969-A664-F618E3A39B89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{A063B900-12C3-43CD-A39F-C71562B8B15F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A063B900-12C3-43CD-A39F-C71562B8B15F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A063B900-12C3-43CD-A39F-C71562B8B15F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46869836-2858-4969-A664-F618E3A39B89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46869836-2858-4969-A664-F618E3A39B89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46869836-2858-4969-A664-F618E3A39B89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46869836-2858-4969-A664-F618E3A39B89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
