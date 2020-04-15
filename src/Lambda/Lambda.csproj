@@ -8,9 +8,14 @@
     <ItemGroup>
       <PackageReference Include="Amazon.Lambda.Core" Version="1.1.0" />
       <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="1.7.0" />
-      <PackageReference Include="dotenv.net" Version="2.1.0" />
+      <PackageReference Include="DotNetEnv" Version="1.4.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0-preview.2.20160.3" />
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0-preview.2.20160.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Gateways\Gateways.csproj" />
+      <ProjectReference Include="..\Usecases\Usecases.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,11 +1,10 @@
 using Amazon.Lambda.Core;
-using System;
-using System.Threading;
 using AwsDotnetCsharp.UsecaseInterfaces;
-using dotenv.net;
-using dotenv.net.DependencyInjection.Infrastructure;
+using Gateways;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using UseCases;
+using UseCases.GatewayInterfaces;
 
 [assembly:LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
@@ -18,34 +17,24 @@ namespace AwsDotnetCsharp
         public GetDocuments(IGetDocumentsIds getDocumentsIds)
         {
             _getDocumentsIds = getDocumentsIds;
-            ReadEnvironmentVariablesFromDotEnv();
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            Configuration = serviceProvider.GetService<ILambdaConfiguration>();
+            serviceCollection.BuildServiceProvider();
+            DotNetEnv.Env.Load("./path/to/.env");
 
         }
 
         private void ConfigureServices(ServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
+            serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
+            serviceCollection.AddScoped<IDatabaseRepository, DatabaseRepository>();
         }
 
         public void FetchDocumentIds(ILambdaContext context)
         {
            var lambdaOutput = _getDocumentsIds.Execute();
            LambdaLogger.Log("Document ids retrieved" + JsonConvert.SerializeObject(lambdaOutput));
-        }
-
-        private static void ReadEnvironmentVariablesFromDotEnv()
-        {
-            DotEnv.Config(
-                new DotEnvOptions
-                {
-                    ThrowOnError = false,
-                    EnvFile = ".env"
-                }
-            );
         }
     }
 }
