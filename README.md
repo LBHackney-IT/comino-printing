@@ -5,6 +5,7 @@
 This system is made up of lambda functions deployed to AWS using the [Serverless](https://serverless.com/) framework and a runtime of dotnetcore2.1.
 
 - Install Serverless globally on your machine. The instructions to install serverless can be found [here](https://serverless.com/framework/docs/getting-started/).
+- Install Amazon.Lambda.Tools for .NET on your machine. Installation instructions can be found [here](https://aws.amazon.com/blogs/developer/net-core-global-tools-for-aws).
 
 You do not need to create a serverless dashboard account to invoke these lambda functions from your local machine.
 
@@ -12,7 +13,7 @@ You do not need to create a serverless dashboard account to invoke these lambda 
 
 - `cd` into `Lambda` folder.
 
-- Run the `build.sh` file locally on your machine to make sure the project can build on your local machine.
+- Run the `build.sh` file locally on your machine to make sure the project can build on your local machine. If using PowerShell on Windows, you can also run `build.cmd`.
 
 - Run docker on your machine. Instructions to install docker can be found [here](https://docs.docker.com/get-docker/).
 
@@ -24,4 +25,4 @@ This repo contains a UML sequence diagram, which can be updated as follows:
 
 1. Run `docker pull think/plantuml` to download [this useful PlantUML image](https://hub.docker.com/r/think/plantuml/)
 2. Edit `./sequenceDiagram/source.uml` as needed
-3. Run `cat sequenceDiagram/source.uml | docker run --rm -i think/plantuml -tpng > sequenceDiagram/source.png` to output
+3. Run `cat sequenceDiagram/source.uml | docker run --rm -i think/plantuml -tpng > sequenceDiagram/source.png` to output (Note: if running on Windows, please use Windows Subsystem for Linux in order to generate valid images)
