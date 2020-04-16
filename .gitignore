@@ -1,5 +1,5 @@
-*/bin/
-*/obj/
+**/bin/
+**/obj/
 .idea/
 RtfParseTests/TestFixtures
 RtfParseTests/ExampleLettersHtml
@@ -8,3 +8,5 @@ ExampleLettersRtf
 RtfParseTests/JSONTestResults
 RtfParseTests/BlankBenefitsHtml/
 RtfParseTests/BlankBenefitsRtf/
+**/.env
+
