@@ -58,8 +58,14 @@ jobs:
           at: ~/repo
 
       - run:
+          name: Install Node.js
+          command: |
+            curl -sL https://deb.nodesource.com/setup_13.x | bash -
+            apt-get install -y nodejs
+
+      - run:
           name: Install Serverless CLI
-          command: sudo npm i -g serverless
+          command: npm i -g serverless
 
       - run:
           name: Set AWS credentials
@@ -78,8 +84,14 @@ jobs:
           at: ~/repo
 
       - run:
+          name: Install Node.js
+          command: |
+            curl -sL https://deb.nodesource.com/setup_13.x | bash -
+            apt-get install -y nodejs
+
+      - run:
           name: Install Serverless CLI
-          command: sudo npm i -g serverless
+          command: npm i -g serverless
 
       - run:
           name: Set AWS credentials
