@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using Dapper;
 using UseCases.GatewayInterfaces;
 
 namespace Gateways
 {
     public class CominoGateway : ICominoGateway
     {
-        private IDatabaseRepository _database;
+        private IDbConnection _database;
 
-        public CominoGateway(IDatabaseRepository database)
+        public CominoGateway(IDbConnection database)
         {
             _database = database;
         }
@@ -25,7 +27,12 @@ AND DocSource = 'O'
 AND DocDate > {startTime}
 ORDER BY DocDate DESC;
 ";
-             return _database.QueryBatchPrint(query).Select(row => row.DocumentNumber).ToList();
+             return _database.Query<W2BatchPrintRow>(query).Select(row => row.DocumentNumber).ToList();
+        }
+
+        public class W2BatchPrintRow
+        {
+            public string DocumentNumber { get; set; }
         }
     }
 }

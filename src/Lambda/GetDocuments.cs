@@ -1,3 +1,6 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
 using Amazon.Lambda.Core;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using Gateways;
@@ -26,7 +29,8 @@ namespace AwsDotnetCsharp
         {
             serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
             serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
-            serviceCollection.AddScoped<IDatabaseRepository, DatabaseRepository>();
+            var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DATABASE_CONN_STRING");
+            serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
         }
 
         public void FetchDocumentIds(ILambdaContext context)
