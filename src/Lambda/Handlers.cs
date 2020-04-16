@@ -17,20 +17,18 @@ namespace AwsDotnetCsharp
     {
         private readonly ServiceProvider _serviceProvider;
 
-        public Handlers()
-        {
+        public Handlers() {
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             _serviceProvider = serviceCollection.BuildServiceProvider();
-
-            DotNetEnv.Env.Load("./.env");
         }
 
-        private void ConfigureServices(ServiceCollection serviceCollection)
+        private void ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
             serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
-            var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DATABASE_CONN_STRING");
+            var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
+
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
         }
 
