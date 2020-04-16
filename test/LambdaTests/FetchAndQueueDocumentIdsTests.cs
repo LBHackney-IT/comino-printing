@@ -1,7 +1,7 @@
+using System.Data;
 using Amazon.Lambda.Core;
 using AutoFixture;
 using AwsDotnetCsharp;
-using AwsDotnetCsharp.UsecaseInterfaces;
 using Moq;
 using NUnit.Framework;
 
@@ -9,21 +9,19 @@ namespace LambdaTests
 {
     public class GetDocumentsTests
     {
-        private Fixture _fixture;
 
         [SetUp]
         public void Setup()
         {
-            _fixture = new Fixture();
         }
 
         [Test]
         public void WhenInvokedItCallsGetDocumentsIds()
         {
-            var lambda = new GetDocuments();
+            var lambda = new Handlers();
             var contextMock = new Mock<ILambdaContext>();
-            lambda.FetchDocumentIds(contextMock.Object);
-            //E2E Test Here?
+            lambda.FetchAndQueueDocumentIds(contextMock.Object);
+            //E2E Test Here - How to mock DB?
         }
     }
 }

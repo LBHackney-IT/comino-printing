@@ -13,11 +13,11 @@ using UseCases.GatewayInterfaces;
 
 namespace AwsDotnetCsharp
 {
-    public class GetDocuments
+    public class Handlers
     {
         private readonly ServiceProvider _serviceProvider;
 
-        public GetDocuments()
+        public Handlers()
         {
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
@@ -34,7 +34,7 @@ namespace AwsDotnetCsharp
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
         }
 
-        public void FetchDocumentIds(ILambdaContext context)
+        public void FetchAndQueueDocumentIds(ILambdaContext context)
         {
             var getDocumentsUseCse = _serviceProvider.GetService<IGetDocumentsIds>();
            var lambdaOutput = getDocumentsUseCse.Execute();
