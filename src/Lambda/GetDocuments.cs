@@ -15,13 +15,14 @@ namespace AwsDotnetCsharp
 {
     public class GetDocuments
     {
-        private readonly IGetDocumentsIds _getDocumentsIds;
+        private readonly ServiceProvider _serviceProvider;
 
         public GetDocuments()
         {
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
-            serviceCollection.BuildServiceProvider();
+            _serviceProvider = serviceCollection.BuildServiceProvider();
+
             DotNetEnv.Env.Load("./.env");
         }
 
@@ -35,7 +36,8 @@ namespace AwsDotnetCsharp
 
         public void FetchDocumentIds(ILambdaContext context)
         {
-           var lambdaOutput = _getDocumentsIds.Execute();
+            var getDocumentsUseCse = _serviceProvider.GetService<IGetDocumentsIds>();
+           var lambdaOutput = getDocumentsUseCse.Execute();
            LambdaLogger.Log("Document ids retrieved" + JsonConvert.SerializeObject(lambdaOutput));
         }
     }
