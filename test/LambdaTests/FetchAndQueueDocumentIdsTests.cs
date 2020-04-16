@@ -20,7 +20,7 @@ namespace LambdaTests
         {
             var lambda = new Handlers();
             var contextMock = new Mock<ILambdaContext>();
-            lambda.FetchAndQueueDocumentIds(contextMock.Object);
+//            lambda.FetchAndQueueDocumentIds(contextMock.Object);
             //E2E Test Here - How to mock DB?
         }
     }
