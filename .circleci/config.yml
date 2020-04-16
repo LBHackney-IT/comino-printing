@@ -87,7 +87,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: sls deploy -s staging
+          command: cd src/Lambda && sls deploy -s staging
 
   deploy-production:
     executor: dotnet-executor
@@ -112,7 +112,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: sls deploy -s production
+          command: cd src/Lambda && sls deploy -s production
 
 workflows:
   version: 2
