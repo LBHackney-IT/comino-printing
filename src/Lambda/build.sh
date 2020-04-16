@@ -8,4 +8,5 @@ then
 fi
 
 dotnet restore
+dotnet tool install --global Amazon.Lambda.Tools --version 4.0.0
 dotnet lambda package --configuration release --framework netcoreapp2.1 --output-package bin/release/netcoreapp2.1/fetchdocumentids.zip

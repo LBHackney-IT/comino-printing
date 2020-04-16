@@ -46,20 +46,6 @@ jobs:
             - ~/.nuget/packages
           key: v1-dependencies-{{ checksum "combined-csproj.txt" }}
 
-      - run:
-          name: Install Node.js
-          command: |
-            curl -sL https://deb.nodesource.com/setup_13.x | bash -
-            apt-get install -y nodejs
-
-      - run:
-          name: Install Serverless CLI
-          command: npm i -g serverless
-
-      - run:
-          name: Set AWS credentials
-          command: serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney
-
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -87,7 +73,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: cd src/Lambda && sls deploy -s staging
+          command: cd src/Lambda && make && sls deploy -s staging
 
   deploy-production:
     executor: dotnet-executor
@@ -112,7 +98,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: cd src/Lambda && sls deploy -s production
+          command: cd src/Lambda && make && sls deploy -s production
 
 workflows:
   version: 2
