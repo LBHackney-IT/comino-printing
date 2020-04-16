@@ -1,0 +1,111 @@
+version: 2.1
+
+executors:
+  dotnet-executor:
+    docker:
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.1
+
+    working_directory: ~/repo
+
+jobs:
+  build:
+    executor: dotnet-executor
+
+    steps:
+      - checkout
+
+      - run:
+          name: (TEMPORARY) Remove spike projects to exclude from build/test steps here
+          command: dotnet sln remove RtfParseTests RtfParseSpike
+
+      - run:
+          name: Concatenate all csproj files into single file for checksum
+          command: cat */**/*.csproj > combined-csproj.txt
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "combined-csproj.txt" }}
+            - v1-dependencies-
+
+      - run:
+          name: Install dependencies
+          command: dotnet restore
+
+      - run:
+          name: Build project
+          command: dotnet build
+
+      - run:
+          name: Run tests
+          # The following issue is affecting our test command here:
+          # https://github.com/dotnet/core/issues/2775
+          command: x=$(dotnet test); echo $x;
+
+      - save_cache:
+          paths:
+            - ~/.nuget/packages
+          key: v1-dependencies-{{ checksum "combined-csproj.txt" }}
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+
+  deploy-staging:
+    executor: dotnet-executor
+
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Install Serverless CLI
+          command: sudo npm i -g serverless
+
+      - run:
+          name: Set AWS credentials
+          command: |
+            pushd ~ && serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
+
+      - run:
+          name: Deploy application
+          command: sls deploy -s staging
+
+  deploy-production:
+    executor: dotnet-executor
+
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Install Serverless CLI
+          command: sudo npm i -g serverless
+
+      - run:
+          name: Set AWS credentials
+          command: |
+            pushd ~ && serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney && popd
+
+      - run:
+          name: Deploy application
+          command: sls deploy -s production
+
+workflows:
+  version: 2
+  continuous-delivery:
+    jobs:
+      - build
+      - deploy-staging:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+      - permit-deploy-production:
+          type: approval
+          requires:
+            - deploy-staging
+      - deploy-production:
+          requires:
+            - permit-deploy-production
