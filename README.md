@@ -10,13 +10,10 @@ You do not need to create a serverless dashboard account to invoke these lambda 
 
 ## Invoking lambda functions locally
 
-- `cd` into `Lambda` folder.
-
-- Run the `build.sh` file locally on your machine to make sure the project can build on your local machine.
-
-- Run docker on your machine. Instructions to install docker can be found [here](https://docs.docker.com/get-docker/).
-
-- Run `serverless invoke local --function <lambda_function_name>` to invoke the function. `<lambda_function_name>` should be the name of the function as written in the `serverless.yml` file.
+1. Make sure docker is running your machine. Instructions to install docker can be found [here](https://docs.docker.com/get-docker/).
+2. Navigate into the Lambda subdirectory: `cd src/Lambda`
+3. Run `./build.sh`to make sure the project can build on your local machine.
+4. Run `serverless invoke local --function <lambda_function_name>` to invoke a function. `<lambda_function_name>` should be the name of the function as written in the `serverless.yml` file.
 
 ### Sequence Diagram
 

@@ -10,7 +10,7 @@ fi
 dotnet restore
 dotnet tool install --global Amazon.Lambda.Tools --version 4.0.0
 
-# ensure that the newly-installed tools are on PATH
+# (for CI) ensure that the newly-installed tools are on PATH
 if [ -f /etc/debian_version ]
 then
   export PATH="$PATH:/$(whoami)/.dotnet/tools"
