@@ -61,8 +61,9 @@ functions:
     package:
       artifact: bin/release/netcoreapp2.1/fetchdocumentids.zip
     environment: 
-      COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR}
+      COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
       ENV: ${self:provider.stage}
+
     #  exclude:
     #    - exclude-me.js
     #    - exclude-me-dir/**
