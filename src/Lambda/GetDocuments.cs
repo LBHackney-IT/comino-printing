@@ -14,14 +14,12 @@ namespace AwsDotnetCsharp
     {
         private readonly IGetDocumentsIds _getDocumentsIds;
 
-        public GetDocuments(IGetDocumentsIds getDocumentsIds)
+        public GetDocuments()
         {
-            _getDocumentsIds = getDocumentsIds;
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             serviceCollection.BuildServiceProvider();
             DotNetEnv.Env.Load("./.env");
-
         }
 
         private void ConfigureServices(ServiceCollection serviceCollection)

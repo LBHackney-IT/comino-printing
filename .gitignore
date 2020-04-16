@@ -8,3 +8,5 @@ ExampleLettersRtf
 RtfParseTests/JSONTestResults
 RtfParseTests/BlankBenefitsHtml/
 RtfParseTests/BlankBenefitsRtf/
+**/.env
+

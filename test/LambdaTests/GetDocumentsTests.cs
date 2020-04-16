@@ -10,23 +10,20 @@ namespace LambdaTests
     public class GetDocumentsTests
     {
         private Fixture _fixture;
-        private Mock<IGetDocumentsIds> _usecaseMock;
-        
+
         [SetUp]
         public void Setup()
         {
             _fixture = new Fixture();
-            _usecaseMock = new Mock<IGetDocumentsIds>();
         }
 
         [Test]
         public void WhenInvokedItCallsGetDocumentsIds()
         {
-            var lambda = new GetDocuments(_usecaseMock.Object);
+            var lambda = new GetDocuments();
             var contextMock = new Mock<ILambdaContext>();
             lambda.FetchDocumentIds(contextMock.Object);
-            
-            _usecaseMock.Verify(x => x.Execute(), Times.Once);
+            //E2E Test Here?
         }
     }
 }
