@@ -9,4 +9,11 @@ fi
 
 dotnet restore
 dotnet tool install --global Amazon.Lambda.Tools --version 4.0.0
+
+# ensure that the newly-installed tools are on PATH
+if [ -f /etc/debian_version ]
+then
+  export PATH="$PATH:/$(whoami)/.dotnet/tools"
+fi
+
 dotnet lambda package --configuration release --framework netcoreapp2.1 --output-package bin/release/netcoreapp2.1/fetchdocumentids.zip
