@@ -53,7 +53,7 @@ package:
 
 functions:
   fetchdocumentids:
-    handler: Lambda::AwsDotnetCsharp.Handlers::FetchDocumentIds
+    handler: Lambda::AwsDotnetCsharp.Handlers::FetchAndQueueDocumentIds
     events:
       - schedule: rate(1 minute)
         
