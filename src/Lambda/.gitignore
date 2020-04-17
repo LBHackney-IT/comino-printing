@@ -247,3 +247,6 @@ _Pvt_Extensions
 
 #Local env variables
 .env
+
+#Local Dynamo Directories
+.dynamodb/

@@ -12,6 +12,8 @@
 # Happy Coding!
 
 service: getdocumentsfromcomino
+plugins: 
+  - serverless-dynamodb-local
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -64,6 +66,34 @@ functions:
     environment:
       COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
       ENV: ${self:provider.stage}
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    cominoLetters:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        TableName: 'Letters'
+        AttributeDefinitions:
+          - AttributeName: Id
+            AttributeType: S
+          - AttributeName: Code
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Id
+            KeyType: HASH
+          - AttributeName: Code
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
     #  exclude:
     #    - exclude-me.js
     #    - exclude-me-dir/**
