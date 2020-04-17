@@ -1,10 +1,12 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using Gateways;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UseCases;
@@ -16,12 +18,11 @@ namespace AwsDotnetCsharp
 {
     public class Handlers
     {
-        private readonly ServiceProvider _serviceProvider;
+        private ServiceProvider _serviceProvider;
 
         public Handlers() {
-            var serviceCollection = new ServiceCollection();
-            ConfigureServices(serviceCollection);
-            _serviceProvider = serviceCollection.BuildServiceProvider();
+            var configuration = BuildConfiguration();
+            ConfigureServices(configuration);
         }
 
         public void FetchAndQueueDocumentIds(ILambdaContext context)
@@ -38,14 +39,30 @@ namespace AwsDotnetCsharp
            LambdaLogger.Log("Received from SQS: " + JsonConvert.SerializeObject(lambdaOutput));
         }
 
-        private void ConfigureServices(IServiceCollection serviceCollection)
+        private void ConfigureServices(IConfigurationRoot configurationRoot)
         {
+            var serviceCollection = new ServiceCollection();
+
             serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
             serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
             LambdaLogger.Log($"Fetched Connection string: {cominoConnectionString != null}");
-            LambdaLogger.Log($"Stage env: {Environment.GetEnvironmentVariable("ENV")}");
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
+            serviceCollection.AddSingleton(new DynamoDbConfiguration {TableName = "name"});
+            _serviceProvider = serviceCollection.BuildServiceProvider();
         }
+
+        private IConfigurationRoot BuildConfiguration()
+        {
+            return new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddEnvironmentVariables()
+                .Build();
+        }
+    }
+
+    public class DynamoDbConfiguration
+    {
+        public string TableName { get; set; }
     }
 }
