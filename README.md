@@ -18,6 +18,7 @@ You do not need to create a serverless dashboard account to invoke these lambda 
 ### Running Local Dynamo DB
 1. Ensure Java is installed `java --version` should return a version number. If not run `brew cask install java`
 2. Run make run-local-dynamo-db
+3. Go to [here](http://localhost:8001/)
 
 ### Sequence Diagram
 
