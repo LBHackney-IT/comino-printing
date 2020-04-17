@@ -46,15 +46,21 @@ resources: # CloudFormation template syntax from here on.
       Properties:
         TableName: "Letters"
         AttributeDefinitions:
-          - AttributeName: Id
-            AttributeType: S
-          - AttributeName: Code
+          - AttributeName: InitialTimestamp
             AttributeType: S
         KeySchema:
-          - AttributeName: Id
+          - AttributeName: InitialTimestamp
             KeyType: HASH
-          - AttributeName: Code
-            KeyType: RANGE
+        GlobalSecondaryIndex:
+          IndexName: Status
+          KeySchema:
+            - AttributeName: Status
+              KeyType: HASH
+          Projection:
+            Projection
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
