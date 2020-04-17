@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using Amazon.Lambda.Core;
+using Amazon.Lambda.SQSEvents;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using Gateways;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,7 +29,7 @@ namespace AwsDotnetCsharp
             serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
             serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
-
+            LambdaLogger.Log($"Fetched Connection string: {cominoConnectionString != null}");
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
         }
 
@@ -37,6 +38,13 @@ namespace AwsDotnetCsharp
             var getDocumentsUseCse = _serviceProvider.GetService<IGetDocumentsIds>();
            var lambdaOutput = getDocumentsUseCse.Execute();
            LambdaLogger.Log("Document ids retrieved" + JsonConvert.SerializeObject(lambdaOutput));
+        }
+
+        public void ListenForSqsEvents(SQSEvent sqsEvent)
+        {
+            var listenForSqsEventsUseCase = _serviceProvider.GetService<IListenForSqsEvents>();
+            var lambdaOutput = listenForSqsEventsUseCase.Execute(sqsEvent);
+           LambdaLogger.Log("Received from SQS: " + JsonConvert.SerializeObject(lambdaOutput));
         }
     }
 }

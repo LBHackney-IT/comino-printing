@@ -12,6 +12,8 @@
 # Happy Coding!
 
 service: getdocumentsfromcomino
+plugins:
+  - serverless-dynamodb-local
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -49,24 +51,56 @@ provider:
 #    variable1: value1
 
 package:
-  individually: true
+  artifact: bin/release/netcoreapp2.1/comino-printing.zip
 
 functions:
   fetchdocumentids:
     handler: Lambda::AwsDotnetCsharp.Handlers::FetchAndQueueDocumentIds
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
       - schedule: rate(1 minute)
-        
-    # you can add packaging information here
-    package:
-      artifact: bin/release/netcoreapp2.1/fetchdocumentids.zip
     environment:
       COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
       ENV: ${self:provider.stage}
 
-    #  exclude:
-    #    - exclude-me.js
-    #    - exclude-me-dir/**
+  listenForSqsEvents:
+    handler: Lambda::AwsDotnetCsharp.Handlers::ListenForSqsEvents
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    events:
+      - sqs: arn:aws:sqs:eu-west-2:775052747630:CominoPrintingDocumentIds
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    cominoLetters:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: "Letters"
+        AttributeDefinitions:
+          - AttributeName: Id
+            AttributeType: S
+          - AttributeName: Code
+            AttributeType: S
+        KeySchema:
+          - AttributeName: Id
+            KeyType: HASH
+          - AttributeName: Code
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    sqsQueueCominoPrintingDocumentIds:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "CominoPrintingDocumentIds"
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -102,7 +136,6 @@ functions:
 #          conditions:
 #            host: example.com
 #            path: /hello
-
 
 # you can add CloudFormation resource templates here
 #resources:

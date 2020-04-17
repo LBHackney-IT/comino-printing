@@ -68,6 +68,10 @@ jobs:
           command: npm i -g serverless
 
       - run:
+          name: NPM Install
+          command: cd src/Lambda && npm install
+
+      - run:
           name: Set AWS credentials
           command: serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney
 

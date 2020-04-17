@@ -15,6 +15,11 @@ You do not need to create a serverless dashboard account to invoke these lambda 
 3. Run `./build.sh`to make sure the project can build on your local machine.
 4. Run `serverless invoke local --function <lambda_function_name>` to invoke a function. `<lambda_function_name>` should be the name of the function as written in the `serverless.yml` file.
 
+### Running Local Dynamo DB
+1. Ensure Java is installed `java --version` should return a version number. If not run `brew cask install java`
+2. Run make run-local-dynamo-db
+3. Go to [here](http://localhost:8001/)
+
 ### Sequence Diagram
 
 This repo contains a UML sequence diagram, which can be updated as follows:

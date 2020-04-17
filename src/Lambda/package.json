@@ -1,0 +1,15 @@
+{
+  "name": "hn-comino-letter-printing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "dynamodb-admin": "^4.0.0",
+    "serverless-dynamodb-local": "^0.2.39"
+  }
+}
