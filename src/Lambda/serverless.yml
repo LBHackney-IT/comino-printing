@@ -54,16 +54,16 @@ package:
 functions:
   fetchdocumentids:
     handler: Lambda::AwsDotnetCsharp.Handlers::FetchAndQueueDocumentIds
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
       - schedule: rate(1 minute)
-        
+
     # you can add packaging information here
     package:
       artifact: bin/release/netcoreapp2.1/fetchdocumentids.zip
     environment:
       COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
       ENV: ${self:provider.stage}
-
     #  exclude:
     #    - exclude-me.js
     #    - exclude-me-dir/**
@@ -102,7 +102,6 @@ functions:
 #          conditions:
 #            host: example.com
 #            path: /hello
-
 
 # you can add CloudFormation resource templates here
 #resources:
