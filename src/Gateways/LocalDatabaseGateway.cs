@@ -1,19 +1,30 @@
 using System;
+using Amazon.DynamoDBv2;
 
 namespace Gateways
 {
     public class LocalDatabaseGateway
     {
-        private DynamoDbClient dynamoDb() {
-//            var endpoint = Environment.GetEnvironmentVariable("ENDPOINT_OVERRIDE");
-
-            DynamoDbClientBuilder builder = DynamoDbClient.builder();
-            builder.httpClient(ApacheHttpClient.builder().build());
-            if (endpoint != null && !endpoint.isEmpty()) {
-                builder.endpointOverride(URI.create(endpoint));
-            }
-
-            return builder.build();
+        public LocalDatabaseGateway(IDynamoDatabaseClient testDatabase)
+        {
+            throw new NotImplementedException();
         }
+    }
+
+    public interface IDynamoDatabaseClient
+    {
+        AmazonDynamoDBClient Client { get; }
+    }
+
+    public class DynamoDatabaseHandler : IDynamoDatabaseClient
+    {
+        private readonly AmazonDynamoDBClient _client;
+
+        public DynamoDatabaseHandler(AmazonDynamoDBConfig config)
+        {
+            _client = new AmazonDynamoDBClient(config);
+        }
+
+        public AmazonDynamoDBClient Client => _client;
     }
 }
