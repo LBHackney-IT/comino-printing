@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using Amazon.Lambda.Core;
+using Amazon.Lambda.SQSEvents;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using Gateways;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +38,13 @@ namespace AwsDotnetCsharp
             var getDocumentsUseCse = _serviceProvider.GetService<IGetDocumentsIds>();
            var lambdaOutput = getDocumentsUseCse.Execute();
            LambdaLogger.Log("Document ids retrieved" + JsonConvert.SerializeObject(lambdaOutput));
+        }
+
+        public void ListenForSqsEvents(SQSEvent sqsEvent)
+        {
+            var listenForSqsEventsUseCase = _serviceProvider.GetService<IListenForSqsEvents>();
+            var lambdaOutput = listenForSqsEventsUseCase.Execute(sqsEvent);
+           LambdaLogger.Log("Received from SQS: " + JsonConvert.SerializeObject(lambdaOutput));
         }
     }
 }
