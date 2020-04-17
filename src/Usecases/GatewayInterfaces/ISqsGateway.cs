@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Amazon.SQS.Model;
 
 namespace UseCases.GatewayInterfaces
 {
     public interface ISqsGateway
     {
-        void AddDocumentIdsToQueue(List<string> documentsIds);
+        Task<SendMessageBatchResponse> AddDocumentIdsToQueue(List<string> documentsIds);
     }
 }
