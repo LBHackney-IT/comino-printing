@@ -60,7 +60,7 @@ functions:
     events:
       - schedule: rate(1 minute)
     package:
-      artifact: bin/release/netcoreapp2.1/fetchdocumentids.zip
+      artifact: bin/release/netcoreapp2.1/comino-printing.zip
     environment:
       COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
       ENV: ${self:provider.stage}
@@ -71,7 +71,7 @@ functions:
     events:
       - sqs: arn:aws:sqs:region:eu-west-2:CominoPrintingDocumentIds
     package:
-      artifact: bin/release/netcoreapp2.1/listenForSqsEvents.zip
+      artifact: bin/release/netcoreapp2.1/comino-printing.zip
 
 resources: # CloudFormation template syntax from here on.
   Resources:

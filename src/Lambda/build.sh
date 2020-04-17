@@ -16,4 +16,4 @@ then
   export PATH="$PATH:/$(whoami)/.dotnet/tools"
 fi
 
-dotnet lambda package --configuration release --framework netcoreapp2.1 --output-package bin/release/netcoreapp2.1/fetchdocumentids.zip
+dotnet lambda package --configuration release --framework netcoreapp2.1 --output-package bin/release/netcoreapp2.1/comino-printing.zip
