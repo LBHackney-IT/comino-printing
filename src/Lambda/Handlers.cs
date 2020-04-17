@@ -28,7 +28,7 @@ namespace AwsDotnetCsharp
             serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
             serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
-
+            LambdaLogger.Log($"Fetched Connection string: {cominoConnectionString != null}");
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
         }
 
