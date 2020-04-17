@@ -67,7 +67,7 @@ functions:
     handler: Lambda::AwsDotnetCsharp.Handlers::ListenForSqsEvents
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
-      - sqs: arn:aws:sqs:region:eu-west-2:CominoPrintingDocumentIds
+      - sqs: arn:aws:sqs:eu-west-2:775052747630:CominoPrintingDocumentIds
 
 resources: # CloudFormation template syntax from here on.
   Resources:
