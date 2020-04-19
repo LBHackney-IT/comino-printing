@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.IO;
 using Amazon;
 using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using AwsDotnetCsharp.UsecaseInterfaces;
@@ -50,9 +51,10 @@ namespace AwsDotnetCsharp
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
             LambdaLogger.Log($"Fetched Connection string: {cominoConnectionString != null}");
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
-            var dynamoConfig = new AmazonDynamoDBConfig();
-            dynamoConfig.RegionEndpoint = RegionEndpoint.EUWest2;
-            serviceCollection.AddSingleton<IDynamoDatabaseClient>(sp => new DynamoDatabaseHandler(dynamoConfig));
+
+            var dynamoConfig = new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest2};
+            serviceCollection.AddSingleton<IDynamoDBHandler>(sp => new DynamoDBHandler(dynamoConfig));
+
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 

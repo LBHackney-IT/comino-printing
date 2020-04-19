@@ -39,28 +39,30 @@ functions:
     events:
       - sqs: arn:aws:sqs:eu-west-2:775052747630:sqs-comino-printing-${self:provider.stage}
 
-resources: # CloudFormation template syntax from here on.
+resources: 
   Resources:
     cominoLetters:
       Type: "AWS::DynamoDB::Table"
       Properties:
-        TableName: "Letters"
+        TableName: "Documents"
         AttributeDefinitions:
           - AttributeName: InitialTimestamp
+            AttributeType: S
+          - AttributeName: Status
             AttributeType: S
         KeySchema:
           - AttributeName: InitialTimestamp
             KeyType: HASH
-        GlobalSecondaryIndex:
-          IndexName: Status
-          KeySchema:
-            - AttributeName: Status
-              KeyType: HASH
-          Projection:
-            Projection
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: Status
+            KeySchema:
+              - AttributeName: Status
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
