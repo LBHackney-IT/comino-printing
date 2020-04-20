@@ -56,6 +56,7 @@ namespace AwsDotnetCsharp
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
 
             var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
+            LambdaLogger.Log($"Dynamo table name {tableName}");
             var dynamoConfig = new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest2};
             serviceCollection.AddSingleton<IDynamoDBHandler>(sp => new DynamoDBHandler(dynamoConfig, tableName));
 
