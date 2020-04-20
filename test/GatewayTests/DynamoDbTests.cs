@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
@@ -11,13 +12,17 @@ namespace GatewayTests
         protected DynamoDBHandler DatabaseClient;
 
         [SetUp]
-        public void DynamoDbSetUp()
+        public async Task DynamoDbSetUp()
         {
             var config = new AmazonDynamoDBConfig
             {
                 ServiceURL = "http://localhost:8000",
             };
-            DatabaseClient = new DynamoDBHandler(config);
+            var client = new AmazonDynamoDBClient(config);
+            var tables = await client.ListTablesAsync();
+            client.Dispose();
+            var tableName = tables.TableNames.First();
+            DatabaseClient = new DynamoDBHandler(config, tableName);
         }
 
         [TearDown]

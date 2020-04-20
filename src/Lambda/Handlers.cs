@@ -52,15 +52,12 @@ namespace AwsDotnetCsharp
             serviceCollection.AddScoped<ILocalDatabaseGateway, LocalDatabaseGateway>();
             serviceCollection.AddScoped<ISaveRecordsToLocalDatabase, SaveRecordsToLocalDatabase>();
 
-            //TO REMOVE: For Debugging env vars connection
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
-            LambdaLogger.Log($"Fetched Connection string: {cominoConnectionString != null}");
-            LambdaLogger.Log($"Stage variable {Environment.GetEnvironmentVariable("ENV")}");
-
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
 
+            var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
             var dynamoConfig = new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest2};
-            serviceCollection.AddSingleton<IDynamoDBHandler>(sp => new DynamoDBHandler(dynamoConfig));
+            serviceCollection.AddSingleton<IDynamoDBHandler>(sp => new DynamoDBHandler(dynamoConfig, tableName));
 
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }

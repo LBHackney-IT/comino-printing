@@ -5,10 +5,10 @@ namespace Gateways
 {
     public class DynamoDBHandler : IDynamoDBHandler
     {
-        public DynamoDBHandler(AmazonDynamoDBConfig dynamoConfig)
+        public DynamoDBHandler(AmazonDynamoDBConfig dynamoConfig, string tableName)
         {
             var client = new AmazonDynamoDBClient(dynamoConfig);
-            DocumentTable = Table.LoadTable(client, "Hn-Comino-Printing-Letters");
+            DocumentTable = Table.LoadTable(client, tableName);
         }
 
         public Table DocumentTable { get; }
