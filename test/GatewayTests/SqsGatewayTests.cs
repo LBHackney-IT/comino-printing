@@ -15,26 +15,43 @@ namespace GatewayTests
     public class SqsGatewayTest
     {
         private SqsGateway _subject;
-        private Mock<AmazonSQSClient> _client;
-        private Fixture _fixture;
-        
+        private Mock<AmazonSQSClient> _sqsClient;
+
         [SetUp]
         public void Setup()
         {
-            _client = new Mock<AmazonSQSClient>();
-            _subject = new SqsGateway(_client.Object);
-            _fixture = new Fixture();
+            _sqsClient = new Mock<AmazonSQSClient>();
+            _subject = new SqsGateway(_sqsClient.Object);
         }
         
         [Test]
-        public void AddDocumentIdsToQueueCallsTheSqsClient()
+        public void AddDocumentIdsToQueueCallsTheSendMessageAsyncMethodOnTheSqsClient()
         {
-            var documentIds = _fixture.CreateMany<string>().ToList();
+            const string documentId = "123456";
 
-            _subject.AddDocumentIdsToQueue(documentIds);
-            _client
-                .Verify(x => x.SendMessageBatchAsync(It.IsAny<SendMessageBatchRequest>(), CancellationToken.None), 
+            _subject.AddDocumentIdsToQueue(documentId);
+            
+            _sqsClient
+                .Verify(x => x.SendMessageAsync(It.IsAny<SendMessageRequest>(), It.IsAny<CancellationToken>()), 
                     Times.Once);
+        }
+
+        [Test]
+        public void AddDocumentIdsToQueueReturnsAMessageResponseContainingTheCorrectId()
+        {
+            const string documentId = "123456";
+            
+            _sqsClient.Setup(x => x.SendMessageAsync(It.IsAny<SendMessageRequest>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(
+                    (SendMessageRequest request, CancellationToken ct) =>
+                        new SendMessageResponse
+                        {
+                            MD5OfMessageBody = $"{request.MessageBody}"
+                        });
+            
+            var response = _subject.AddDocumentIdsToQueue(documentId);
+
+            response.MD5OfMessageBody.Should().BeEquivalentTo(documentId);
         }
     }
 }

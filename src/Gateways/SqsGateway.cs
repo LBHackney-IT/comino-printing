@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,32 +10,24 @@ namespace Gateways
 {
     public class SqsGateway : ISqsGateway
     {
-        private readonly AmazonSQSClient _client;
+        private readonly AmazonSQSClient _sqsClient;
+        private string _queueUrl;
 
-        public SqsGateway(AmazonSQSClient client)
+        public SqsGateway(AmazonSQSClient sqsClient)
         {
-            _client = client;
+            _sqsClient = sqsClient;
+            _queueUrl = "AccessToEnvironmentVariable";
         }
 
-        public Task<SendMessageBatchResponse> AddDocumentIdsToQueue(List<string> documentsIds)
+        public SendMessageResponse AddDocumentIdsToQueue(string documentId)
         {
-            var messageEntries = new List<SendMessageBatchRequestEntry>();
-            
-            var i = 1;
-            
-            foreach (var docId in documentsIds)
+            var sqsMessageRequest = new SendMessageRequest
             {
-                messageEntries.Add(new SendMessageBatchRequestEntry($"message{i}",$"{docId}"));
-                i++;
-            }
-
-            var sendMessageBatchRequest = new SendMessageBatchRequest
-            {
-                Entries = messageEntries, 
-                QueueUrl = ""
+                QueueUrl = _queueUrl,
+                MessageBody = $"{documentId}"
             };
             
-            return _client.SendMessageBatchAsync(sendMessageBatchRequest, CancellationToken.None);
+            return _sqsClient.SendMessageAsync(sqsMessageRequest).Result;
         }
     }
 }

@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Amazon.SQS.Model;
 using AutoFixture;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using UseCases;
@@ -23,13 +26,39 @@ namespace UnitTests
         }
         
         [Test]
-        public void ExecutePushesDocumentIdsToSqs()
+        public void ExecuteCallsTheGatewayOnEachDocumentId()
         {
             var documentIds = _fixture.CreateMany<string>().ToList();
             
             _pushIdsToSqs.Execute(documentIds);
-            _gatewayMock
-                .Verify(x => x.AddDocumentIdsToQueue(documentIds), Times.Once);
+
+            foreach (var docId in documentIds)
+            {
+                _gatewayMock
+                    .Verify(x => x.AddDocumentIdsToQueue(docId), Times.Once);
+            }
+        }
+        
+        [Test]
+        public void ExecuteReturnsAListOfMessageResponses()
+        {
+            var documentIds = _fixture.CreateMany<string>().ToList();
+                
+            var expectedList = documentIds.Select(docId => new SendMessageResponse {MD5OfMessageBody = $"{docId}"}).ToList();
+
+            foreach (var docId in documentIds)
+            {
+                _gatewayMock
+                    .Setup(x => x.AddDocumentIdsToQueue(docId))
+                    .Returns((string id) => new SendMessageResponse
+                    {
+                        MD5OfMessageBody = $"{id}"
+                    });
+            }
+            
+            var response = _pushIdsToSqs.Execute(documentIds);
+
+            response.Should().BeEquivalentTo(expectedList);
         }
     }
 }

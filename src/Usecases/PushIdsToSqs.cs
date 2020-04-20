@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Amazon.SQS.Model;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using UseCases.GatewayInterfaces;
 
@@ -14,9 +15,16 @@ namespace UseCases
             _sqsGateway = sqsGateway;
         }
 
-        public void Execute(List<string> documentIds)
+        public List<SendMessageResponse> Execute(List<string> documentIds)
         {
-            _sqsGateway.AddDocumentIdsToQueue(documentIds);
+            var messageResponses = new List<SendMessageResponse>();
+            
+            foreach (var docId in documentIds)
+            {
+                messageResponses.Add(_sqsGateway.AddDocumentIdsToQueue(docId));
+            }
+
+            return messageResponses;
         }
     }
 }

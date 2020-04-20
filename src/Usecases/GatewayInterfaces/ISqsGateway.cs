@@ -6,6 +6,6 @@ namespace UseCases.GatewayInterfaces
 {
     public interface ISqsGateway
     {
-        Task<SendMessageBatchResponse> AddDocumentIdsToQueue(List<string> documentsIds);
+        SendMessageResponse AddDocumentIdsToQueue(string documentsId);
     }
 }
