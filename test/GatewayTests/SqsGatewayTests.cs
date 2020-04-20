@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using AutoFixture;
@@ -20,11 +21,10 @@ namespace GatewayTests
         [SetUp]
         public void Setup()
         {
-            _sqsClient = new Mock<AmazonSQSClient>();
+            _sqsClient = new Mock<AmazonSQSClient>(RegionEndpoint.EUWest2);
             _subject = new SqsGateway(_sqsClient.Object);
         }
-
-        [Ignore("To Fix")]
+        
         [Test]
         public void AddDocumentIdsToQueueCallsTheSendMessageAsyncMethodOnTheSqsClient()
         {
@@ -38,7 +38,6 @@ namespace GatewayTests
         }
 
         [Test]
-        [Ignore("To Fix")]
         public void AddDocumentIdsToQueueReturnsAMessageResponseContainingTheCorrectId()
         {
             const string documentId = "123456";

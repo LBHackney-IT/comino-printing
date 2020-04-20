@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using Amazon.Lambda.Core;
@@ -31,6 +32,13 @@ namespace AwsDotnetCsharp
            LambdaLogger.Log("Document ids retrieved" + JsonConvert.SerializeObject(lambdaOutput));
         }
 
+        public void PushIdsToSqs(List<string> documentIds)
+        {
+            var pushIdsToSqsUseCase = _serviceProvider.GetService<IPushIdsToSqs>();
+            var lambdaOutput = pushIdsToSqsUseCase.Execute(documentIds);
+            LambdaLogger.Log("Send Message Responses:" + JsonConvert.SerializeObject(lambdaOutput));
+        }
+
         public void ListenForSqsEvents(SQSEvent sqsEvent)
         {
             var listenForSqsEventsUseCase = _serviceProvider.GetService<IListenForSqsEvents>();
@@ -42,6 +50,8 @@ namespace AwsDotnetCsharp
         {
             serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
             serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
+            serviceCollection.AddScoped<ISqsGateway, SqsGateway>();
+            serviceCollection.AddScoped<IPushIdsToSqs, PushIdsToSqs>();
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
             LambdaLogger.Log($"Fetched Connection string: {cominoConnectionString != null}");
             LambdaLogger.Log($"Stage env: {Environment.GetEnvironmentVariable("ENV")}");

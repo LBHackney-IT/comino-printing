@@ -16,7 +16,7 @@ namespace Gateways
         public SqsGateway(AmazonSQSClient sqsClient)
         {
             _sqsClient = sqsClient;
-            _queueUrl = "AccessToEnvironmentVariable";
+            _queueUrl = Environment.GetEnvironmentVariable("SQS_URL");
         }
 
         public SendMessageResponse AddDocumentIdsToQueue(string documentId)
