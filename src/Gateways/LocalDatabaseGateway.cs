@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using Usecases.Domain;
+using UseCases.GatewayInterfaces;
 
 namespace Gateways
 {
-    public class LocalDatabaseGateway
+    public class LocalDatabaseGateway : ILocalDatabaseGateway
     {
         private readonly Table _documentsTable;
 

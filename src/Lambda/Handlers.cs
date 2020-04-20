@@ -49,9 +49,14 @@ namespace AwsDotnetCsharp
 
             serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
             serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
+            serviceCollection.AddScoped<ILocalDatabaseGateway, LocalDatabaseGateway>();
+            serviceCollection.AddScoped<ISaveRecordsToLocalDatabase, SaveRecordsToLocalDatabase>();
+
+            //TO REMOVE: For Debugging env vars connection
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
             LambdaLogger.Log($"Fetched Connection string: {cominoConnectionString != null}");
             LambdaLogger.Log($"Stage variable {Environment.GetEnvironmentVariable("ENV")}");
+
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
 
             var dynamoConfig = new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest2};

@@ -3,10 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Usecases.Domain;
 using UseCases.GatewayInterfaces;
+using Usecases.UseCaseInterfaces;
 
 namespace UseCases
 {
-    public class SaveRecordsToLocalDatabase
+    public class SaveRecordsToLocalDatabase : ISaveRecordsToLocalDatabase
     {
         private readonly ILocalDatabaseGateway _databaseGateway;
 
