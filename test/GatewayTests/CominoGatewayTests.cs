@@ -86,7 +86,7 @@ ORDER BY DocDate DESC;
             return stubbedResponseFromDb.Select(doc => new DocumentDetails
             {
                 DocumentCreator = doc.CreatedBy,
-                DocumentId = doc.CreatedBy,
+                DocumentId = doc.DocumentNumber,
             });
         }
     }

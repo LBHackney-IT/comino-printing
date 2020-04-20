@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UseCases;
 using UseCases.GatewayInterfaces;
+using Usecases.UseCaseInterfaces;
 
 [assembly:LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 

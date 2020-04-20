@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using Usecases.Domain;
 using UseCases.GatewayInterfaces;
+using Usecases.UseCaseInterfaces;
 
 namespace UseCases
 {
@@ -17,7 +18,7 @@ namespace UseCases
 
         public List<DocumentDetails> Execute()
         {
-            var documents = _cominoGateway.GetDocumentsAfterStartDate(DateTime.Now.AddMinutes(-1));
+            return _cominoGateway.GetDocumentsAfterStartDate(DateTime.Now.AddMinutes(-1));
         }
     }
 }
