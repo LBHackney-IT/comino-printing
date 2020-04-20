@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using Gateways;
 using NUnit.Framework;
 
@@ -13,21 +14,14 @@ namespace GatewayTests
         protected DynamoDBHandler DatabaseClient;
 
         [SetUp]
-        public async Task DynamoDbSetUp()
+        public void DynamoDbSetUp()
         {
             var config = new AmazonDynamoDBConfig
             {
                 ServiceURL = "http://localhost:8000",
             };
 
-            var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
-            if (tableName == null)
-            {
-                var client = new AmazonDynamoDBClient(config);
-                var tables = await client.ListTablesAsync();
-                client.Dispose();
-                tableName = tables.TableNames.First();
-            }
+            var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME") ?? "comino-printing-test-letters";
             DatabaseClient = new DynamoDBHandler(config, tableName);
         }
 
