@@ -34,7 +34,7 @@ functions:
     events:
       - schedule: rate(1 minute)
     environment:
-      COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR}
+      COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
       ENV: ${self:provider.stage}
 
   push-ids-to-sqs:
@@ -53,22 +53,30 @@ functions:
     events:
       - sqs: arn:aws:sqs:eu-west-2:775052747630:sqs-comino-printing-${self:provider.stage}
 
-resources: # CloudFormation template syntax from here on.
+resources: 
   Resources:
     cominoLetters:
       Type: "AWS::DynamoDB::Table"
       Properties:
         TableName: ${self:provider.environment.LETTERS_TABLE_NAME}
         AttributeDefinitions:
-          - AttributeName: Id
+          - AttributeName: InitialTimestamp
             AttributeType: S
-          - AttributeName: Code
+          - AttributeName: Status
             AttributeType: S
         KeySchema:
-          - AttributeName: Id
+          - AttributeName: InitialTimestamp
             KeyType: HASH
-          - AttributeName: Code
-            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: Status
+            KeySchema:
+              - AttributeName: Status
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Usecases.Domain;
 
 namespace UseCases.GatewayInterfaces
 {
     public interface ICominoGateway
     {
-        List<string> GetDocumentsAfterStartDate(DateTime time);
+        List<DocumentDetails> GetDocumentsAfterStartDate(DateTime time);
     }
 }

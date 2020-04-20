@@ -2,14 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using Amazon;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using Gateways;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UseCases;
 using UseCases.GatewayInterfaces;
+using Usecases.UseCaseInterfaces;
 
 [assembly:LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
@@ -17,12 +23,11 @@ namespace AwsDotnetCsharp
 {
     public class Handlers
     {
-        private readonly ServiceProvider _serviceProvider;
+        private ServiceProvider _serviceProvider;
 
         public Handlers() {
-            var serviceCollection = new ServiceCollection();
-            ConfigureServices(serviceCollection);
-            _serviceProvider = serviceCollection.BuildServiceProvider();
+            var configuration = BuildConfiguration();
+            ConfigureServices(configuration);
         }
 
         public void FetchAndQueueDocumentIds(ILambdaContext context)
@@ -46,16 +51,34 @@ namespace AwsDotnetCsharp
            LambdaLogger.Log("Received from SQS: " + JsonConvert.SerializeObject(lambdaOutput));
         }
 
-        private void ConfigureServices(IServiceCollection serviceCollection)
+        private void ConfigureServices(IConfigurationRoot configurationRoot)
         {
+            var serviceCollection = new ServiceCollection();
+
             serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
             serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
             serviceCollection.AddScoped<ISqsGateway, SqsGateway>();
             serviceCollection.AddScoped<IPushIdsToSqs, PushIdsToSqs>();
+            serviceCollection.AddScoped<ILocalDatabaseGateway, LocalDatabaseGateway>();
+            serviceCollection.AddScoped<ISaveRecordsToLocalDatabase, SaveRecordsToLocalDatabase>();
+
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
-            LambdaLogger.Log($"Fetched Connection string: {cominoConnectionString != null}");
-            LambdaLogger.Log($"Stage env: {Environment.GetEnvironmentVariable("ENV")}");
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
+
+            var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
+            LambdaLogger.Log($"Dynamo table name {tableName}");
+            var dynamoConfig = new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest2};
+            serviceCollection.AddSingleton<IDynamoDBHandler>(sp => new DynamoDBHandler(dynamoConfig, tableName));
+
+            _serviceProvider = serviceCollection.BuildServiceProvider();
+        }
+
+        private IConfigurationRoot BuildConfiguration()
+        {
+            return new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddEnvironmentVariables()
+                .Build();
         }
     }
 }
