@@ -8,7 +8,7 @@ namespace Gateways
         public DynamoDBHandler(AmazonDynamoDBConfig dynamoConfig)
         {
             var client = new AmazonDynamoDBClient(dynamoConfig);
-            DocumentTable = Table.LoadTable(client, "Documents");
+            DocumentTable = Table.LoadTable(client, "Hn-Comino-Printing-Letters");
         }
 
         public Table DocumentTable { get; }

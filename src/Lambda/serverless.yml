@@ -44,7 +44,7 @@ resources:
     cominoLetters:
       Type: "AWS::DynamoDB::Table"
       Properties:
-        TableName: "Documents"
+        TableName: "Hn-Comino-Printing-Letters"
         AttributeDefinitions:
           - AttributeName: InitialTimestamp
             AttributeType: S
