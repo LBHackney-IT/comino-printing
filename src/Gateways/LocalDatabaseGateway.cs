@@ -1,7 +1,8 @@
 using System;
-using System.Globalization;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using Usecases.Domain;
 
 namespace Gateways
@@ -17,16 +18,52 @@ namespace Gateways
 
         public async Task<string> SaveDocument(DocumentDetails newDocument)
         {
-            var documentItem = new Document
+            var currentTimestamp = CurrentUtcUnixTimestamp();
+            while (true)
+            {
+                var documentItem = ConstructDocument(newDocument, currentTimestamp);
+
+                try
+                {
+                    var putConfig = ConditionalOnTimestampUniqueness(currentTimestamp);
+                    await _documentsTable.PutItemAsync(documentItem, putConfig);
+                }
+                catch (ConditionalCheckFailedException)
+                {
+                    currentTimestamp = CurrentUtcUnixTimestamp();
+                    continue;
+                }
+
+                break;
+            }
+
+            return currentTimestamp;
+        }
+
+        private static Document ConstructDocument(DocumentDetails newDocument, string currentTimestamp)
+        {
+            return new Document
             {
                 ["DocumentId"] = newDocument.DocumentId,
                 ["DocumentCreator"] = newDocument.DocumentCreator,
-                ["InitialTimestamp"] = CurrentUtcUnixTimestamp(),
+                ["InitialTimestamp"] = currentTimestamp,
                 ["Status"] = "Waiting"
             };
-            await _documentsTable.PutItemAsync(documentItem);
+        }
 
-            return null;
+        private static PutItemOperationConfig ConditionalOnTimestampUniqueness(string currentTimestamp)
+        {
+            return new PutItemOperationConfig
+            {
+                ConditionalExpression = new Expression
+                {
+                    ExpressionStatement = "InitialTimestamp <> :t",
+                    ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry>{
+                    {
+                        ":t", currentTimestamp
+                    }}
+                },
+            };
         }
 
         private static string CurrentUtcUnixTimestamp()
