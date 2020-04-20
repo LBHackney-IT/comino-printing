@@ -67,7 +67,7 @@ functions:
     handler: Lambda::AwsDotnetCsharp.Handlers::ListenForSqsEvents
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
-      - sqs: arn:aws:sqs:eu-west-2:775052747630:CominoPrintingDocumentIds
+      - sqs: arn:aws:sqs:eu-west-2:775052747630:sqs-comino-printing-${self:provider.stage}
 
 resources: # CloudFormation template syntax from here on.
   Resources:
@@ -91,7 +91,7 @@ resources: # CloudFormation template syntax from here on.
     sqsQueueCominoPrintingDocumentIds:
       Type: "AWS::SQS::Queue"
       Properties:
-        QueueName: "CominoPrintingDocumentIds"
+        QueueName: sqs-comino-printing-${self:provider.stage}
 
 custom:
   dynamodb:
