@@ -43,7 +43,7 @@ jobs:
             sudo docker pull amazon/dynamodb-local
             sudo docker run -p 8000:8000 amazon/dynamodb-local
             aws dynamodb create-table \
-                --table-name Documents \
+                --table-name Hn-Comino-Printing-Letters \
                 --attribute-definitions \
                   AttributeName=InitialTimestamp,AttributeType=S \
                 --key-schema AttributeName=InitialTimestamp,KeyType=HASH \
