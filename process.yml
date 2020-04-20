@@ -1,0 +1,251 @@
+version: 2
+jobs:
+  build:
+    docker:
+    - image: mcr.microsoft.com/dotnet/core/sdk:2.1
+    - image: amazon/dynamodb-local
+    working_directory: ~/repo
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: (TEMPORARY) Remove spike projects to exclude from build/test steps here
+        command: dotnet sln remove RtfParseTests RtfParseSpike
+    - run:
+        name: Concatenate all csproj files into single file for checksum
+        command: cat */**/*.csproj > combined-csproj.txt
+    - restore_cache:
+        keys:
+        - v1-dependencies-{{ checksum "combined-csproj.txt" }}
+        - v1-dependencies-
+    - run:
+        name: Install Node.js
+        command: |
+          curl -sL https://deb.nodesource.com/setup_13.x | bash -
+          apt-get install -y nodejs
+    - run:
+        name: NPM Install
+        command: cd src/Lambda && npm install
+    - run:
+        name: Install serverless
+        command: npm i -g serverless
+    - run:
+        name: Install Docker client
+        command: |
+          set -x
+          VER="17.03.0-ce"
+          curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+          tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+          mv /tmp/docker/* /usr/bin
+    - run:
+        name: Install dependencies
+        command: dotnet restore
+    - run:
+        name: Build project
+        command: dotnet build
+    - run:
+        name: Run Test DynamoDb
+        command: docker run -d -p 8000:8000 amazon/dynamodb-local
+    - run:
+        name: Set AWS credentials
+        command: serverless config credentials -p aws -k "ACCESS_KEY" -s "SECRET_ACCESS_KEY" -n test
+    - run:
+        name: Migrate Database
+        command: cd src/Lambda && sls -s test --aws-profile test dynamodb migrate
+    - run:
+        name: Run tests
+        command: x=$(dotnet test); echo $x;
+    - save_cache:
+        paths:
+        - ~/.nuget/packages
+        key: v1-dependencies-{{ checksum "combined-csproj.txt" }}
+    - persist_to_workspace:
+        root: ~/repo
+        paths: .
+  deploy-staging:
+    docker:
+    - image: mcr.microsoft.com/dotnet/core/sdk:2.1
+    working_directory: ~/repo
+    steps:
+    - attach_workspace:
+        at: ~/repo
+    - run:
+        name: Set AWS credentials
+        command: serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney
+    - run:
+        name: Deploy application
+        command: cd src/Lambda && ./build.sh && sls deploy -s staging
+  deploy-production:
+    docker:
+    - image: mcr.microsoft.com/dotnet/core/sdk:2.1
+    working_directory: ~/repo
+    steps:
+    - attach_workspace:
+        at: ~/repo
+    - run:
+        name: Set AWS credentials
+        command: serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney
+    - run:
+        name: Deploy application
+        command: cd src/Lambda && ./build.sh && sls deploy -s production
+workflows:
+  version: 2
+  continuous-delivery:
+    jobs:
+    - build
+    - deploy-staging:
+        filters:
+          branches:
+            only:
+            - master
+        requires:
+        - build
+    - permit-deploy-production:
+        type: approval
+        requires:
+        - deploy-staging
+    - deploy-production:
+        requires:
+        - permit-deploy-production
+
+# Original config.yml file:
+# version: 2.1
+# 
+# executors:
+#   dotnet-executor:
+#     docker:
+#       - image: mcr.microsoft.com/dotnet/core/sdk:2.1
+# 
+#     working_directory: ~/repo
+# 
+# jobs:
+#   build:
+#     docker:
+#       - image: mcr.microsoft.com/dotnet/core/sdk:2.1
+#       - image: amazon/dynamodb-local
+# 
+#     working_directory: ~/repo
+# 
+#     steps:
+#       - checkout
+#       - setup_remote_docker
+#       - run:
+#           name: (TEMPORARY) Remove spike projects to exclude from build/test steps here
+#           command: dotnet sln remove RtfParseTests RtfParseSpike
+# 
+#       - run:
+#           name: Concatenate all csproj files into single file for checksum
+#           command: cat */**/*.csproj > combined-csproj.txt
+# 
+#       - restore_cache:
+#           keys:
+#             - v1-dependencies-{{ checksum \"combined-csproj.txt\" }}
+#             - v1-dependencies-
+# 
+#       - run:
+#           name: Install Node.js
+#           command: |
+#             curl -sL https://deb.nodesource.com/setup_13.x | bash -
+#             apt-get install -y nodejs
+# 
+#       - run:
+#           name: NPM Install
+#           command: cd src/Lambda && npm install
+# 
+#       - run:
+#           name: Install serverless
+#           command: npm i -g serverless
+# 
+#       - run:
+#           name: Install Docker client
+#           command: |
+#             set -x
+#             VER=\"17.03.0-ce\"
+#             curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+#             tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+#             mv /tmp/docker/* /usr/bin
+# 
+#       - run:
+#           name: Install dependencies
+#           command: dotnet restore
+# 
+#       - run:
+#           name: Build project
+#           command: dotnet build
+# 
+#       - run:
+#           name: Run Test DynamoDb
+#           command: docker run -d -p 8000:8000 amazon/dynamodb-local
+# 
+#       - run:
+#           name: Set AWS credentials
+#           command: serverless config credentials -p aws -k \"ACCESS_KEY\" -s \"SECRET_ACCESS_KEY\" -n test
+# 
+#       - run:
+#           name: Migrate Database
+#           command: cd src/Lambda && sls -s test --aws-profile test dynamodb migrate
+# 
+#       - run:
+#           name: Run tests
+#           # The following issue is affecting our test command here:
+#           # https://github.com/dotnet/core/issues/2775
+#           command: x=$(dotnet test); echo $x;
+# 
+#       - save_cache:
+#           paths:
+#             - ~/.nuget/packages
+#           key: v1-dependencies-{{ checksum \"combined-csproj.txt\" }}
+# 
+#       - persist_to_workspace:
+#           root: ~/repo
+#           paths: .
+# 
+#   deploy-staging:
+#     executor: dotnet-executor
+# 
+#     steps:
+#       - attach_workspace:
+#           at: ~/repo
+# 
+#       - run:
+#           name: Set AWS credentials
+#           command: serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney
+# 
+#       - run:
+#           name: Deploy application
+#           command: cd src/Lambda && ./build.sh && sls deploy -s staging
+# 
+#   deploy-production:
+#     executor: dotnet-executor
+# 
+#     steps:
+#       - attach_workspace:
+#           at: ~/repo
+# 
+#       - run:
+#           name: Set AWS credentials
+#           command: serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney
+# 
+#       - run:
+#           name: Deploy application
+#           command: cd src/Lambda && ./build.sh && sls deploy -s production
+# 
+# workflows:
+#   version: 2
+#   continuous-delivery:
+#     jobs:
+#       - build
+#       - deploy-staging:
+#           requires:
+#             - build
+#           filters:
+#             branches:
+#               only:
+#                 - master
+#       - permit-deploy-production:
+#           type: approval
+#           requires:
+#             - deploy-staging
+#       - deploy-production:
+#           requires:
+#             - permit-deploy-production
