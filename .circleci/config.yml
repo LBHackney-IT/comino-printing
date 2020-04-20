@@ -13,6 +13,9 @@ jobs:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.1
       - image: amazon/dynamodb-local
 
+    working_directory: ~/repo
+
+
     steps:
       - checkout
       - setup_remote_docker
@@ -30,16 +33,47 @@ jobs:
             - v1-dependencies-
 
       - run:
+          name: Install Node.js
+          command: |
+            curl -sL https://deb.nodesource.com/setup_13.x | bash -
+            apt-get install -y nodejs
+
+      - run:
+          name: NPM Install
+          command: cd src/Lambda && npm install
+
+      - run:
+          name: Install serverless
+          command: npm i -g serverless
+
+      - run:
+          name: Install Docker client
+          command: |
+            set -x
+            VER="17.03.0-ce"
+            curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+            mv /tmp/docker/* /usr/bin
+
+      - run:
           name: Install dependencies
           command: dotnet restore
 
       - run:
           name: Build project
           command: dotnet build
-          
+
       - run:
           name: Run Test DynamoDb
-          command: docker run -p 8000:8000 amazon/dynamodb-local
+          command: docker run -d -p 8000:8000 amazon/dynamodb-local
+
+      - run:
+          name: Set AWS credentials
+          command: serverless config credentials -p aws -k "ACCESS_KEY" -s "SECRET_ACCESS_KEY" -n test
+
+      - run:
+          name: Migrate Database
+          command: cd src/Lambda && sls -s test --aws-profile test dynamodb migrate
 
       - run:
           name: Run tests
@@ -64,20 +98,6 @@ jobs:
           at: ~/repo
 
       - run:
-          name: Install Node.js
-          command: |
-            curl -sL https://deb.nodesource.com/setup_13.x | bash -
-            apt-get install -y nodejs
-
-      - run:
-          name: Install Serverless CLI
-          command: npm i -g serverless
-
-      - run:
-          name: NPM Install
-          command: cd src/Lambda && npm install
-
-      - run:
           name: Set AWS credentials
           command: serverless config credentials -p aws -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY} -n hackney
 
@@ -91,16 +111,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
-
-      - run:
-          name: Install Node.js
-          command: |
-            curl -sL https://deb.nodesource.com/setup_13.x | bash -
-            apt-get install -y nodejs
-
-      - run:
-          name: Install Serverless CLI
-          command: npm i -g serverless
 
       - run:
           name: Set AWS credentials

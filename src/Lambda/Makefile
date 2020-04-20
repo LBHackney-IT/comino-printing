@@ -13,5 +13,5 @@ run-local-dynamo-db:
 .PHONY: stop-local-db
 stop-local-db:
 	sls dynamodb remove
-
+ 
 
