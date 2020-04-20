@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
@@ -18,10 +19,15 @@ namespace GatewayTests
             {
                 ServiceURL = "http://localhost:8000",
             };
-            var client = new AmazonDynamoDBClient(config);
-            var tables = await client.ListTablesAsync();
-            client.Dispose();
-            var tableName = tables.TableNames.First();
+
+            var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
+            if (tableName == null)
+            {
+                var client = new AmazonDynamoDBClient(config);
+                var tables = await client.ListTablesAsync();
+                client.Dispose();
+                tableName = tables.TableNames.First();
+            }
             DatabaseClient = new DynamoDBHandler(config, tableName);
         }
 
