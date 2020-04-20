@@ -54,6 +54,8 @@ namespace UnitTests
                     DocumentCreator = doc.DocumentCreator,
                     DocumentId = doc.DocumentId,
                     SavedAt = timestamp,
+                    DocumentType = doc.DocumentType,
+                    LetterType = doc.LetterType
                 };
             }).ToList();
             var response = await _subject.Execute(documentsToSave);

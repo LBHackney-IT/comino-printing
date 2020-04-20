@@ -13,7 +13,7 @@ using Usecases.Domain;
 
 namespace GatewayTests
 {
-    public class Tests
+    public class CominoGatewayTests
     {
         private CominoGateway _subject;
         private Mock<IDbConnection> _connection;
@@ -31,12 +31,18 @@ namespace GatewayTests
         public void GetDocumentsAfterStartDateSendsCorrectQueryToRepository()
         {
             var time = new DateTime(06, 12, 30, 00, 38, 54);
-            const string expectedQuery = @"SELECT DocNo FROM CCDocument
-WHERE DocCategory = 'Benefits/Out-Going'
-AND DirectionFg = 'O'
-AND DocSource = 'O'
-AND DocDate > 12/30/6 0:38:54
-ORDER BY DocDate DESC;
+            const string expectedQuery = @"SELECT DocNo AS DocumentNumber,
+StoreDate AS Date,
+strDescription AS LetterType,
+strUser AS UserName,
+RefType AS DocumentType
+FROM W2BatchPrint
+JOIN CCDocument on DocNo = nDocNo
+WHERE CCDocument.DocCategory = 'Benefits/Out-Going'
+AND CCDocument.DirectionFg = 'O'
+AND CCDocument.DocSource = 'O'
+AND CCDocument.DocDate > 12/30/6 0:38:54
+ORDER BY CCDocument.DocDate DESC;
 ";
 
             var stubbedResponseFromDb = _fixture.CreateMany<CominoGateway.W2BatchPrintRow>().ToList();
@@ -55,12 +61,18 @@ ORDER BY DocDate DESC;
         {
             var time = new DateTime(12, 11, 25,06, 13, 45);
             var expectedQuery =
-                @"SELECT DocNo FROM CCDocument
-WHERE DocCategory = 'Benefits/Out-Going'
-AND DirectionFg = 'O'
-AND DocSource = 'O'
-AND DocDate > 11/25/12 6:13:45
-ORDER BY DocDate DESC;
+@"SELECT DocNo AS DocumentNumber,
+StoreDate AS Date,
+strDescription AS LetterType,
+strUser AS UserName,
+RefType AS DocumentType
+FROM W2BatchPrint
+JOIN CCDocument on DocNo = nDocNo
+WHERE CCDocument.DocCategory = 'Benefits/Out-Going'
+AND CCDocument.DirectionFg = 'O'
+AND CCDocument.DocSource = 'O'
+AND CCDocument.DocDate > 11/25/12 6:13:45
+ORDER BY CCDocument.DocDate DESC;
 ";
             var stubbedResponseFromDb = _fixture.CreateMany<CominoGateway.W2BatchPrintRow>().ToList();
             var expectedResponse = MapDatabaseRowToDomain(stubbedResponseFromDb);
@@ -85,8 +97,10 @@ ORDER BY DocDate DESC;
         {
             return stubbedResponseFromDb.Select(doc => new DocumentDetails
             {
-                DocumentCreator = doc.CreatedBy,
+                DocumentCreator = doc.UserName,
                 DocumentId = doc.DocumentNumber,
+                LetterType = doc.LetterType,
+                DocumentType = doc.DocumentType,
             });
         }
     }

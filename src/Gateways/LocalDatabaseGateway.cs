@@ -46,9 +46,11 @@ namespace Gateways
             return new Document
             {
                 ["DocumentId"] = newDocument.DocumentId,
-                ["DocumentCreator"] = newDocument.DocumentCreator,
+                ["DocumentCreatorUserName"] = newDocument.DocumentCreator,
+                ["LetterType"] = newDocument.LetterType,
+                ["DocumentType"] = newDocument.DocumentType,
                 ["InitialTimestamp"] = currentTimestamp,
-                ["Status"] = "Waiting"
+                ["Status"] = "Waiting",
             };
         }
 
