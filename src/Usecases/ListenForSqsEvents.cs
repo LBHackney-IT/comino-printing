@@ -9,22 +9,21 @@ namespace UseCases
     {
         public List<string> Execute(SQSEvent sqsEvent)
         {
-            var processedDocumentIds = new List<string>();
+            var receivedDocumentIds = new List<string>();
 
-            // the number of records should be 1, as per batchSize configuration 
-            // in ./src/Lambda/serverless.yml
+            // expected Records count = 1, per batchSize configured in serverless.yml
             foreach (var record in sqsEvent.Records)
             {
-                var docNo = record.Body;
+                var documentId = record.Body;
 
                 // anything written to Console will be logged as CloudWatch Logs events
-                Console.WriteLine($"Received from queue [{record.EventSourceArn}] DocNo = {docNo}");
+                Console.WriteLine($"Received from queue [{record.EventSourceArn}] documentId = {documentId}");
 
-                processedDocumentIds.Add(docNo);
+                receivedDocumentIds.Add(documentId);
             }
 
 
-            return processedDocumentIds;
+            return receivedDocumentIds;
         }
     }
 }

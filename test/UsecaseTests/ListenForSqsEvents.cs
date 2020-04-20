@@ -30,7 +30,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void ExecuteGetsEventsFromSqs()
+        public void ExecuteReceivesAndProcessesDocumentsFromSqs()
         {
             var expected = new List<string>(){ "123456" };
             var received = _listenForSqsEvents.Execute(_sqsEventMock.Object);
