@@ -7,7 +7,7 @@
 #
 # Happy Coding!
 
-service: getdocumentsfromcomino
+service: comino-printing
 plugins:
   - serverless-dynamodb-local
 
@@ -19,12 +19,14 @@ provider:
   name: aws
   runtime: dotnetcore2.1
   region: eu-west-2
+  stage: ${opt:stage}
 
 package:
   artifact: bin/release/netcoreapp2.1/comino-printing.zip
 
 functions:
-  fetchdocumentids:
+  fetch-document-ids:
+    name: ${service}-${self:provider.stage}-fetch-document-ids
     handler: Lambda::AwsDotnetCsharp.Handlers::FetchAndQueueDocumentIds
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
@@ -33,7 +35,8 @@ functions:
       COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR}
       ENV: ${self:provider.stage}
 
-  listenForSqsEvents:
+  listen-for-sqs-events:
+    name: ${service}-${self:provider.stage}-listen-for-sqs-events
     handler: Lambda::AwsDotnetCsharp.Handlers::ListenForSqsEvents
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
