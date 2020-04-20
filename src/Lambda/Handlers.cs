@@ -48,8 +48,36 @@ namespace AwsDotnetCsharp
         public void ListenForSqsEvents(SQSEvent sqsEvent)
         {
             var listenForSqsEventsUseCase = _serviceProvider.GetService<IListenForSqsEvents>();
-            var lambdaOutput = listenForSqsEventsUseCase.Execute(sqsEvent);
-           LambdaLogger.Log("Received from SQS: " + JsonConvert.SerializeObject(lambdaOutput));
+            var receivedDocumentIds = listenForSqsEventsUseCase.Execute(sqsEvent);
+            LambdaLogger.Log("Received from SQS: " + JsonConvert.SerializeObject(receivedDocumentIds));
+
+            var getHtmlDocumentUseCase = _serviceProvider.GetService<IGetHtmlDocument>();
+            var convertHtmlToPdfUseCase = _serviceProvider.GetService<IConvertHtmlToPdf>();
+            // var localDatabaseUseCase = _serviceProvider.GetService<>();
+            var savePdfToS3UseCase = _serviceProvider.GetService<ISavePdfToS3>();
+
+            foreach (var documentId in receivedDocumentIds)
+            {
+                // get the HTML document from the W2 Documents API
+                var htmlDoc = getHtmlDocumentUseCase.Execute(documentId);
+                Console.WriteLine($"> htmlDoc:\n{htmlDoc}");
+
+                // set the current status of this document in the local database
+                // localDatabaseUseCase.UpdateDocumentStatus(documentId, $"Retrieved HTML document {documentId}");
+
+                // convert the HTML document into a PDF
+                var pdfDoc = convertHtmlToPdfUseCase.Execute(htmlDoc);
+                Console.WriteLine($"> pdfDoc:\n{pdfDoc}");
+
+                // set the current status of this document in the local database
+                // localDatabaseUseCase.UpdateDocumentStatus(documentId, $"Created PDF document {documentId}");
+
+                // save the PDF to S3 as [documentId].pdf
+                var s3PutResult = savePdfToS3UseCase.Execute(documentId, pdfDoc);
+                Console.WriteLine($"> s3PutResult:\n{s3PutResult}");
+
+                // localDatabaseUseCase.UpdateDocumentStatus(documentId, $"S3 PUT response: {s3PutResult}");
+            }
         }
 
         private void ConfigureServices(IConfigurationRoot configurationRoot)
