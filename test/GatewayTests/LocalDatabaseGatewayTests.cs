@@ -24,7 +24,7 @@ namespace GatewayTests
         }
 
         [Test]
-        public async Task AddRecordForDocumentId_SavesARecordToTheDatabase_WithDocumentIdAndCreator()
+        public async Task AddRecordForDocumentId_SavesARecordToTheDatabase_WithAllDocumentDetails()
         {
             var newDocument = RandomDocumentDetails();
             await _dbGateway.SaveDocument(newDocument);
@@ -33,7 +33,9 @@ namespace GatewayTests
 
             response
                 .Where(doc => doc["DocumentId"] == newDocument.DocumentId)
-                .Count(doc => doc["DocumentCreator"] == newDocument.DocumentCreator)
+                .Where(doc => doc["LetterType"] == newDocument.LetterType)
+                .Where(doc => doc["DocumentType"] == newDocument.DocumentType)
+                .Count(doc => doc["DocumentCreatorUserName"] == newDocument.DocumentCreator)
                 .Should().Be(1);
         }
 
@@ -100,17 +102,21 @@ namespace GatewayTests
             return new DocumentDetails
             {
                 DocumentId = _fixture.Create<string>(),
-                DocumentCreator = _fixture.Create<string>()
+                DocumentCreator = _fixture.Create<string>(),
+                LetterType = _fixture.Create<string>(),
+                DocumentType = _fixture.Create<string>(),
             };
         }
 
-        private async Task AddDocumentToDatabase(DocumentDetails document1, int currentTimestamp)
+        private async Task AddDocumentToDatabase(DocumentDetails document, int currentTimestamp)
         {
             var documentItem = new Document
             {
-                ["DocumentId"] = document1.DocumentId,
-                ["DocumentCreator"] = document1.DocumentCreator,
+                ["DocumentId"] = document.DocumentId,
+                ["DocumentCreatorUserName"] = document.DocumentCreator,
                 ["InitialTimestamp"] = currentTimestamp.ToString(),
+                ["LetterType"] = document.LetterType,
+                ["DocumentType"] = document.DocumentType,
                 ["Status"] = "Waiting"
             };
             await DatabaseClient.DocumentTable.PutItemAsync(documentItem);
