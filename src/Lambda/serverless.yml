@@ -26,7 +26,7 @@ package:
 
 functions:
   fetch-document-ids:
-    name: ${service}-${self:provider.stage}-fetch-document-ids
+    name: ${self:service}-${self:provider.stage}-fetch-document-ids
     handler: Lambda::AwsDotnetCsharp.Handlers::FetchAndQueueDocumentIds
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
@@ -36,7 +36,7 @@ functions:
       ENV: ${self:provider.stage}
 
   listen-for-sqs-events:
-    name: ${service}-${self:provider.stage}-listen-for-sqs-events
+    name: ${self:service}-${self:provider.stage}-listen-for-sqs-events
     handler: Lambda::AwsDotnetCsharp.Handlers::ListenForSqsEvents
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
