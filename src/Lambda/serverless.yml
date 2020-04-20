@@ -46,7 +46,7 @@ functions:
 
 resources: # CloudFormation template syntax from here on.
   Resources:
-    comino-letters:
+    cominoLetters:
       Type: "AWS::DynamoDB::Table"
       Properties:
         TableName: ${self:provider.environment.LETTERS_TABLE_NAME}
