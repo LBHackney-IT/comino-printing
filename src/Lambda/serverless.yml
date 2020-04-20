@@ -60,7 +60,7 @@ functions:
     events:
       - schedule: rate(1 minute)
     environment:
-      COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
+      COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR}
       ENV: ${self:provider.stage}
 
   listenForSqsEvents:

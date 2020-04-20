@@ -24,15 +24,6 @@ namespace AwsDotnetCsharp
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        private void ConfigureServices(IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
-            serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
-            var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
-            LambdaLogger.Log($"Fetched Connection string: {cominoConnectionString != null}");
-            serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
-        }
-
         public void FetchAndQueueDocumentIds(ILambdaContext context)
         {
             var getDocumentsUseCse = _serviceProvider.GetService<IGetDocumentsIds>();
@@ -45,6 +36,16 @@ namespace AwsDotnetCsharp
             var listenForSqsEventsUseCase = _serviceProvider.GetService<IListenForSqsEvents>();
             var lambdaOutput = listenForSqsEventsUseCase.Execute(sqsEvent);
            LambdaLogger.Log("Received from SQS: " + JsonConvert.SerializeObject(lambdaOutput));
+        }
+
+        private void ConfigureServices(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
+            serviceCollection.AddScoped<ICominoGateway, CominoGateway>();
+            var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
+            LambdaLogger.Log($"Fetched Connection string: {cominoConnectionString != null}");
+            LambdaLogger.Log($"Stage env: {Environment.GetEnvironmentVariable("ENV")}");
+            serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
         }
     }
 }
