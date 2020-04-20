@@ -6,7 +6,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using UseCases;
-using Usecases.Domain;
 using UseCases.GatewayInterfaces;
 
 namespace UnitTests
@@ -38,7 +37,7 @@ namespace UnitTests
         public void ExecuteQueriesAndReturnsCominoForNewDocumentsWithCorrectTime()
         {
             var startDate = DateTime.Now.AddMinutes(-1);
-            var documentIds = _fixture.CreateMany<DocumentDetails>().ToList();
+            var documentIds = _fixture.CreateMany<string>().ToList();
             _gatewayMock
                 .Setup(x => x.GetDocumentsAfterStartDate(CheckDateWithinASecond(startDate)))
                 .Returns(documentIds)
