@@ -98,6 +98,12 @@ jobs:
           at: ~/repo
 
       - run:
+          name: Install Node.js
+          command: |
+            curl -sL https://deb.nodesource.com/setup_13.x | bash -
+            apt-get install -y nodejs
+
+      - run:
           name: Install serverless
           command: npm i -g serverless
 
@@ -115,6 +121,12 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
+
+      - run:
+          name: Install Node.js
+          command: |
+            curl -sL https://deb.nodesource.com/setup_13.x | bash -
+            apt-get install -y nodejs
 
       - run:
           name: Install serverless
