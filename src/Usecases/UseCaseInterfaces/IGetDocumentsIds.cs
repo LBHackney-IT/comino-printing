@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using Usecases.Domain;
 
-namespace AwsDotnetCsharp.UsecaseInterfaces
+namespace Usecases.UseCaseInterfaces
 {
     public interface IGetDocumentsIds
     {
-        List<string> Execute();
+        List<DocumentDetails> Execute();
     }
 }

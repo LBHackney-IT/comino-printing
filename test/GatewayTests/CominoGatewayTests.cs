@@ -9,6 +9,7 @@ using Gateways;
 using Moq;
 using Moq.Dapper;
 using NUnit.Framework;
+using Usecases.Domain;
 
 namespace GatewayTests
 {
@@ -38,13 +39,10 @@ AND DocDate > 12/30/6 0:38:54
 ORDER BY DocDate DESC;
 ";
 
-            var expectedResponse = _fixture.CreateMany<string>();
-            var stubbedResponseFromDb =
-                expectedResponse.Select(id => new CominoGateway.W2BatchPrintRow {DocumentNumber = id});
-            _connection
-                .SetupDapper(c => c.Query<CominoGateway.W2BatchPrintRow>(expectedQuery, null, null, true, null, null))
-                .Returns(stubbedResponseFromDb)
-                .Verifiable();
+            var stubbedResponseFromDb = _fixture.CreateMany<CominoGateway.W2BatchPrintRow>().ToList();
+            var expectedResponse = MapDatabaseRowToDomain(stubbedResponseFromDb);
+
+            SetupMockQueryToReturn(expectedQuery, stubbedResponseFromDb);
 
             var response = _subject.GetDocumentsAfterStartDate(time);
 
@@ -64,18 +62,32 @@ AND DocSource = 'O'
 AND DocDate > 11/25/12 6:13:45
 ORDER BY DocDate DESC;
 ";
-            var expectedResponse = _fixture.CreateMany<string>();
-            var stubbedResponseFromDb =
-                expectedResponse.Select(id => new CominoGateway.W2BatchPrintRow {DocumentNumber = id});
-            _connection
-                .SetupDapper(c => c.Query<CominoGateway.W2BatchPrintRow>(expectedQuery, null, null, true, null, null))
-                .Returns(stubbedResponseFromDb)
-                .Verifiable();
+            var stubbedResponseFromDb = _fixture.CreateMany<CominoGateway.W2BatchPrintRow>().ToList();
+            var expectedResponse = MapDatabaseRowToDomain(stubbedResponseFromDb);
+
+            SetupMockQueryToReturn(expectedQuery, stubbedResponseFromDb);
 
             var response = _subject.GetDocumentsAfterStartDate(time);
 
             response.Should().BeEquivalentTo(expectedResponse);
             _connection.Verify();
+        }
+
+        private void SetupMockQueryToReturn(string expectedQuery, List<CominoGateway.W2BatchPrintRow> stubbedResponseFromDb)
+        {
+            _connection
+                .SetupDapper(c => c.Query<CominoGateway.W2BatchPrintRow>(expectedQuery, null, null, true, null, null))
+                .Returns(stubbedResponseFromDb)
+                .Verifiable();
+        }
+
+        private static IEnumerable<DocumentDetails> MapDatabaseRowToDomain(List<CominoGateway.W2BatchPrintRow> stubbedResponseFromDb)
+        {
+            return stubbedResponseFromDb.Select(doc => new DocumentDetails
+            {
+                DocumentCreator = doc.CreatedBy,
+                DocumentId = doc.DocumentNumber,
+            });
         }
     }
 }
