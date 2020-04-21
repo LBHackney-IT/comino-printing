@@ -30,13 +30,21 @@ remove-test-db-docker:
 	-docker kill test-dynamodb
 	-docker rm test-dynamodb
 
+.PHONY: deploy-ui
+deploy-ui: build-ui
+	sls client deploy --no-confirm --aws-profile hackney --stage ${STAGE}
+
+.PHONY: deploy-lambda
+deploy-lambda: build-lambda
+	sls deploy --aws-profile hackney --stage ${STAGE}
+
+.PHONY: deploy
+deploy: deploy-lambda deploy-ui
+
 .PHONY: build-ui
 build-ui:
-	cd comino-print-ui
-	npm install
-	npm run build
+	cd comino-print-ui && npm install && npm run build
 
 .PHONY: build-lambda
 build-lambda:
-	cd src/Lambda
-	./build.sh
+	cd src/Lambda && ./build.sh

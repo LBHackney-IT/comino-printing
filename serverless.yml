@@ -26,7 +26,7 @@ provider:
     W2_DOCUMENT_BASE_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/W2_DOCUMENTS_API}
 
 package:
-  artifact: /src/Lambda/bin/release/netcoreapp2.1/comino-printing.zip
+  artifact: ./src/Lambda/bin/release/netcoreapp2.1/comino-printing.zip
 
 functions:
   fetch-document-ids:
