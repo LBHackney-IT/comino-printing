@@ -4,7 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Usecases;
 using Usecases.Domain;
+using Usecases.Enums;
 using UseCases.GatewayInterfaces;
 
 namespace Gateways
@@ -46,14 +48,18 @@ namespace Gateways
         {
             var config = new GetItemOperationConfig{ ConsistentRead = true };
             var document = await _documentsTable.GetItemAsync(currentTimestamp, config);
-            return new DocumentDetails
+            return MapToDocumentDetails(document);
+        }
+
+        public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt, LetterStatusEnum newStatus)
+        {
+            var updateDoc = new Document
             {
-                DocumentCreator = document["DocumentCreatorUserName"],
-                DocumentId = document["DocumentId"],
-                DocumentType = document["DocumentType"],
-                LetterType = document["LetterType"],
-                SavedAt = document["InitialTimestamp"],
+                ["InitialTimestamp"] = savedDocumentSavedAt,
+                ["Status"] = newStatus.ToString(),
             };
+            var response = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
+            return MapToDocumentDetails(response);
         }
 
         private static Document ConstructDocument(DocumentDetails newDocument, string currentTimestamp)
@@ -66,6 +72,18 @@ namespace Gateways
                 ["DocumentType"] = newDocument.DocumentType,
                 ["InitialTimestamp"] = currentTimestamp,
                 ["Status"] = "Waiting",
+            };
+        }
+
+        private static DocumentDetails MapToDocumentDetails(Document document)
+        {
+            return new DocumentDetails
+            {
+                DocumentCreator = document["DocumentCreatorUserName"],
+                DocumentId = document["DocumentId"],
+                DocumentType = document["DocumentType"],
+                LetterType = document["LetterType"],
+                SavedAt = document["InitialTimestamp"],
             };
         }
 
