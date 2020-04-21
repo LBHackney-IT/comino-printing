@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace Usecases.UseCaseInterfaces
 {
     public interface IFetchAndQueueDocumentIds
     {
-        void Execute();
+        Task Execute();
     }
 }
