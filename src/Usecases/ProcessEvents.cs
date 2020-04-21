@@ -2,6 +2,7 @@ using Amazon.Lambda.SQSEvents;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Usecases.UseCaseInterfaces;
@@ -28,26 +29,25 @@ namespace UseCases
         {
             Console.WriteLine("Received message from SQS");
             // expected Records count = 1, per batchSize configured in serverless.yml
-            foreach (var record in sqsEvent.Records)
-            {
-                //TODO: ADD logging to local database
-                var timestamp = record.Body;
+            var record = sqsEvent.Records.First();
 
-                // anything written to Console will be logged as CloudWatch Logs events
-                Console.WriteLine($"Received from queue [{record.EventSourceArn}] document timestamp = {timestamp}");
+            //TODO: ADD logging to local database
+            var timestamp = record.Body;
 
-                var document = await _getDocumentDetails.Execute(timestamp);
+            // anything written to Console will be logged as CloudWatch Logs events
+            Console.WriteLine($"Received from queue [{record.EventSourceArn}] document timestamp = {timestamp}");
 
-                Console.WriteLine($"Retrieved from dynamo, getting Html for documentId = {document.DocumentId}");
+            var document = await _getDocumentDetails.Execute(timestamp);
 
-                var html = await _getHtmlDocument.Execute(document.DocumentId);
+            Console.WriteLine($"Retrieved from dynamo, getting Html for documentId = {document.DocumentId}");
 
-                Console.WriteLine($"> htmlDoc:\n{html}");
-                var pdfBytes = _convertHtmlToPdf.Execute(html, document.LetterType);
+            var html = await _getHtmlDocument.Execute(document.DocumentId);
 
-                var result = _savePdfToS3.Execute(timestamp, pdfBytes);
-                Console.WriteLine($"> s3PutResult:\n{result}");
-            }
+            Console.WriteLine($"> htmlDoc:\n{html}");
+            var pdfBytes = _convertHtmlToPdf.Execute(html, document.LetterType);
+
+            var result = _savePdfToS3.Execute(timestamp, pdfBytes);
+            Console.WriteLine($"> s3PutResult:\n{result}");
         }
     }
 }
