@@ -92,6 +92,19 @@ namespace GatewayTests
             Convert.ToInt32(response).Should().BeGreaterThan(currentTimestamp);
         }
 
+        [Test]
+        public async Task GetRecordByTimeStamp_RetrievesRecordFromDb()
+        {
+            var currentTimestamp = GetCurrentTimestamp();
+            var savedDocument = RandomDocumentDetails();
+            savedDocument.SavedAt = currentTimestamp.ToString();
+            await AddDocumentToDatabase(savedDocument, currentTimestamp);
+
+            var response = await _dbGateway.GetRecordByTimeStamp(currentTimestamp.ToString());
+
+            response.Should().BeEquivalentTo(savedDocument);
+        }
+
         private static int GetCurrentTimestamp()
         {
             return Convert.ToInt32((DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds);
