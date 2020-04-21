@@ -7,7 +7,9 @@ using AutoFixture;
 using FluentAssertions;
 using Gateways;
 using NUnit.Framework;
+using Usecases;
 using Usecases.Domain;
+using Usecases.Enums;
 
 namespace GatewayTests
 {
@@ -95,12 +97,32 @@ namespace GatewayTests
         [Test]
         public async Task GetRecordByTimeStamp_RetrievesRecordFromDb()
         {
-            var currentTimestamp = GetCurrentTimestamp();
-            var savedDocument = RandomDocumentDetails();
-            savedDocument.SavedAt = currentTimestamp.ToString();
-            await AddDocumentToDatabase(savedDocument, currentTimestamp);
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
 
-            var response = await _dbGateway.GetRecordByTimeStamp(currentTimestamp.ToString());
+            var response = await _dbGateway.GetRecordByTimeStamp(savedDocument.SavedAt);
+
+            response.Should().BeEquivalentTo(savedDocument);
+        }
+
+        [Test]
+        public async Task RetrieveDocumentAndSetStatusToProcessing_UpdatesADocumentsStatus()
+        {
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
+            var newStatus = LetterStatusEnum.Processing;
+
+            await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.SavedAt, newStatus);
+
+            var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.SavedAt);
+            savedDoc["Status"].ToString().Should().Be(newStatus.ToString());
+        }
+
+        [Test]
+        public async Task RetrieveDocumentAndSetStatusToProcessing_ReturnsTheDocument()
+        {
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
+            var newStatus = LetterStatusEnum.Processing;
+
+            var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.SavedAt, newStatus);
 
             response.Should().BeEquivalentTo(savedDocument);
         }
@@ -121,18 +143,22 @@ namespace GatewayTests
             };
         }
 
-        private async Task AddDocumentToDatabase(DocumentDetails document, int currentTimestamp)
+        private async Task<DocumentDetails> AddDocumentToDatabase(DocumentDetails document, int? currentTimestamp = null)
         {
+            var timestamp = currentTimestamp ?? GetCurrentTimestamp();
             var documentItem = new Document
             {
                 ["DocumentId"] = document.DocumentId,
                 ["DocumentCreatorUserName"] = document.DocumentCreator,
-                ["InitialTimestamp"] = currentTimestamp.ToString(),
+                ["InitialTimestamp"] = timestamp.ToString(),
                 ["LetterType"] = document.LetterType,
                 ["DocumentType"] = document.DocumentType,
-                ["Status"] = "Waiting"
+                ["Status"] = LetterStatusEnum.Waiting.ToString()
             };
             await DatabaseClient.DocumentTable.PutItemAsync(documentItem);
+
+            document.SavedAt = timestamp.ToString();
+            return document;
         }
 
         private static int GetTimestampForDocumentId(List<Document> savedItems, DocumentDetails document)
