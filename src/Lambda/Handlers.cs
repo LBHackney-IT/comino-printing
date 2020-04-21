@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UseCases;
 using UseCases.GatewayInterfaces;
+using UseCases.UntestedParsers;
 using Usecases.UseCaseInterfaces;
 
 [assembly:LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -47,31 +48,40 @@ namespace AwsDotnetCsharp
         {
             var services = new ServiceCollection();
 
-            services.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
+            //Comino Database
+            var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
+            services.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
+
+            //Dynamo DB
+            var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
+            LambdaLogger.Log($"Dynamo table name {tableName}");
+            var dynamoConfig = new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest2};
+            services.AddSingleton<IDynamoDBHandler>(sp => new DynamoDBHandler(dynamoConfig, tableName));
+
+            //SQS
+            services.AddTransient<IAmazonSQS>(sp => new AmazonSQSClient(RegionEndpoint.EUWest2));
+
+            //Gateways
+            services.AddScoped<IS3Gateway, S3Gateway>();
             services.AddScoped<ICominoGateway, CominoGateway>();
+            services.AddHttpClient<IW2DocumentsGateway, W2DocumentsGateway>();
             services.AddScoped<ISqsGateway, SqsGateway>();
-            services.AddScoped<IPushIdsToSqs, PushIdsToSqs>();
             services.AddScoped<ILocalDatabaseGateway, LocalDatabaseGateway>();
+
+            //UseCases
+            services.AddScoped<ISavePdfToS3, SavePdfToS3>();
+            services.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
+            services.AddScoped<IPushIdsToSqs, PushIdsToSqs>();
             services.AddScoped<ISaveRecordsToLocalDatabase, SaveRecordsToLocalDatabase>();
             services.AddScoped<IProcessEvents, ProcessEvents>();
             services.AddScoped<IGetHtmlDocument, GetHtmlDocument>();
             services.AddScoped<IConvertHtmlToPdf, ConvertHtmlToPdf>();
             services.AddScoped<ISavePdfToS3, SavePdfToS3>();
-            services.AddHttpClient<IW2DocumentsGateway, W2DocumentsGateway>();
             services.AddScoped<IGetParser, ParserLookup>();
             services.AddScoped<IConvertHtmlToPdf, ConvertHtmlToPdf>();
             services.AddScoped<IFetchAndQueueDocumentIds, FetchAndQueueDocumentIds>();
             services.AddScoped<IGetDetailsOfDocumentForProcessing, GetDetailsOfDocumentForProcessing>();
-
-            var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
-            services.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
-
-            services.AddTransient<IAmazonSQS>(sp => new AmazonSQSClient(RegionEndpoint.EUWest2));
-
-            var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
-            LambdaLogger.Log($"Dynamo table name {tableName}");
-            var dynamoConfig = new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest2};
-            services.AddSingleton<IDynamoDBHandler>(sp => new DynamoDBHandler(dynamoConfig, tableName));
+            services.AddScoped<IParseHtmlToPdf, IronPDFParser>();
 
             _serviceProvider = services.BuildServiceProvider();
         }
