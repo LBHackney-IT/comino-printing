@@ -25,7 +25,7 @@ provider:
     W2_DOCUMENT_BASE_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/W2_DOCUMENTS_API}
 
 package:
-  artifact: bin/release/netcoreapp2.1/comino-printing.zip
+  artifact: /src/Lambda/bin/release/netcoreapp2.1/comino-printing.zip
 
 functions:
   fetch-document-ids:
@@ -38,7 +38,7 @@ functions:
       COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
       SQS_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/SQS_URL}
       ENV: ${self:provider.stage}
-        
+
   listen-for-sqs-events:
     name: ${self:service}-${self:provider.stage}-listen-for-sqs-events
     handler: Lambda::AwsDotnetCsharp.Handlers::ListenForSqsEvents
@@ -47,7 +47,7 @@ functions:
       - sqs: arn:aws:sqs:eu-west-2:775052747630:sqs-comino-printing-${self:provider.stage}
         batchSize: 1
 
-resources: 
+resources:
   Resources:
     cominoLetters:
       Type: "AWS::DynamoDB::Table"
