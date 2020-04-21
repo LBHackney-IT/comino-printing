@@ -13,13 +13,15 @@ namespace UseCases
         private readonly IGetHtmlDocument _getHtmlDocument;
         private readonly IConvertHtmlToPdf _convertHtmlToPdf;
         private readonly ISavePdfToS3 _savePdfToS3;
+        private IGetDetailsOfDocumentForProcessing _getDocumentDetails;
 
         public ProcessEvents(IGetHtmlDocument getHtmlDocument, IConvertHtmlToPdf convertHtmlToPdf,
-            ISavePdfToS3 savePdfToS3)
+            ISavePdfToS3 savePdfToS3, IGetDetailsOfDocumentForProcessing getDocumentDetails)
         {
             _getHtmlDocument = getHtmlDocument;
             _convertHtmlToPdf = convertHtmlToPdf;
             _savePdfToS3 = savePdfToS3;
+            _getDocumentDetails = getDocumentDetails;
         }
 
         public async Task Execute(SQSEvent sqsEvent)
@@ -29,20 +31,21 @@ namespace UseCases
             foreach (var record in sqsEvent.Records)
             {
                 //TODO: ADD logging to local database
-                var documentId = record.Body;
+                var timestamp = record.Body;
 
                 // anything written to Console will be logged as CloudWatch Logs events
-                Console.WriteLine($"Received from queue [{record.EventSourceArn}] documentId = {documentId}");
-                Console.WriteLine($"Getting Html for documentId = {documentId}");
+                Console.WriteLine($"Received from queue [{record.EventSourceArn}] document timestamp = {timestamp}");
 
-                //TODO: Get document details from local db
+                var document = await _getDocumentDetails.Execute(timestamp);
 
-                var html = await _getHtmlDocument.Execute(documentId);
+                Console.WriteLine($"Retrieved from dynamo, getting Html for documentId = {document.DocumentId}");
+
+                var html = await _getHtmlDocument.Execute(document.DocumentId);
 
                 Console.WriteLine($"> htmlDoc:\n{html}");
-                var pdfBytes = _convertHtmlToPdf.Execute(html, "Change in Circs ICL");
+                var pdfBytes = _convertHtmlToPdf.Execute(html, document.LetterType);
 
-                var result = _savePdfToS3.Execute(documentId, pdfBytes);
+                var result = _savePdfToS3.Execute(timestamp, pdfBytes);
                 Console.WriteLine($"> s3PutResult:\n{result}");
             }
         }
