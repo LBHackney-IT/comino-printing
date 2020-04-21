@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "dynamodb-admin": "^4.0.0",
-    "serverless-dynamodb-local": "^0.2.39"
+    "serverless-dynamodb-local": "^0.2.39",
+    "serverless-finch": "^2.5.2"
   }
 }

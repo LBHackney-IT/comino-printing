@@ -30,7 +30,13 @@ remove-test-db-docker:
 	-docker kill test-dynamodb
 	-docker rm test-dynamodb
 
-.PHONY: build
-build:
+.PHONY: build-ui
+build-ui:
+	cd comino-print-ui
+	npm install
+	npm run build
+
+.PHONY: build-lambda
+build-lambda:
 	cd src/Lambda
 	./build.sh

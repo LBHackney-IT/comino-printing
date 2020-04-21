@@ -10,6 +10,7 @@
 service: comino-printing
 plugins:
   - serverless-dynamodb-local
+  - serverless-finch
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -78,6 +79,10 @@ resources:
       Type: "AWS::SQS::Queue"
       Properties:
         QueueName: sqs-comino-printing-${self:provider.stage}
+    uiBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: "${self:service}-${self:provider.stage}-ui"
 
 custom:
   dynamodb:
@@ -88,3 +93,8 @@ custom:
       port: 8000
       inMemory: true
       migrate: true
+  client:
+    bucketName: "${self:service}-${self:provider.stage}-ui"
+    distributionFolder: comino-print-ui/build
+    indexDocument: index.html
+    errorDocument: index.html
