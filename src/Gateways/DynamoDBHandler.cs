@@ -14,6 +14,7 @@ namespace Gateways
             {
                 var credentials = new BasicAWSCredentials("TestAccessKey", "TestSecretKey");
                 var client = new AmazonDynamoDBClient(credentials, dynamoConfig);
+                Console.WriteLine($"> setting DocumentTable: {tableName}");
                 DocumentTable = Table.LoadTable(client, tableName);
             }
             else

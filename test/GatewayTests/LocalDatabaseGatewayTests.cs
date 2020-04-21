@@ -24,7 +24,6 @@ namespace GatewayTests
         }
 
         [Test]
-        // [Ignore("To Fix")]
         public async Task AddRecordForDocumentId_SavesARecordToTheDatabase_WithDocumentIdAndCreator()
         {
             var newDocument = RandomDocumentDetails();
@@ -39,7 +38,6 @@ namespace GatewayTests
         }
 
         [Test]
-        [Ignore("To Fix")]
         public async Task AddRecordForDocumentId_SavesARecordToTheDatabase_WithCorrectTimestamp()
         {
             var newDocument = RandomDocumentDetails();
@@ -52,7 +50,6 @@ namespace GatewayTests
         }
 
         [Test]
-        [Ignore("To Fix")]
         public async Task AddRecordForDocumentId_ReturnsTheTimestampCreated()
         {
             var newDocument = RandomDocumentDetails();
@@ -63,7 +60,6 @@ namespace GatewayTests
         }
 
         [Test]
-        [Ignore("To Fix")]
         public async Task AddRecordForDocumentId_IfTwoRecordsAddedAtTheSameTime_NeitherIsOverwritten()
         {
             var currentTimestamp = GetCurrentTimestamp();
@@ -81,7 +77,6 @@ namespace GatewayTests
         }
 
         [Test]
-        [Ignore("To Fix")]
         public async Task AddRecordForDocumentId_IfTwoRecordsAddedAtTheSameTime_ReturnsTimestampFromRetry()
         {
             var currentTimestamp = GetCurrentTimestamp();

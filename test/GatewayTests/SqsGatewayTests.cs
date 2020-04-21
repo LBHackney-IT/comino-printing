@@ -26,9 +26,8 @@ namespace GatewayTests
             _sqsClient = new Mock<AmazonSQSClient>(RegionEndpoint.EUWest2);
             _subject = new SqsGateway(_sqsClient.Object);
         }
-        
+
         [Test]
-        [Ignore("To Fix")]
         public void AddDocumentIdsToQueueCallsTheSendMessageAsyncMethodOnTheSqsClient()
         {
             const string documentId = "123456";
