@@ -45,6 +45,7 @@ functions:
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
       - sqs: arn:aws:sqs:eu-west-2:775052747630:sqs-comino-printing-${self:provider.stage}
+          batchSize: 1
 
 resources: 
   Resources:
