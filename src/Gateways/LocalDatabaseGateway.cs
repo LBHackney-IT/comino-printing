@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
@@ -39,6 +40,20 @@ namespace Gateways
             }
 
             return currentTimestamp;
+        }
+
+        public async Task<DocumentDetails> GetRecordByTimeStamp(string currentTimestamp)
+        {
+            var config = new GetItemOperationConfig{ ConsistentRead = true };
+            var document = await _documentsTable.GetItemAsync(currentTimestamp, config);
+            return new DocumentDetails
+            {
+                DocumentCreator = document["DocumentCreatorUserName"],
+                DocumentId = document["DocumentId"],
+                DocumentType = document["DocumentType"],
+                LetterType = document["LetterType"],
+                SavedAt = document["InitialTimestamp"],
+            };
         }
 
         private static Document ConstructDocument(DocumentDetails newDocument, string currentTimestamp)
