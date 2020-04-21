@@ -18,7 +18,6 @@ namespace UseCases
         {
             ILetterParser parser = _getParser.ForType(documentType);
 
-            // Only changes in Circs atm
             var htmlInput = parser.Execute(htmlDocument);
 
             var css = CompileCss(htmlInput);

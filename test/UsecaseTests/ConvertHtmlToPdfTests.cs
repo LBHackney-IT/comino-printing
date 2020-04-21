@@ -1,8 +1,9 @@
-using System;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using RtfParseSpike.Templates;
 using UseCases;
 using Usecases.UseCaseInterfaces;
 
@@ -14,6 +15,7 @@ namespace UnitTests
         private Fixture _fixture;
         private Mock<IGetParser> _getParsers;
         private Mock<IParseHtmlToPdf> _parseHtmlToPdf;
+        private Mock<ILetterParser> _mockLetterTypeParser;
 
         [SetUp]
         public void Setup()
@@ -25,14 +27,83 @@ namespace UnitTests
         }
 
         [Test]
-        public void ExecuteCalledWithHtmlDocumentReturnsAPdf()
+        public void ExecuteGetParserBasedOnDocType()
         {
             var documentType = _fixture.Create<string>();
-            var htmlDocument = "<p>html document</p>";
-            var expected = "[pdf document - filepath?]";
-            var received = _convertHtmlToPdf.Execute(htmlDocument, documentType);
+            var htmlDocument = _fixture.Create<string>();
+            SetupLetterMockLetterTypeParser(htmlDocument);
+            SetUpGetParser(documentType);
 
-            received.Should().BeEquivalentTo(expected);
+            _convertHtmlToPdf.Execute(htmlDocument, documentType);
+            _getParsers.Verify();
+        }
+
+        [Test]
+        public void ExecuteGetsHtmlFromCorrectParser()
+        {
+            var documentType = _fixture.Create<string>();
+            var htmlDocument = _fixture.Create<string>();
+
+            SetupLetterMockLetterTypeParser(htmlDocument);
+            SetUpGetParser(documentType);
+
+            _convertHtmlToPdf.Execute(htmlDocument, documentType);
+
+            _mockLetterTypeParser.Verify();
+        }
+
+        [Test]
+        public void ExecuteRetainsHtmlFromParserAndWrapsInFurtherHtmlAndCss()
+        {
+            var documentType = _fixture.Create<string>();
+            var htmlDocument = _fixture.Create<string>();
+
+            var parsedHtml = SetupLetterMockLetterTypeParser(htmlDocument);
+            SetUpGetParser(documentType);
+
+            _convertHtmlToPdf.Execute(htmlDocument, documentType);
+            _parseHtmlToPdf.Verify(x => x.Execute(
+                It.Is<string>(html =>
+                    AssertLetterDetailsIncludedIn(html, parsedHtml)), 5, 15, 5, 15), Times.Once);
+        }
+
+        [Test]
+        public void ExecuteReturnsPDfBytesFromHtmlToPdfParser()
+        {
+            var documentType = _fixture.Create<string>();
+            var htmlDocument = _fixture.Create<string>();
+            byte[] pdfBytes = _fixture.CreateMany<byte>().ToArray();
+
+
+            SetupLetterMockLetterTypeParser(htmlDocument);
+            SetUpGetParser(documentType);
+
+            _parseHtmlToPdf.Setup(x => x.Execute(It.IsAny<string>(), 5, 15, 5, 15)).Returns(pdfBytes);
+
+            var response = _convertHtmlToPdf.Execute(htmlDocument, documentType);
+            response.Should().BeEquivalentTo(pdfBytes);
+        }
+
+        private LetterTemplate SetupLetterMockLetterTypeParser(string htmlDocument)
+        {
+            var parsedHtml = _fixture.Create<LetterTemplate>();
+
+            var mockLetterTypeParser = new Mock<ILetterParser>();
+            mockLetterTypeParser.Setup(x => x.Execute(htmlDocument)).Returns(parsedHtml).Verifiable();
+            _mockLetterTypeParser = mockLetterTypeParser;
+            return parsedHtml;
+        }
+
+        private void SetUpGetParser(string documentType)
+        {
+            _getParsers.Setup(x => x.ForType(documentType)).Returns(_mockLetterTypeParser.Object).Verifiable();
+        }
+
+        private static bool AssertLetterDetailsIncludedIn(string receivedHtml, LetterTemplate parsedHtml)
+        {
+            return receivedHtml.Contains(parsedHtml.Header)
+                   && receivedHtml.Contains(parsedHtml.MainBody)
+                   && receivedHtml.Contains(parsedHtml.TemplateSpecificCss);
         }
     }
 }

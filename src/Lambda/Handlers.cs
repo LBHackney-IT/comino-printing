@@ -66,6 +66,7 @@ namespace AwsDotnetCsharp
             services.AddScoped<ISavePdfToS3, SavePdfToS3>();
             services.AddHttpClient<IW2DocumentsGateway, W2DocumentsGateway>();
             services.AddScoped<IGetParser, ParserLookup>();
+            services.AddScoped<IConvertHtmlToPdf, ConvertHtmlToPdf>();
 
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
             services.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
