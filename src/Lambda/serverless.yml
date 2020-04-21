@@ -21,7 +21,7 @@ provider:
   region: eu-west-2
   stage: ${opt:stage}
   environment:
-    LETTERS_TABLE_NAME: "${self:service}-${self:provider.stage}-letters"
+    LETTERS_TABLE_NAME: "${self:service}-${self:provider.stage}-letters-2"
     W2_DOCUMENT_BASE_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/W2_DOCUMENTS_API}
 
 package:
