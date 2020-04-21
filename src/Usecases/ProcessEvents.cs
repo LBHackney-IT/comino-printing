@@ -2,6 +2,7 @@ using Amazon.Lambda.SQSEvents;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Usecases.UseCaseInterfaces;
 
@@ -21,20 +22,20 @@ namespace UseCases
             _savePdfToS3 = savePdfToS3;
         }
 
-        public void Execute(SQSEvent sqsEvent)
+        public async Task Execute(SQSEvent sqsEvent)
         {
-            Console.Write("Received from SQS: " + JsonConvert.SerializeObject(sqsEvent));
+            Console.WriteLine("Received message from SQS");
             // expected Records count = 1, per batchSize configured in serverless.yml
             foreach (var record in sqsEvent.Records)
             {
-                //TODO: ADD logging to local database 
+                //TODO: ADD logging to local database
                 var documentId = record.Body;
 
                 // anything written to Console will be logged as CloudWatch Logs events
                 Console.WriteLine($"Received from queue [{record.EventSourceArn}] documentId = {documentId}");
                 Console.WriteLine($"Getting Html for documentId = {documentId}");
 
-                var html = _getHtmlDocument.Execute(documentId);
+                var html = await _getHtmlDocument.Execute(documentId);
 
                 Console.WriteLine($"> htmlDoc:\n{html}");
                 var pdfBytes = _convertHtmlToPdf.Execute(html);

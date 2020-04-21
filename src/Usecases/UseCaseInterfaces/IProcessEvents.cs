@@ -1,9 +1,10 @@
+using System.Threading.Tasks;
 using Amazon.Lambda.SQSEvents;
 
 namespace Usecases.UseCaseInterfaces
 {
     public interface IProcessEvents
     {
-        void Execute(SQSEvent sqsEvent);
+        Task Execute(SQSEvent sqsEvent);
     }
 }

@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using Usecases.Domain;
+using System.Threading.Tasks;
 
 namespace UseCases.GatewayInterfaces
 {
     public interface IW2DocumentsGateway
     {
-        string GetHtmlDocument(string documentId);
+        Task<string> GetHtmlDocument(string documentId);
     }
 }

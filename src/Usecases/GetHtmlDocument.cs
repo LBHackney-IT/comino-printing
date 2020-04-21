@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using UseCases.GatewayInterfaces;
+using Usecases.UseCaseInterfaces;
 
 namespace UseCases
 {
@@ -14,10 +16,11 @@ namespace UseCases
             _w2DocumentsGateway = w2DocumentsGateway;
         }
 
-        public string Execute(string documentId)
+        public async Task<string> Execute(string documentId)
         {
             Console.WriteLine($"> GetHtmlDocument usecase documentId: {documentId}");
-            return _w2DocumentsGateway.GetHtmlDocument(documentId);
+            var html = await _w2DocumentsGateway.GetHtmlDocument(documentId);
+            return html;
         }
     }
 }

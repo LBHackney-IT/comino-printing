@@ -1,6 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -13,22 +12,25 @@ namespace UnitTests
     {
         private GetHtmlDocument _getHtmlDocument;
         private Mock<IW2DocumentsGateway> _gatewayMock;
+        private Fixture _fixture;
 
         [SetUp]
         public void Setup()
         {
+            _fixture = new Fixture();
             _gatewayMock = new Mock<IW2DocumentsGateway>();
             _getHtmlDocument = new GetHtmlDocument(_gatewayMock.Object);
         }
 
         [Test]
-        public void ExecuteCallsTheGatewayWithTheDocumentId()
+        public async Task ExecuteReturnsTheHtmlObtainedFromTheGateway()
         {
-            var documentId = "123456";
+            var documentId = _fixture.Create<string>();
+            var stubbedHtml = _fixture.Create<string>();
+            _gatewayMock.Setup(gateway => gateway.GetHtmlDocument(documentId)).ReturnsAsync(stubbedHtml);
 
-            _getHtmlDocument.Execute(documentId);
-
-            _gatewayMock.Verify(gateway => gateway.GetHtmlDocument(documentId), Times.Once());
+            var response = await _getHtmlDocument.Execute(documentId);
+            response.Should().Be(stubbedHtml);
         }
     }
 }

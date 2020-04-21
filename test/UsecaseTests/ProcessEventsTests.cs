@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Amazon.Lambda.SQSEvents;
 using AutoFixture;
 using AwsDotnetCsharp.UsecaseInterfaces;
@@ -9,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using UseCases;
 using UseCases.GatewayInterfaces;
+using Usecases.UseCaseInterfaces;
 
 namespace UnitTests
 {
@@ -31,46 +33,46 @@ namespace UnitTests
         }
 
         [Test]
-        public void ExecuteReceivesEventAndGetRelatedHtmlDocument()
+        public async Task ExecuteReceivesEventAndGetRelatedHtmlDocument()
         {
             var documentId = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(documentId);
 
-            _processEvents.Execute(sqsEventMock);
+            await _processEvents.Execute(sqsEventMock);
             _mockGetHtmlDocument.Verify(x => x.Execute(documentId), Times.Once);
         }
 
         [Test]
-        public void ParsersRetrievedHtmlToAPdf()
+        public async Task  ParsersRetrievedHtmlToAPdf()
         {
             var documentId = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(documentId);
             var stubbedReturnHtml = _fixture.Create<string>();
-            _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).Returns(stubbedReturnHtml);
+            _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(stubbedReturnHtml);
 
-            _processEvents.Execute(sqsEventMock);
+            await _processEvents.Execute(sqsEventMock);
 
             _mockPdfParser.Verify(x => x.Execute(stubbedReturnHtml), Times.Once);
         }
 
         [Test]
-        public void SavesTheConvertedPdfToS3()
+        public async Task  SavesTheConvertedPdfToS3()
         {
             var documentId = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(documentId);
             //not sure what type this is yet - maybe a byte array???
             var stubbedPdf = _fixture.Create<string>();
 
-            _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).Returns(_fixture.Create<string>());
+            _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
             _mockPdfParser.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedPdf);
 
-            _processEvents.Execute(sqsEventMock);
+            await _processEvents.Execute(sqsEventMock);
 
             _sendToS3.Verify(x => x.Execute(documentId, stubbedPdf), Times.Once);
         }
 
         [Test]
-        public void SomethingAboutSavingStatusToLocalDatabase()
+        public async Task  SomethingAboutSavingStatusToLocalDatabase()
         {
             
         }

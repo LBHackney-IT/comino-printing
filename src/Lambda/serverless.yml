@@ -22,6 +22,7 @@ provider:
   stage: ${opt:stage}
   environment:
     LETTERS_TABLE_NAME: "${self:service}-${self:provider.stage}-letters"
+    W2_DOCUMENT_BASE_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/W2_DOCUMENTS_API}
 
 package:
   artifact: bin/release/netcoreapp2.1/comino-printing.zip

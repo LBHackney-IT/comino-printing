@@ -1,7 +1,9 @@
-namespace AwsDotnetCsharp.UsecaseInterfaces
+using System.Threading.Tasks;
+
+namespace Usecases.UseCaseInterfaces
 {
     public interface IGetHtmlDocument
     {
-        string Execute(string documentId);
+        Task<string> Execute(string documentId);
     }
 }
