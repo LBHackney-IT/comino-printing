@@ -14,6 +14,7 @@ using AwsDotnetCsharp.UsecaseInterfaces;
 using Gateways;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
 using UseCases;
 using UseCases.GatewayInterfaces;
@@ -45,39 +46,10 @@ namespace AwsDotnetCsharp
            LambdaLogger.Log("Response from SQS Queue:" + JsonConvert.SerializeObject(sqsOutput));
         }
 
-        public void ListenForSqsEvents(SQSEvent sqsEvent)
+        public void ListenForSqsEvents(SQSEvent sqsEvent, ILambdaContext context)
         {
-            var listenForSqsEventsUseCase = _serviceProvider.GetService<IListenForSqsEvents>();
-            var receivedDocumentIds = listenForSqsEventsUseCase.Execute(sqsEvent);
-            LambdaLogger.Log("Received from SQS: " + JsonConvert.SerializeObject(receivedDocumentIds));
-
-            var getHtmlDocumentUseCase = _serviceProvider.GetService<IGetHtmlDocument>();
-            var convertHtmlToPdfUseCase = _serviceProvider.GetService<IConvertHtmlToPdf>();
-            // var localDatabaseUseCase = _serviceProvider.GetService<>();
-            var savePdfToS3UseCase = _serviceProvider.GetService<ISavePdfToS3>();
-
-            foreach (var documentId in receivedDocumentIds)
-            {
-                // get the HTML document from the W2 Documents API
-                var htmlDoc = getHtmlDocumentUseCase.Execute(documentId);
-                Console.WriteLine($"> htmlDoc:\n{htmlDoc}");
-
-                // set the current status of this document in the local database
-                // localDatabaseUseCase.UpdateDocumentStatus(documentId, $"Retrieved HTML document {documentId}");
-
-                // convert the HTML document into a PDF
-                var pdfDoc = convertHtmlToPdfUseCase.Execute(htmlDoc);
-                Console.WriteLine($"> pdfDoc:\n{pdfDoc}");
-
-                // set the current status of this document in the local database
-                // localDatabaseUseCase.UpdateDocumentStatus(documentId, $"Created PDF document {documentId}");
-
-                // save the PDF to S3 as [documentId].pdf
-                var s3PutResult = savePdfToS3UseCase.Execute(documentId, pdfDoc);
-                Console.WriteLine($"> s3PutResult:\n{s3PutResult}");
-
-                // localDatabaseUseCase.UpdateDocumentStatus(documentId, $"S3 PUT response: {s3PutResult}");
-            }
+            var listenForSqsEventsUseCase = _serviceProvider.GetService<IProcessEvents>();
+            listenForSqsEventsUseCase.Execute(sqsEvent);
         }
 
         private void ConfigureServices(IConfigurationRoot configurationRoot)
@@ -90,6 +62,10 @@ namespace AwsDotnetCsharp
             serviceCollection.AddScoped<IPushIdsToSqs, PushIdsToSqs>();
             serviceCollection.AddScoped<ILocalDatabaseGateway, LocalDatabaseGateway>();
             serviceCollection.AddScoped<ISaveRecordsToLocalDatabase, SaveRecordsToLocalDatabase>();
+            serviceCollection.AddScoped<IProcessEvents, ProcessEvents>();
+            serviceCollection.AddScoped<IGetHtmlDocument, GetHtmlDocument>();
+            serviceCollection.AddScoped<IConvertHtmlToPdf, ConvertHtmlToPdf>();
+            serviceCollection.AddScoped<ISavePdfToS3, SavePdfToS3>();
 
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
