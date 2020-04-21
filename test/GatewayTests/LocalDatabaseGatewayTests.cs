@@ -7,7 +7,6 @@ using AutoFixture;
 using FluentAssertions;
 using Gateways;
 using NUnit.Framework;
-using Usecases;
 using Usecases.Domain;
 using Usecases.Enums;
 
