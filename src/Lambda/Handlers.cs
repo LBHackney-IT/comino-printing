@@ -33,15 +33,8 @@ namespace AwsDotnetCsharp
 
         public void FetchAndQueueDocumentIds(ILambdaContext context)
         {
-            var getDocumentsUseCse = _serviceProvider.GetService<IGetDocumentsIds>();
-           var lambdaOutput = getDocumentsUseCse.Execute();
-           LambdaLogger.Log("Document ids retrieved" + JsonConvert.SerializeObject(lambdaOutput));
-
-           if (!lambdaOutput.Any()) return;
-           var documentIds = lambdaOutput.Select(documentDetail => documentDetail.DocumentId).ToList();
-           var pushIdsToSqsUseCase = _serviceProvider.GetService<IPushIdsToSqs>();
-           var sqsOutput = pushIdsToSqsUseCase.Execute(documentIds);
-           LambdaLogger.Log("Response from SQS Queue:" + JsonConvert.SerializeObject(sqsOutput));
+            var getDocumentsUseCse = _serviceProvider.GetService<IFetchAndQueueDocumentIds>();
+            getDocumentsUseCse.Execute();
         }
 
         public async Task ListenForSqsEvents(SQSEvent sqsEvent, ILambdaContext context)
@@ -67,6 +60,7 @@ namespace AwsDotnetCsharp
             services.AddHttpClient<IW2DocumentsGateway, W2DocumentsGateway>();
             services.AddScoped<IGetParser, ParserLookup>();
             services.AddScoped<IConvertHtmlToPdf, ConvertHtmlToPdf>();
+            services.AddScoped<IFetchAndQueueDocumentIds, FetchAndQueueDocumentIds>();
 
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
             services.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
