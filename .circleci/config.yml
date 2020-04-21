@@ -90,8 +90,7 @@ jobs:
           name: Run tests
           # The following issue is affecting our test command here:
           # https://github.com/dotnet/core/issues/2775
-          # command: x=$(dotnet test); echo $x;
-          command: dotnet test
+          command: x=$(dotnet test); echo $x;
 
       - save_cache:
           paths:
