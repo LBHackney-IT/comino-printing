@@ -35,16 +35,8 @@ functions:
       - schedule: rate(1 minute)
     environment:
       COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
-      ENV: ${self:provider.stage}
-
-  push-ids-to-sqs:
-    name: ${self:service}-${self:provider.stage}-push-ids-to-sqs
-    handler: Lambda::AwsDotnetCsharp.Handlers::PushIdsToSqs
-    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
-    events:
-      - sqs: arn:aws:sqs:eu-west-2:775052747630:sqs-comino-printing-${self:provider.stage}
-    environment:
       SQS_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/SQS_URL}
+      ENV: ${self:provider.stage}
         
   listen-for-sqs-events:
     name: ${self:service}-${self:provider.stage}-listen-for-sqs-events

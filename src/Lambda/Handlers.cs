@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
+using Amazon.SQS;
 using AwsDotnetCsharp.UsecaseInterfaces;
 using Gateways;
 using Microsoft.Extensions.Configuration;
@@ -35,13 +37,12 @@ namespace AwsDotnetCsharp
             var getDocumentsUseCse = _serviceProvider.GetService<IGetDocumentsIds>();
            var lambdaOutput = getDocumentsUseCse.Execute();
            LambdaLogger.Log("Document ids retrieved" + JsonConvert.SerializeObject(lambdaOutput));
-        }
 
-        public void PushIdsToSqs(List<string> documentIds)
-        {
-            var pushIdsToSqsUseCase = _serviceProvider.GetService<IPushIdsToSqs>();
-            var lambdaOutput = pushIdsToSqsUseCase.Execute(documentIds);
-            LambdaLogger.Log("Send Message Responses:" + JsonConvert.SerializeObject(lambdaOutput));
+           if (!lambdaOutput.Any()) return;
+           var documentIds = lambdaOutput.Select(documentDetail => documentDetail.DocumentId).ToList();
+           var pushIdsToSqsUseCase = _serviceProvider.GetService<IPushIdsToSqs>();
+           var sqsOutput = pushIdsToSqsUseCase.Execute(documentIds);
+           LambdaLogger.Log("Response from SQS Queue:" + JsonConvert.SerializeObject(sqsOutput));
         }
 
         public void ListenForSqsEvents(SQSEvent sqsEvent)
@@ -64,6 +65,8 @@ namespace AwsDotnetCsharp
 
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
             serviceCollection.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
+
+            serviceCollection.AddTransient<IAmazonSQS>(sp => new AmazonSQSClient(RegionEndpoint.EUWest2));
 
             var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
             LambdaLogger.Log($"Dynamo table name {tableName}");

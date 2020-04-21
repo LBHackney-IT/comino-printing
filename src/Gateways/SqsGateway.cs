@@ -10,10 +10,10 @@ namespace Gateways
 {
     public class SqsGateway : ISqsGateway
     {
-        private readonly AmazonSQSClient _sqsClient;
-        private string _queueUrl;
+        private readonly IAmazonSQS _sqsClient;
+        private readonly string _queueUrl;
 
-        public SqsGateway(AmazonSQSClient sqsClient)
+        public SqsGateway(IAmazonSQS sqsClient)
         {
             _sqsClient = sqsClient;
             _queueUrl = Environment.GetEnvironmentVariable("SQS_URL");

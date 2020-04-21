@@ -21,6 +21,8 @@ namespace UseCases
             
             foreach (var docId in documentIds)
             {
+                // Log each iteration to CloudWatch as a Logs event.
+                Console.WriteLine($"Creating message request to SQS Queue for {docId}");
                 messageResponses.Add(_sqsGateway.AddDocumentIdsToQueue(docId));
             }
 

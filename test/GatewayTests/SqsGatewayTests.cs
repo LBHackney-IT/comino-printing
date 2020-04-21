@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
@@ -42,17 +44,40 @@ namespace GatewayTests
         {
             const string documentId = "123456";
 
+            var expectedHash = CreateMd5Hash(documentId);
+
             _sqsClient.Setup(x => x.SendMessageAsync(It.IsAny<SendMessageRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(
                     (SendMessageRequest request, CancellationToken ct) =>
                         new SendMessageResponse
                         {
-                            MD5OfMessageBody = $"{request.MessageBody}"
+                            MD5OfMessageBody = $"{CreateMd5Hash(request.MessageBody)}"
                         });
 
             var response = _subject.AddDocumentIdsToQueue(documentId);
 
-            response.MD5OfMessageBody.Should().BeEquivalentTo(documentId);
+            response.MD5OfMessageBody.Should().BeEquivalentTo(expectedHash);
+        }
+        
+        static string CreateMd5Hash(string input)
+        {
+
+            // Convert the input string to a byte array and compute the hash.
+            byte[] data = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(input));
+
+            // Create a new Stringbuilder to collect the bytes
+            // and create a string.
+            StringBuilder sBuilder = new StringBuilder();
+
+            // Loop through each byte of the hashed data 
+            // and format each one as a hexadecimal string.
+            for (var i = data.Length - 1; i >= 0; i--)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+
+            // Return the hexadecimal string.
+            return sBuilder.ToString();
         }
     }
 }
