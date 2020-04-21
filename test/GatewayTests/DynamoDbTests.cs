@@ -24,7 +24,7 @@ namespace GatewayTests
                 ServiceURL = "http://localhost:8000",
             };
 
-            var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME") ?? "comino-printing-test-letters";
+            var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME") ?? "comino-printing-test-letters-2";
             DatabaseClient = new DynamoDBHandler(config, tableName);
         }
 
