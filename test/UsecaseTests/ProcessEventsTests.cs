@@ -1,15 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.Lambda.SQSEvents;
 using AutoFixture;
 using AwsDotnetCsharp.UsecaseInterfaces;
-using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using UseCases;
-using UseCases.GatewayInterfaces;
 using Usecases.UseCaseInterfaces;
 
 namespace UnitTests
@@ -52,7 +49,7 @@ namespace UnitTests
 
             await _processEvents.Execute(sqsEventMock);
 
-            _mockPdfParser.Verify(x => x.Execute(stubbedReturnHtml), Times.Once);
+            _mockPdfParser.Verify(x => x.Execute(stubbedReturnHtml, It.IsAny<string>()), Times.Once);
         }
 
         [Test]
@@ -61,10 +58,10 @@ namespace UnitTests
             var documentId = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(documentId);
             //not sure what type this is yet - maybe a byte array???
-            var stubbedPdf = _fixture.Create<string>();
+            var stubbedPdf = _fixture.CreateMany<byte>().ToArray();
 
             _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
-            _mockPdfParser.Setup(x => x.Execute(It.IsAny<string>())).Returns(stubbedPdf);
+            _mockPdfParser.Setup(x => x.Execute(It.IsAny<string>(),It.IsAny<string>())).Returns(stubbedPdf);
 
             await _processEvents.Execute(sqsEventMock);
 

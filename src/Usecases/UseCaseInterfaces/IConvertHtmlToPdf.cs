@@ -2,6 +2,6 @@ namespace Usecases.UseCaseInterfaces
 {
     public interface IConvertHtmlToPdf
     {
-        string Execute(string htmlDocument);
+        byte[] Execute(string htmlDocument, string documentType);
     }
 }

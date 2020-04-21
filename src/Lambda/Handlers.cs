@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-<<<<<<< HEAD
 using System.Linq;
-=======
 using System.Threading.Tasks;
->>>>>>> Get html from documents gateway
 using Amazon;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using Amazon.SQS;
@@ -18,7 +13,6 @@ using AwsDotnetCsharp.UsecaseInterfaces;
 using Gateways;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
 using UseCases;
 using UseCases.GatewayInterfaces;

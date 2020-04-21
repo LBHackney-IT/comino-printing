@@ -1,6 +1,6 @@
 namespace LambdaTests
 {
-    public class RespondToSqsEventsTests
+    public class ListenForSqsEventsTests
     {
         
     }

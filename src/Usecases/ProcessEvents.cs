@@ -38,7 +38,7 @@ namespace UseCases
                 var html = await _getHtmlDocument.Execute(documentId);
 
                 Console.WriteLine($"> htmlDoc:\n{html}");
-                var pdfBytes = _convertHtmlToPdf.Execute(html);
+                var pdfBytes = _convertHtmlToPdf.Execute(html, "Change in Circs ICL");
 
                 var result = _savePdfToS3.Execute(documentId, pdfBytes);
                 Console.WriteLine($"> s3PutResult:\n{result}");

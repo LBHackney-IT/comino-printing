@@ -1,4 +1,3 @@
-using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using UseCases;
@@ -22,11 +21,11 @@ namespace UnitTests
         public void ExecuteCallsTheGatewayWithTheDocumentId()
         {
             var documentId = "123456";
-            var filename = "[filename]";
+            var pdfByteArray = new byte[10];
 
-            _savePdfToS3.Execute(documentId, filename);
+            _savePdfToS3.Execute(documentId, pdfByteArray);
 
-            _gatewayMock.Verify(gateway => gateway.SavePdfDocument(documentId, filename), Times.Once());
+            _gatewayMock.Verify(gateway => gateway.SavePdfDocument(documentId, pdfByteArray), Times.Once());
         }
     }
 }

@@ -13,7 +13,7 @@ namespace UseCases
             _s3Gateway = s3Gateway;
         }
 
-        public string Execute(string documentId, string filename)
+        public string Execute(string documentId, byte[] filename)
         {
             Console.WriteLine($"> SavePdfToS3 usecase documentID {documentId}, filename ${filename}");
 

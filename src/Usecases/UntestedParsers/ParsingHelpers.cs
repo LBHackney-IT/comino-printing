@@ -1,4 +1,4 @@
-namespace RtfParseSpike.Parsers
+namespace Usecases.UntestedParsers
 {
     public static class ParsingHelpers
     {

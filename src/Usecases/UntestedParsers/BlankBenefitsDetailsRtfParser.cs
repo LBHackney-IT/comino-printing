@@ -1,17 +1,14 @@
-using System.IO;
 using System.Linq;
-using System.Text;
 using HtmlAgilityPack;
 using RtfParseSpike.Templates;
+using Usecases.UseCaseInterfaces;
 
-namespace RtfParseSpike.Parsers
+namespace Usecases.UntestedParsers
 {
-    public class BlankBenefitsRtfParser
+    public class BlankBenefitsRtfParser : ILetterParser
     {
-        public LetterTemplate Execute(FileInfo fileInfo)
+        public LetterTemplate Execute(string html)
         {
-
-            var html = GetHTMLFromFilePath(fileInfo);
             var documentNode = GetDocumentNode(html);
 
             var address = ParseAddress(documentNode);
@@ -53,12 +50,6 @@ namespace RtfParseSpike.Parsers
             name.Name = "p";
             return name.OuterHtml + documentNode.SelectSingleNode("/html/body/table[1]/tr[10]/td[1]").ChildNodes
                        .Aggregate("", (agg, node) => agg + node.OuterHtml);
-        }
-
-        private static string GetHTMLFromFilePath(FileInfo fileInfo)
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            return  File.ReadAllText(fileInfo.ToString(), Encoding.UTF8);
         }
 
         private static HtmlNode GetDocumentNode(string html)

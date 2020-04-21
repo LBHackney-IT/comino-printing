@@ -1,17 +1,14 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using HtmlAgilityPack;
 using RtfParseSpike.Templates;
+using Usecases.UseCaseInterfaces;
 
-namespace RtfParseSpike.Parsers
+namespace Usecases.UntestedParsers
 {
-    public class ChangesInCircsICL
+    public class ChangesInCircsICL : ILetterParser
     {
-        public LetterTemplate Execute(FileInfo fileInfo)
+        public LetterTemplate Execute(string html)
         {
-            var html = GetHTMLFromFilePath(fileInfo);
             var documentNode = GetDocumentNode(html);
 
             var address = ParseAddress(documentNode);
@@ -69,11 +66,6 @@ namespace RtfParseSpike.Parsers
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
             return doc.DocumentNode;
-        }
-
-        private static string GetHTMLFromFilePath(FileInfo fileInfo)
-        {
-            return File.ReadAllText(fileInfo.ToString(), Encoding.UTF8);
         }
     }
 }
