@@ -35,6 +35,8 @@ namespace UseCases
                 Console.WriteLine($"Received from queue [{record.EventSourceArn}] documentId = {documentId}");
                 Console.WriteLine($"Getting Html for documentId = {documentId}");
 
+                //TODO: Get document details from local db
+
                 var html = await _getHtmlDocument.Execute(documentId);
 
                 Console.WriteLine($"> htmlDoc:\n{html}");
