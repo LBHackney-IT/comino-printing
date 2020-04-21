@@ -1,4 +1,4 @@
-namespace AwsDotnetCsharp.UsecaseInterfaces
+namespace Usecases.UseCaseInterfaces
 {
     public interface IConvertHtmlToPdf
     {

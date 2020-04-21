@@ -1,4 +1,4 @@
-using AwsDotnetCsharp.UsecaseInterfaces;
+using Usecases.UseCaseInterfaces;
 
 namespace UseCases
 {
