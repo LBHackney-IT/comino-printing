@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Amazon.SQS.Model;
 
-namespace AwsDotnetCsharp.UsecaseInterfaces
+namespace Usecases.UseCaseInterfaces
 {
     public interface IPushIdsToSqs
     {
