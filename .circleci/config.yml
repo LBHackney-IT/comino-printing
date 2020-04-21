@@ -18,6 +18,18 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+
+      - run:
+          name: Install Unzip
+          command: apt-get update && apt-get install unzip
+
+      - run:
+          name: Install AWS CLI
+          command: |
+            curl -L -o awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" 
+            unzip awscliv2.zip
+            ./aws/install
+
       - run:
           name: (TEMPORARY) Remove spike projects to exclude from build/test steps here
           command: dotnet sln remove RtfParseTests RtfParseSpike
@@ -42,10 +54,6 @@ jobs:
           command: cd src/Lambda && npm install
 
       - run:
-          name: Install serverless
-          command: npm i -g serverless
-
-      - run:
           name: Install Docker client
           command: |
             set -x
@@ -55,24 +63,28 @@ jobs:
             mv /tmp/docker/* /usr/bin
 
       - run:
+          name: Run Test DynamoDb
+          command: docker run --name test-dynamodb -d -p 8000:8000 -v $(pwd)/local/dynamodb:/data/ amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /data
+
+      - run:
+          name: Configure AWS
+          command: |
+            aws configure set aws_access_key_id key --profile testing
+            aws configure set aws_secret_access_key secret_key --profile testing
+            aws configure set region x --profile testing
+            aws configure set cli_pager "" --profile testing  
+
+      - run:
+          name: Create Table
+          command: aws dynamodb --profile testing --no-paginate create-table --table-name comino-printing-test-letters --attribute-definitions AttributeName=InitialTimestamp,AttributeType=S --key-schema AttributeName=InitialTimestamp,KeyType=HASH --endpoint-url http://localhost:8000 --billing-mode PAY_PER_REQUEST
+
+      - run:
           name: Install dependencies
           command: dotnet restore
 
       - run:
           name: Build project
           command: dotnet build
-
-      - run:
-          name: Run Test DynamoDb
-          command: docker run -d -p 8000:8000 amazon/dynamodb-local
-
-      - run:
-          name: Set AWS credentials
-          command: serverless config credentials -p aws -k "ACCESS_KEY" -s "SECRET_ACCESS_KEY" -n test
-
-      - run:
-          name: Migrate Database
-          command: cd src/Lambda && sls -s test --aws-profile test dynamodb migrate
 
       - run:
           name: Run tests
