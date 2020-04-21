@@ -51,7 +51,7 @@ jobs:
 
       - run:
           name: NPM Install
-          command: cd src/Lambda && npm install
+          command: npm install
 
       - run:
           name: Install Docker client
@@ -71,7 +71,7 @@ jobs:
           command: |
             aws configure set aws_access_key_id key --profile testing
             aws configure set aws_secret_access_key secret_key --profile testing
-            aws configure set region eu-west-2 --profile testing
+            aws configure set region x --profile testing
             aws configure set cli_pager "" --profile testing
 
       - run:
@@ -125,7 +125,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: cd src/Lambda && ./build.sh && sls deploy -s staging
+          command: STAGE=staging make deploy
 
   deploy-production:
     executor: dotnet-executor
@@ -150,7 +150,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: cd src/Lambda && ./build.sh && sls deploy -s production
+          command: STAGE=production make deploy
 
 workflows:
   version: 2

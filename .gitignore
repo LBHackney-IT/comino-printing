@@ -9,4 +9,6 @@ RtfParseTests/JSONTestResults
 RtfParseTests/BlankBenefitsHtml/
 RtfParseTests/BlankBenefitsRtf/
 **/.env
+node_modules
+.serverless
 
