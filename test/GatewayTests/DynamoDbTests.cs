@@ -19,6 +19,8 @@ namespace GatewayTests
         [SetUp]
         public void DynamoDbSetUp()
         {
+            Environment.SetEnvironmentVariable("DYNAMODB_SET_DUMMY_AUTH", "true");
+
             var config = new AmazonDynamoDBConfig
             {
                 ServiceURL = "http://localhost:8000",

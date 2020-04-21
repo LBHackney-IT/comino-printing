@@ -1,5 +1,7 @@
+using System;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.Runtime;
 
 namespace Gateways
 {
@@ -7,8 +9,19 @@ namespace Gateways
     {
         public DynamoDBHandler(AmazonDynamoDBConfig dynamoConfig, string tableName)
         {
-            var client = new AmazonDynamoDBClient(dynamoConfig);
-            DocumentTable = Table.LoadTable(client, tableName);
+            // TEMPORARY: debugging AWS SDK DynamoDB tests - hanging due to auth issue?
+            if (Environment.GetEnvironmentVariable("DYNAMODB_SET_DUMMY_AUTH") == "true")
+            {
+                var credentials = new BasicAWSCredentials("TestAccessKey", "TestSecretKey");
+                var client = new AmazonDynamoDBClient(credentials, dynamoConfig);
+                DocumentTable = Table.LoadTable(client, tableName);
+            }
+            else
+            {
+                var client = new AmazonDynamoDBClient(dynamoConfig);
+                DocumentTable = Table.LoadTable(client, tableName);
+            }
+
         }
 
         public Table DocumentTable { get; }

@@ -24,7 +24,7 @@ namespace GatewayTests
         }
 
         [Test]
-        [Ignore("To Fix")]
+        // [Ignore("To Fix")]
         public async Task AddRecordForDocumentId_SavesARecordToTheDatabase_WithDocumentIdAndCreator()
         {
             var newDocument = RandomDocumentDetails();
