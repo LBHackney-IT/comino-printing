@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
-using Usecases;
 using Usecases.Domain;
 using Usecases.Enums;
 using Usecases.GatewayInterfaces;
@@ -68,29 +67,27 @@ namespace Gateways
 
         public async Task LogMessage(string documentSavedAt, string message)
         {
-            var newLogEntry = new AttributeValue
-            {
-                L = new List<AttributeValue>
-                {
-                    new AttributeValue
-                    {
-                        M = new Dictionary<string, AttributeValue>
-                        {
-                            {CurrentUtcUnixTimestamp(), new AttributeValue {S = message}}
-                        }
-                    }
-                }
-            };
-            var update = new UpdateItemRequest
-            {
-                TableName = _documentsTable.TableName,
-                UpdateExpression = "SET #atr = list_append(#atr, :val)",
-                Key = new Dictionary<string, AttributeValue>{ { "InitialTimestamp", new AttributeValue{ S = documentSavedAt}}},
-                ExpressionAttributeNames = new Dictionary<string, string>{ {"#atr", "Log"}},
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {{":val", newLogEntry}}
-            };
+            var timestamp = CurrentUtcUnixTimestamp();
+            var update = UpdateRequestToAppendLogMessage(documentSavedAt, message, timestamp);
 
-            await _databaseClient.UpdateItemAsync(update);
+            try
+            {
+                await _databaseClient.UpdateItemAsync(update);
+            }
+            catch (ConditionalCheckFailedException)
+            {
+                var createLog = UpdateRequestToCreateLogWithMessage(documentSavedAt, message, timestamp);
+
+                await _databaseClient.UpdateItemAsync(createLog);
+            }
+        }
+
+        public DocumentLog GetLogForDocument(string savedDocumentSavedAt)
+        {
+            var log = _documentsTable.GetItemAsync(savedDocumentSavedAt).Result["Log"];
+            var logEntries = new Dictionary<string, string>();
+            log.AsDocument().ToList().ForEach( x => logEntries[x.Key] = x.Value.ToString());
+            return new DocumentLog{Entries = logEntries};
         }
 
         private static Document ConstructDocument(DocumentDetails newDocument, string currentTimestamp)
@@ -136,6 +133,34 @@ namespace Gateways
         private static string CurrentUtcUnixTimestamp()
         {
             return Convert.ToInt32((DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds).ToString();
+        }
+
+        private UpdateItemRequest UpdateRequestToCreateLogWithMessage(string documentSavedAt, string message, string timestamp)
+        {
+            var log = new AttributeValue
+                {M = new Dictionary<string, AttributeValue> {{timestamp, new AttributeValue {S = message}}}};
+            return new UpdateItemRequest
+            {
+                TableName = _documentsTable.TableName,
+                UpdateExpression = "SET #atr = :val",
+                Key = new Dictionary<string, AttributeValue> {{"InitialTimestamp", new AttributeValue {S = documentSavedAt}}},
+                ExpressionAttributeNames = new Dictionary<string, string> {{"#atr", "Log"}},
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {{":val", log}},
+            };
+        }
+
+        private UpdateItemRequest UpdateRequestToAppendLogMessage(string documentSavedAt, string message, string timestamp)
+        {
+            var newLogEntry = new AttributeValue {S = message};
+            return new UpdateItemRequest
+            {
+                TableName = _documentsTable.TableName,
+                UpdateExpression = "SET #atr.#timestamp = :val",
+                Key = new Dictionary<string, AttributeValue> {{"InitialTimestamp", new AttributeValue {S = documentSavedAt}}},
+                ExpressionAttributeNames = new Dictionary<string, string> {{"#atr", "Log"}, {"#timestamp", timestamp}},
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {{":val", newLogEntry}},
+                ConditionExpression = "attribute_exists(#atr)"
+            };
         }
     }
 }

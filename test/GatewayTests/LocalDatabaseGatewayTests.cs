@@ -10,6 +10,7 @@ using Gateways;
 using NUnit.Framework;
 using Usecases.Domain;
 using Usecases.Enums;
+using Usecases.UseCaseInterfaces;
 
 namespace GatewayTests
 {
@@ -128,31 +129,86 @@ namespace GatewayTests
         }
 
         [Test]
-        public async Task LogMessage_AppendsMessageToLog()
+        public async Task LogMessage_WhenDoesntExist_CreatesLog()
         {
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
             var logMessage = "Something has happened";
             await _dbGateway.LogMessage(savedDocument.SavedAt, logMessage);
             var savedItems = await GetItemsFromDatabase();
+            var log = GetLog(savedItems, savedDocument.SavedAt);
 
-            GetLastLogEntryMessage(savedItems, savedDocument.SavedAt).Should().BeEquivalentTo(logMessage);
-
-            var timestampOfLogMessage = Convert.ToInt32(GetLastLogEntryTimestamp(savedItems, savedDocument.SavedAt));
-            timestampOfLogMessage.Should().BeCloseTo(GetCurrentTimestamp(), 1);
+            log.Values.Select(s => s.ToString()).Should().Contain(logMessage);
         }
 
-        private static string GetLastLogEntryMessage(List<Document> savedItems, string savedAt)
+        [Test]
+        public async Task LogMessage_WhenLogExists_AppendsMessageToLog()
         {
-            var savedLog = savedItems.First(i => i["InitialTimestamp"] == savedAt)["Log"];
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
+            var previousLog = new AttributeValue
+            {
+                M = new Dictionary<string, AttributeValue>
+                {
+                    {(GetCurrentTimestamp() - 1000).ToString(), new AttributeValue {S = "I was made"}},
+                }
+            };
 
-            return savedLog.AsListOfDynamoDBEntry().First().AsDocument().First().Value;
+            await UpdateLog(savedDocument, previousLog);
+
+            var logMessage = "Something has happened";
+            await _dbGateway.LogMessage(savedDocument.SavedAt, logMessage);
+
+            var savedItems = await GetItemsFromDatabase();
+            var log = GetLog(savedItems, savedDocument.SavedAt);
+
+            log.Values.Select(s => s.ToString()).Should().Contain(logMessage);
         }
 
-        private static string GetLastLogEntryTimestamp(List<Document> savedItems, string savedAt)
+        [Test]
+        public async Task GetLogForDocument_ReturnsAllLogEntries()
         {
-            var savedLog = savedItems.First(i => i["InitialTimestamp"] == savedAt)["Log"];
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
+            var currentTime = GetCurrentTimestamp();
+            var logEntries = new AttributeValue
+            {
+                M = new Dictionary<string, AttributeValue>
+                {
+                    {(currentTime - 50).ToString(), new AttributeValue {S = "I was made"}},
+                    {(currentTime - 30).ToString(), new AttributeValue {S = "then this happened"}},
+                    {(currentTime - 10).ToString(), new AttributeValue {S = "then something else happened"}},
+                    {currentTime.ToString(), new AttributeValue {S = "that was the end"}}
+                }
+            };
 
-            return savedLog.AsListOfDynamoDBEntry().First().AsDocument().First().Key;
+            await UpdateLog(savedDocument, logEntries);
+
+            var expectedLog = new Dictionary<string, string>
+            {
+                {(currentTime - 50).ToString(), "I was made"},
+                {(currentTime - 30).ToString(), "then this happened"},
+                {(currentTime - 10).ToString(), "then something else happened"},
+                {currentTime.ToString(), "that was the end"}
+            };
+            var receivedLog = _dbGateway.GetLogForDocument(savedDocument.SavedAt);
+            receivedLog.Entries.Should().BeEquivalentTo(expectedLog);
+        }
+
+        private async Task UpdateLog(DocumentDetails savedDocument, AttributeValue logEntries)
+        {
+            var update = new UpdateItemRequest
+            {
+                TableName = DatabaseClient.DocumentTable.TableName,
+                UpdateExpression = "SET #atr = :val",
+                Key = new Dictionary<string, AttributeValue>
+                    {{"InitialTimestamp", new AttributeValue {S = savedDocument.SavedAt}}},
+                ExpressionAttributeNames = new Dictionary<string, string> {{"#atr", "Log"}},
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {{":val", logEntries}}
+            };
+            await DatabaseClient.DatabaseClient.UpdateItemAsync(update);
+        }
+
+        private static Document GetLog(List<Document> savedItems, string savedAt)
+        {
+            return savedItems.First(i => i["InitialTimestamp"] == savedAt)["Log"].AsDocument();
         }
 
         private static int GetCurrentTimestamp()
@@ -181,7 +237,6 @@ namespace GatewayTests
                 ["InitialTimestamp"] = timestamp.ToString(),
                 ["LetterType"] = document.LetterType,
                 ["DocumentType"] = document.DocumentType,
-                ["Log"] = new DynamoDBList(),
                 ["Status"] = LetterStatusEnum.Waiting.ToString()
             };
             await DatabaseClient.DocumentTable.PutItemAsync(documentItem);
