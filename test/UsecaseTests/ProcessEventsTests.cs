@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using UseCases;
 using Usecases.Domain;
+using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
 using Usecases.UseCaseInterfaces;
 
@@ -19,6 +20,7 @@ namespace UnitTests
         private Mock<IConvertHtmlToPdf> _mockPdfParser;
         private Mock<IS3Gateway> _sendToS3;
         private Mock<IGetDetailsOfDocumentForProcessing> _mockGetDocDetails;
+        private Mock<IDbLogger> _logger;
 
         [SetUp]
         public void Setup()
@@ -28,7 +30,9 @@ namespace UnitTests
             _mockPdfParser = new Mock<IConvertHtmlToPdf>();
             _sendToS3 = new Mock<IS3Gateway>();
             _mockGetDocDetails = new Mock<IGetDetailsOfDocumentForProcessing>();
-            _processEvents = new ProcessEvents(_mockGetHtmlDocument.Object, _mockPdfParser.Object, _sendToS3.Object, _mockGetDocDetails.Object);
+            _logger = new Mock<IDbLogger>();
+            _processEvents = new ProcessEvents(_mockGetHtmlDocument.Object, _mockPdfParser.Object, _sendToS3.Object,
+                _mockGetDocDetails.Object, _logger.Object);
         }
 
         [Test]
@@ -43,6 +47,17 @@ namespace UnitTests
         }
 
         [Test]
+        public async Task ExecuteLogsPickingUpDocumentFromTheQueue()
+        {
+            var timestamp = _fixture.Create<string>();
+            var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
+            SetupGetDocumentDetails(timestamp);
+
+            await _processEvents.Execute(sqsEventMock);
+            _logger.Verify(l => l.LogMessage(timestamp, "Picked up document from queue - Processing"));
+        }
+
+        [Test]
         public async Task ExecuteUsesDocumentNumberToGetRelatedHtmlDocument()
         {
             var timestamp = _fixture.Create<string>();
@@ -51,6 +66,17 @@ namespace UnitTests
 
             await _processEvents.Execute(sqsEventMock);
             _mockGetHtmlDocument.Verify(x => x.Execute(documentDetails.DocumentId), Times.Once);
+        }
+
+        [Test]
+        public async Task ExecuteLogsThatHtmlDocumentHasBeenRetrieved()
+        {
+            var timestamp = _fixture.Create<string>();
+            var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
+            SetupGetDocumentDetails(timestamp);
+
+            await _processEvents.Execute(sqsEventMock);
+            _logger.Verify(l => l.LogMessage(timestamp, "Retrieved Html from Documents API"));
         }
 
 
@@ -70,6 +96,20 @@ namespace UnitTests
         }
 
         [Test]
+        public async Task IfThePdfParserIsSuccessfulLogThis()
+        {
+            var timestamp = _fixture.Create<string>();
+            var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
+            var documentId = SetupGetDocumentDetails(timestamp).DocumentId;
+
+            _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
+
+            await _processEvents.Execute(sqsEventMock);
+
+            _logger.Verify(l => l.LogMessage(timestamp, "Converted To Pdf"));
+        }
+
+        [Test]
         public async Task IfThePdfParserIsSuccessfulSaveToS3()
         {
             var timestamp = _fixture.Create<string>();
@@ -81,6 +121,20 @@ namespace UnitTests
             await _processEvents.Execute(sqsEventMock);
 
             _sendToS3.Verify(x => x.SavePdfDocument(documentId), Times.Once);
+        }
+
+        [Test]
+        public async Task IfStoringInS3IsSuccessfulLogsThis()
+        {
+            var timestamp = _fixture.Create<string>();
+            var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
+            var documentId = SetupGetDocumentDetails(timestamp).DocumentId;
+
+            _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
+
+            await _processEvents.Execute(sqsEventMock);
+
+            _logger.Verify(l => l.LogMessage(timestamp, "Stored in S3 - Ready for approval"));
         }
 
         private static SQSEvent CreateSqsEventForDocumentId(string documentId)
