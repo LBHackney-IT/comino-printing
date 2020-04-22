@@ -124,7 +124,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: touch .env && STAGE=staging make deploy
+          command: apt-get install make && touch .env && STAGE=staging make deploy
 
   deploy-production:
     executor: dotnet-executor
@@ -149,7 +149,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: touch .env && STAGE=production make deploy
+          command: apt-get install make && touch .env && STAGE=production make deploy
 
 workflows:
   version: 2
