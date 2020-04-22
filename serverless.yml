@@ -87,7 +87,7 @@ resources:
     generatedPdfsBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BuketName: ${self:provider.environment.GENERATED_PDF_BUCKET_NAME}
+        BucketName: ${self:provider.environment.GENERATED_PDF_BUCKET_NAME}
 
 custom:
   dynamodb:
