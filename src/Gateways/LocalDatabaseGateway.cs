@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,7 +54,9 @@ namespace Gateways
             var document = await _documentsTable.GetItemAsync(currentTimestamp, config);
             return MapToDocumentDetails(document);
         }
-
+        
+        // New gateway method to return all (DynamoDB scans)
+        
         public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt)
         {
             var updateDoc = new Document
