@@ -100,3 +100,17 @@ p {
 .privacy-notice {
   margin-top: 75px !important;
 }
+
+.DocumentListPage {
+  padding-bottom: 30px;
+}
+
+.DocumentListPage td.failed {
+  color: #d00;
+}
+.DocumentListPage td.posted {
+  color: #00664f;
+}
+.DocumentListPage td.approval-required {
+  color: #c76000;
+}

@@ -2,6 +2,12 @@
 import { dummyDocuments } from "./dummyDocuments";
 
 export const fetchDocuments = (endId, cb) => {
+  const limit = 10;
+  const docs = endId
+    ? dummyDocuments.filter((d) => d.id < endId)
+    : dummyDocuments;
+  docs.sort((a, b) => a.id < b.id);
+  cb(null, docs.slice(0, limit));
   // const req = {
   //   method: "GET",
   //   mode: "cors",
@@ -12,7 +18,6 @@ export const fetchDocuments = (endId, cb) => {
   //     endId,
   //   },
   // };
-  cb(null, dummyDocuments);
 
   // fetch(`${process.env.REACT_APP_HN_API_URL}/documents`, req)
   //   .then(async function (response) {
