@@ -7,6 +7,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12346,
@@ -16,6 +23,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12347,
@@ -25,6 +39,13 @@ export const dummyDocuments = [
     status: "Failed",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12348,
@@ -34,6 +55,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12349,
@@ -43,6 +71,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12350,
@@ -52,6 +87,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12351,
@@ -61,6 +103,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12352,
@@ -70,6 +119,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12353,
@@ -79,6 +135,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12354,
@@ -88,6 +151,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12355,
@@ -97,6 +167,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12356,
@@ -106,6 +183,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12357,
@@ -115,6 +199,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12358,
@@ -124,6 +215,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12359,
@@ -133,6 +231,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12360,
@@ -142,6 +247,13 @@ export const dummyDocuments = [
     status: "Posted",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12361,
@@ -151,6 +263,13 @@ export const dummyDocuments = [
     status: "Sent to print",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12362,
@@ -160,6 +279,13 @@ export const dummyDocuments = [
     status: "Sent to print",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12363,
@@ -169,6 +295,13 @@ export const dummyDocuments = [
     status: "Sent to print",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12364,
@@ -178,6 +311,13 @@ export const dummyDocuments = [
     status: "Sent to print",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12365,
@@ -187,6 +327,13 @@ export const dummyDocuments = [
     status: "Approval required",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12366,
@@ -196,6 +343,13 @@ export const dummyDocuments = [
     status: "Approval required",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12367,
@@ -205,6 +359,13 @@ export const dummyDocuments = [
     status: "Failed",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12368,
@@ -214,6 +375,13 @@ export const dummyDocuments = [
     status: "Approval required",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
   {
     id: 12369,
@@ -223,5 +391,12 @@ export const dummyDocuments = [
     status: "Approval required",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
+    logs: [
+      { date: "2020-04-21T12:12:00Z", message: "Found in Comino" },
+      { date: "2020-04-21T12:13:00Z", message: "Generated PDF" },
+      { date: "2020-04-21T12:20:00Z", message: "Approved" },
+      { date: "2020-04-21T16:33:00Z", message: "Sent to Notify" },
+      { date: "2020-04-21T20:13:00Z", message: "Posted" },
+    ],
   },
 ];

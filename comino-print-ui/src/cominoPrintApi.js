@@ -29,6 +29,8 @@ export const fetchDocuments = (endId, cb) => {
   //   });
 };
 export const fetchDocument = (id, cb) => {
+  const doc = dummyDocuments.filter((d) => d.id === id)[0];
+  cb(null, doc);
   // const req = {
   //   method: "GET",
   //   mode: "cors",
