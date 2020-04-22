@@ -26,7 +26,7 @@ jobs:
       - run:
           name: Install AWS CLI
           command: |
-            curl -L -o awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" 
+            curl -L -o awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
             unzip awscliv2.zip
             ./aws/install
 
@@ -124,7 +124,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: STAGE=staging make deploy
+          command: touch .env && STAGE=staging make deploy
 
   deploy-production:
     executor: dotnet-executor
@@ -149,7 +149,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: STAGE=production make deploy
+          command: touch .env && STAGE=production make deploy
 
 workflows:
   version: 2
