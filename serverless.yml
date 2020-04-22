@@ -99,7 +99,7 @@ custom:
       inMemory: true
       migrate: true
   client:
-    bucketName: "${self:service}-${self:provider.stage}-ui"
+    deploymentBucket: "${self:service}-${self:provider.stage}-ui"
     distributionFolder: comino-print-ui/build
     indexDocument: index.html
     errorDocument: index.html
