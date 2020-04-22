@@ -48,6 +48,30 @@ namespace Gateways
             return currentTimestamp;
         }
 
+        public async Task<List<DocumentDetails>> GetAllRecords()
+        {
+            var scanFilter = new ScanFilter();
+
+            var search = _documentsTable.Scan(scanFilter);
+            var records = await search.GetRemainingAsync();
+            return records.ToList().Select(document =>
+            {
+                var logEntries = new Dictionary<string, string>();
+                document["Log"].AsDocument().ToList().ForEach( x => logEntries[x.Key] = x.Value.ToString());
+
+                return new DocumentDetails
+                {
+                    DocumentCreator = document["DocumentCreatorUserName"],
+                    DocumentId = document["DocumentId"],
+                    DocumentType = document["DocumentType"],
+                    LetterType = document["LetterType"],
+                    SavedAt = document["InitialTimestamp"],
+                    Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
+                    Log = logEntries
+                };
+            }).ToList();
+        }
+
         public async Task<DocumentDetails> GetRecordByTimeStamp(string currentTimestamp)
         {
             var config = new GetItemOperationConfig{ ConsistentRead = true };

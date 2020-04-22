@@ -44,6 +44,22 @@ namespace GatewayTests
         }
 
         [Test]
+        public async Task GetAllRecordsReturnsAllDocumentRecords()
+        {
+            var savedDocumentOne = RandomDocumentDetails();
+            await _dbGateway.SaveDocument(savedDocumentOne);
+            
+            var savedDocumentTwo = RandomDocumentDetails();
+            await _dbGateway.SaveDocument(savedDocumentTwo);
+
+            var expectedResponse = new List<DocumentDetails> {savedDocumentOne, savedDocumentTwo};
+
+            var response = await _dbGateway.GetAllRecords();
+
+            response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
         public async Task AddRecordForDocumentId_SavesARecordToTheDatabase_WithCorrectTimestamp()
         {
             var newDocument = RandomDocumentDetails();
