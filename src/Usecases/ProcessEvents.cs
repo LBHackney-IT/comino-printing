@@ -33,6 +33,7 @@ namespace UseCases
             var record = sqsEvent.Records.First();
 
             //TODO: ADD logging to local database
+
             var timestamp = record.Body;
 
             // anything written to Console will be logged as CloudWatch Logs events

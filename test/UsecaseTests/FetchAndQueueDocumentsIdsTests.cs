@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using UseCases;
 using Usecases.Domain;
+using Usecases.GatewayInterfaces;
 using Usecases.UseCaseInterfaces;
 
 namespace UnitTests
@@ -18,6 +20,7 @@ namespace UnitTests
         private Mock<IPushIdsToSqs> _pushIdsToSqs;
         private Mock<ISaveRecordsToLocalDatabase> _saveToLocalDatabase;
         private Fixture _fixture;
+        private Mock<IDbLogger> _logger;
 
         [SetUp]
         public void SetUp()
@@ -26,11 +29,12 @@ namespace UnitTests
             _getDocumentIdsMock = new Mock<IGetDocumentsIds>();
             _pushIdsToSqs = new Mock<IPushIdsToSqs>();
             _saveToLocalDatabase = new Mock<ISaveRecordsToLocalDatabase>();
-            _subject = new FetchAndQueueDocumentIds(_getDocumentIdsMock.Object, _pushIdsToSqs.Object, _saveToLocalDatabase.Object);
+            _logger = new Mock<IDbLogger>();
+            _subject = new FetchAndQueueDocumentIds(_getDocumentIdsMock.Object, _pushIdsToSqs.Object, _saveToLocalDatabase.Object, _logger.Object);
         }
 
         [Test]
-        public async Task  ItGetsDocumentIds()
+        public async Task ItGetsDocumentIds()
         {
             SetupSaveToLocalDatabase(SetupGetDocuments());
             await _subject.Execute();
@@ -47,6 +51,15 @@ namespace UnitTests
         }
 
         [Test]
+        public async Task ItAddsAMessageToTheLogWhenDocumentsAreStored()
+        {
+            var documents = SetupGetDocuments();
+            var docsWithTimestamps = SetupSaveToLocalDatabase(documents);
+            await _subject.Execute();
+            docsWithTimestamps.ForEach(doc => _logger.Verify(x => x.LogMessage(doc.SavedAt, "Retrieved ID from Comino and stored")));
+        }
+
+        [Test]
         public async Task  ItPushesDocumentsToQueue()
         {
             var documents = SetupGetDocuments();
@@ -55,6 +68,28 @@ namespace UnitTests
 
             var expectedTimestamps = docsWithTimestamps.Select(x => x.SavedAt).ToList();
             _pushIdsToSqs.Verify(x => x.Execute(expectedTimestamps), Times.Once);
+        }
+
+        [Test]
+        public async Task ItAddsAMessageToTheLogWhenDocumentsArePushedToTheQueue()
+        {
+            var documents = SetupGetDocuments();
+            var docsWithTimestamps = SetupSaveToLocalDatabase(documents);
+            await _subject.Execute();
+            docsWithTimestamps.ForEach(doc => _logger.Verify(x => x.LogMessage(doc.SavedAt, "Document added to SQS queue")));
+        }
+
+        [Test]
+        public void IfSavingToSqsThrows_LogsError_ThenThrows()
+        {
+            var documents = SetupGetDocuments();
+            var docsWithTimestamps = SetupSaveToLocalDatabase(documents);
+
+            _pushIdsToSqs.Setup(x => x.Execute(It.IsAny<List<string>>())).Throws(new Exception("My custom exception"));
+
+            var testRun = new AsyncTestDelegate(async () => await _subject.Execute());
+            Assert.ThrowsAsync<Exception>(testRun);
+            docsWithTimestamps.ForEach(doc => _logger.Verify(x => x.LogMessage(doc.SavedAt, "Failed adding to queue. Error message My custom exception")));
         }
 
         private List<DocumentDetails> SetupGetDocuments()
