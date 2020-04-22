@@ -16,15 +16,16 @@ namespace Gateways
                 var client = new AmazonDynamoDBClient(credentials, dynamoConfig);
                 Console.WriteLine($"> setting DocumentTable: {tableName}");
                 DocumentTable = Table.LoadTable(client, tableName);
+                DatabaseClient = client;
             }
             else
             {
                 var client = new AmazonDynamoDBClient(dynamoConfig);
                 DocumentTable = Table.LoadTable(client, tableName);
             }
-
         }
 
+        public AmazonDynamoDBClient DatabaseClient { get; }
         public Table DocumentTable { get; }
     }
 }

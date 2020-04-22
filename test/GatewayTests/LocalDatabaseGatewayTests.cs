@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using AutoFixture;
 using FluentAssertions;
 using Gateways;
@@ -12,7 +13,6 @@ using Usecases.Enums;
 
 namespace GatewayTests
 {
-    [Ignore("to fix")]
     public class LocalDatabaseGatewayTests : DynamoDbTests
     {
         private Fixture _fixture;
@@ -127,6 +127,34 @@ namespace GatewayTests
             response.Should().BeEquivalentTo(savedDocument);
         }
 
+        [Test]
+        public async Task LogMessage_AppendsMessageToLog()
+        {
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
+            var logMessage = "Something has happened";
+            await _dbGateway.LogMessage(savedDocument.SavedAt, logMessage);
+            var savedItems = await GetItemsFromDatabase();
+
+            GetLastLogEntryMessage(savedItems, savedDocument.SavedAt).Should().BeEquivalentTo(logMessage);
+
+            var timestampOfLogMessage = Convert.ToInt32(GetLastLogEntryTimestamp(savedItems, savedDocument.SavedAt));
+            timestampOfLogMessage.Should().BeCloseTo(GetCurrentTimestamp(), 1);
+        }
+
+        private static string GetLastLogEntryMessage(List<Document> savedItems, string savedAt)
+        {
+            var savedLog = savedItems.First(i => i["InitialTimestamp"] == savedAt)["Log"];
+
+            return savedLog.AsListOfDynamoDBEntry().First().AsDocument().First().Value;
+        }
+
+        private static string GetLastLogEntryTimestamp(List<Document> savedItems, string savedAt)
+        {
+            var savedLog = savedItems.First(i => i["InitialTimestamp"] == savedAt)["Log"];
+
+            return savedLog.AsListOfDynamoDBEntry().First().AsDocument().First().Key;
+        }
+
         private static int GetCurrentTimestamp()
         {
             return Convert.ToInt32((DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds);
@@ -153,6 +181,7 @@ namespace GatewayTests
                 ["InitialTimestamp"] = timestamp.ToString(),
                 ["LetterType"] = document.LetterType,
                 ["DocumentType"] = document.DocumentType,
+                ["Log"] = new DynamoDBList(),
                 ["Status"] = LetterStatusEnum.Waiting.ToString()
             };
             await DatabaseClient.DocumentTable.PutItemAsync(documentItem);

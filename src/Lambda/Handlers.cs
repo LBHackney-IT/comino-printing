@@ -13,6 +13,7 @@ using Gateways;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UseCases;
+using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
 using UseCases.UntestedParsers;
 using Usecases.UseCaseInterfaces;
@@ -68,6 +69,7 @@ namespace AwsDotnetCsharp
             services.AddHttpClient<IW2DocumentsGateway, W2DocumentsGateway>();
             services.AddScoped<ISqsGateway, SqsGateway>();
             services.AddScoped<ILocalDatabaseGateway, LocalDatabaseGateway>();
+            services.AddScoped<IDbLogger, LocalDatabaseGateway>();
 
             //UseCases
             services.AddScoped<IGetDocumentsIds, GetDocumentsIds>();

@@ -2,22 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using Usecases;
 using Usecases.Domain;
 using Usecases.Enums;
+using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
 
 namespace Gateways
 {
-    public class LocalDatabaseGateway : ILocalDatabaseGateway
+    public class LocalDatabaseGateway : ILocalDatabaseGateway, IDbLogger
     {
         private readonly Table _documentsTable;
+        private AmazonDynamoDBClient _databaseClient;
 
         public LocalDatabaseGateway(IDynamoDBHandler database)
         {
             _documentsTable = database.DocumentTable;
+            _databaseClient = database.DatabaseClient;
         }
 
         public async Task<string> SaveDocument(DocumentDetails newDocument)
@@ -60,6 +64,33 @@ namespace Gateways
             };
             var response = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
             return MapToDocumentDetails(response);
+        }
+
+        public async Task LogMessage(string documentSavedAt, string message)
+        {
+            var newLogEntry = new AttributeValue
+            {
+                L = new List<AttributeValue>
+                {
+                    new AttributeValue
+                    {
+                        M = new Dictionary<string, AttributeValue>
+                        {
+                            {CurrentUtcUnixTimestamp(), new AttributeValue {S = message}}
+                        }
+                    }
+                }
+            };
+            var update = new UpdateItemRequest
+            {
+                TableName = _documentsTable.TableName,
+                UpdateExpression = "SET #atr = list_append(#atr, :val)",
+                Key = new Dictionary<string, AttributeValue>{ { "InitialTimestamp", new AttributeValue{ S = documentSavedAt}}},
+                ExpressionAttributeNames = new Dictionary<string, string>{ {"#atr", "Log"}},
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {{":val", newLogEntry}}
+            };
+
+            await _databaseClient.UpdateItemAsync(update);
         }
 
         private static Document ConstructDocument(DocumentDetails newDocument, string currentTimestamp)
