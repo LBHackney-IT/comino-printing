@@ -2,18 +2,16 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
+using Amazon.S3;
 using Amazon.SQS;
-using AwsDotnetCsharp.UsecaseInterfaces;
 using Gateways;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using UseCases;
 using UseCases.GatewayInterfaces;
 using UseCases.UntestedParsers;
@@ -56,10 +54,13 @@ namespace AwsDotnetCsharp
             var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
             LambdaLogger.Log($"Dynamo table name {tableName}");
             var dynamoConfig = new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest2};
-            services.AddSingleton<IDynamoDBHandler>(sp => new DynamoDBHandler(dynamoConfig, tableName));
+            services.AddTransient<IDynamoDBHandler>(sp => new DynamoDBHandler(dynamoConfig, tableName));
 
             //SQS
             services.AddTransient<IAmazonSQS>(sp => new AmazonSQSClient(RegionEndpoint.EUWest2));
+
+            //S3
+            services.AddSingleton<IAmazonS3>(sp => new AmazonS3Client(RegionEndpoint.EUWest2));
 
             //Gateways
             services.AddScoped<IS3Gateway, S3Gateway>();
@@ -69,14 +70,12 @@ namespace AwsDotnetCsharp
             services.AddScoped<ILocalDatabaseGateway, LocalDatabaseGateway>();
 
             //UseCases
-            services.AddScoped<ISavePdfToS3, SavePdfToS3>();
             services.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
             services.AddScoped<IPushIdsToSqs, PushIdsToSqs>();
             services.AddScoped<ISaveRecordsToLocalDatabase, SaveRecordsToLocalDatabase>();
             services.AddScoped<IProcessEvents, ProcessEvents>();
             services.AddScoped<IGetHtmlDocument, GetHtmlDocument>();
             services.AddScoped<IConvertHtmlToPdf, ConvertHtmlToPdf>();
-            services.AddScoped<ISavePdfToS3, SavePdfToS3>();
             services.AddScoped<IGetParser, ParserLookup>();
             services.AddScoped<IConvertHtmlToPdf, ConvertHtmlToPdf>();
             services.AddScoped<IFetchAndQueueDocumentIds, FetchAndQueueDocumentIds>();

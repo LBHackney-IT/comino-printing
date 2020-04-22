@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using UseCases.GatewayInterfaces;
 using Usecases.UseCaseInterfaces;
 
 namespace UseCases
@@ -13,11 +14,11 @@ namespace UseCases
     {
         private readonly IGetHtmlDocument _getHtmlDocument;
         private readonly IConvertHtmlToPdf _convertHtmlToPdf;
-        private readonly ISavePdfToS3 _savePdfToS3;
+        private readonly IS3Gateway _savePdfToS3;
         private IGetDetailsOfDocumentForProcessing _getDocumentDetails;
 
         public ProcessEvents(IGetHtmlDocument getHtmlDocument, IConvertHtmlToPdf convertHtmlToPdf,
-            ISavePdfToS3 savePdfToS3, IGetDetailsOfDocumentForProcessing getDocumentDetails)
+            IS3Gateway savePdfToS3, IGetDetailsOfDocumentForProcessing getDocumentDetails)
         {
             _getHtmlDocument = getHtmlDocument;
             _convertHtmlToPdf = convertHtmlToPdf;
@@ -44,9 +45,9 @@ namespace UseCases
             var html = await _getHtmlDocument.Execute(document.DocumentId);
 
             Console.WriteLine($"> htmlDoc:\n{html}");
-            var pdfBytes = _convertHtmlToPdf.Execute(html, document.LetterType);
+            _convertHtmlToPdf.Execute(html, document.LetterType, document.DocumentId);
 
-            var result = _savePdfToS3.Execute(timestamp, pdfBytes);
+            var result = _savePdfToS3.SavePdfDocument(document.DocumentId);
             Console.WriteLine($"> s3PutResult:\n{result}");
         }
     }
