@@ -101,7 +101,8 @@ p {
   margin-top: 75px !important;
 }
 
-.DocumentListPage {
+.DocumentListPage,
+.DocumentViewPage {
   padding-bottom: 30px;
 }
 
@@ -116,4 +117,7 @@ p {
 }
 .DocumentViewPage ul.logs li {
   list-style-type: none;
+}
+.DocumentViewPage .buttons button {
+  margin-right: 20px;
 }

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import moment from "moment";
+import { Link } from "react-router-dom";
 import { fetchDocument } from "../../cominoPrintApi";
 
 const LogRow = (props) => {
@@ -35,6 +36,11 @@ export default class DocumentView extends Component {
     return (
       <div className="DocumentViewPage">
         <div className="lbh-container">
+          <Link to="/" className="govuk-back-link lbh-back-link">
+            Back
+          </Link>
+        </div>
+        <div className="lbh-container">
           <h2 className="govuk-heading-l">
             Document number <a href="./">{d.id}</a>
           </h2>
@@ -68,9 +74,16 @@ export default class DocumentView extends Component {
           </dl>
         </div>
 
-        <div className="lbh-container">
+        <div className="lbh-container buttons">
           <button className="govuk-button  lbh-button">
             Approve for sending
+          </button>
+          <button
+            name="Warning"
+            class="govuk-button  lbh-button govuk-button--warning lbh-button--warning"
+            data-module="govuk-button"
+          >
+            Cancel sending
           </button>
         </div>
       </div>
