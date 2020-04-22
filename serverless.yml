@@ -24,7 +24,7 @@ provider:
   environment:
     LETTERS_TABLE_NAME: "${self:service}-${self:provider.stage}-letters-2"
     W2_DOCUMENT_BASE_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/W2_DOCUMENTS_API}
-    GENERATED_PDF_BUCKET_NAME: "${self:service}-${self:provider.stage}-ui"
+    GENERATED_PDF_BUCKET_NAME: "${self:service}-${self:provider.stage}-generatedPdfs"
 
 package:
   artifact: ./src/Lambda/bin/release/netcoreapp2.1/comino-printing.zip
@@ -87,7 +87,7 @@ resources:
     generatedPdfsBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BuketName: "${self:service}-${self:provider.stage}-generatedPdfs"
+        BuketName: ${self:provider.environment.GENERATED_PDF_BUCKET_NAME}
 
 custom:
   dynamodb:
@@ -99,7 +99,7 @@ custom:
       inMemory: true
       migrate: true
   client:
-    bucketName: ${self:provider.environment.LETTERS_TABLE_NAME}
+    bucketName: "${self:service}-${self:provider.stage}-ui"
     distributionFolder: comino-print-ui/build
     indexDocument: index.html
     errorDocument: index.html
