@@ -21,6 +21,12 @@ provider:
   runtime: dotnetcore2.1
   region: eu-west-2
   stage: ${opt:stage}
+  vpc:
+    securityGroupIds:
+      - sg-022acccbebd7bca46
+    subnetIds:
+      - subnet-00356e0650138f74f
+      - subnet-0a7f442c22a6feedc
   environment:
     LETTERS_TABLE_NAME: "${self:service}-${self:provider.stage}-letters-2"
     W2_DOCUMENT_BASE_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/W2_DOCUMENTS_API}
