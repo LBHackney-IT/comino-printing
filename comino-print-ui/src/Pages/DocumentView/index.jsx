@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { fetchDocument } from "../../cominoPrintApi";
-import { createBrowserHistory } from "history";
-const history = createBrowserHistory();
+// import { createBrowserHistory } from "history";
+// const history = createBrowserHistory();
 
 const LogRow = (props) => {
   return (
