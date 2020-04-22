@@ -1,7 +1,10 @@
+using System.Threading.Tasks;
+using Usecases.Domain;
+
 namespace UseCases.GatewayInterfaces
 {
     public interface IS3Gateway
     {
-        string SavePdfDocument(string documentId, byte[] filename);
+        Task<Response> SavePdfDocument(string documentId);
     }
 }

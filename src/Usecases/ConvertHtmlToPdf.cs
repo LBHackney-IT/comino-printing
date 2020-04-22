@@ -1,3 +1,4 @@
+using System.IO;
 using RtfParseSpike.Templates;
 using Usecases.UseCaseInterfaces;
 
@@ -14,7 +15,7 @@ namespace UseCases
             _getParser = getParser;
         }
 
-        public byte[] Execute(string htmlDocument, string documentType)
+        public void Execute(string htmlDocument, string documentType, string documentId)
         {
             ILetterParser parser = _getParser.ForType(documentType);
 
@@ -29,8 +30,7 @@ namespace UseCases
                            + htmlInput.MainBody
                            + "</body></html>";
 
-            var pdfBytes = _parseHtmlToPdf.Execute(fullHtml);
-            return pdfBytes;
+            _parseHtmlToPdf.Execute(fullHtml, documentId);
         }
 
         private static string CompileCss(LetterTemplate htmlInput)

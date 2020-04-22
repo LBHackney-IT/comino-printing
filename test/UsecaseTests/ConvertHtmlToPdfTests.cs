@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using AutoFixture;
 using FluentAssertions;
@@ -31,10 +32,12 @@ namespace UnitTests
         {
             var documentType = _fixture.Create<string>();
             var htmlDocument = _fixture.Create<string>();
+            var documentId = _fixture.Create<string>();
+
             SetupLetterMockLetterTypeParser(htmlDocument);
             SetUpGetParser(documentType);
 
-            _convertHtmlToPdf.Execute(htmlDocument, documentType);
+            _convertHtmlToPdf.Execute(htmlDocument, documentType, documentId);
             _getParsers.Verify();
         }
 
@@ -43,45 +46,45 @@ namespace UnitTests
         {
             var documentType = _fixture.Create<string>();
             var htmlDocument = _fixture.Create<string>();
+            var documentId = _fixture.Create<string>();
 
             SetupLetterMockLetterTypeParser(htmlDocument);
             SetUpGetParser(documentType);
 
-            _convertHtmlToPdf.Execute(htmlDocument, documentType);
+            _convertHtmlToPdf.Execute(htmlDocument, documentType, documentId);
 
             _mockLetterTypeParser.Verify();
         }
 
         [Test]
-        public void ExecuteRetainsHtmlFromParserAndWrapsInFurtherHtmlAndCss()
+        public void ExecuteWrapsHtmlFromParserInFurtherHtmlAndCss()
         {
             var documentType = _fixture.Create<string>();
             var htmlDocument = _fixture.Create<string>();
+            var documentId = _fixture.Create<string>();
 
             var parsedHtml = SetupLetterMockLetterTypeParser(htmlDocument);
             SetUpGetParser(documentType);
 
-            _convertHtmlToPdf.Execute(htmlDocument, documentType);
+            _convertHtmlToPdf.Execute(htmlDocument, documentType, documentId);
             _parseHtmlToPdf.Verify(x => x.Execute(
                 It.Is<string>(html =>
-                    AssertLetterDetailsIncludedIn(html, parsedHtml)), 5, 15, 5, 15), Times.Once);
+                    AssertLetterDetailsIncludedIn(html, parsedHtml)), documentId, 5, 15, 5, 15), Times.Once);
         }
 
         [Test]
-        public void ExecuteReturnsPDfBytesFromHtmlToPdfParser()
+        public void ExecuteReturnsCallsThePdfConverterWithFileToSaveTo()
         {
             var documentType = _fixture.Create<string>();
             var htmlDocument = _fixture.Create<string>();
-            byte[] pdfBytes = _fixture.CreateMany<byte>().ToArray();
-
+            var documentId = _fixture.Create<string>();
 
             SetupLetterMockLetterTypeParser(htmlDocument);
             SetUpGetParser(documentType);
 
-            _parseHtmlToPdf.Setup(x => x.Execute(It.IsAny<string>(), 5, 15, 5, 15)).Returns(pdfBytes);
+             _convertHtmlToPdf.Execute(htmlDocument, documentType, documentId);
 
-            var response = _convertHtmlToPdf.Execute(htmlDocument, documentType);
-            response.Should().BeEquivalentTo(pdfBytes);
+             _parseHtmlToPdf.Verify(x => x.Execute(It.IsAny<string>(),documentId,  5, 15, 5, 15));
         }
 
         private LetterTemplate SetupLetterMockLetterTypeParser(string htmlDocument)

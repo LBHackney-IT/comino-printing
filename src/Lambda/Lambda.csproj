@@ -8,6 +8,7 @@
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.Core" Version="1.1.0" />
         <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="1.7.0" />
+        <PackageReference Include="AWSSDK.S3" Version="3.5.0-beta" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0-preview.2.20160.3" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0-preview.2.20160.3" />
         <PackageReference Include="System.Data.SqlClient" Version="4.1.0" />
