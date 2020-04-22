@@ -1,19 +1,18 @@
 using System.Collections.Generic;
-using Usecases.Domain;
 
 namespace comino_print_api.Responses
 {
-    public class Document
+    public class DocumentResponse
     {
-        public int Id { get; set; }
-        public string DocumentId { get; set; }
-        public string DocumentCreator { get; set; }
-        public string CreatedAt { get; set; }
+        public string Id { get; set; }
+        public string DocNo { get; set; }
+        public string Sender { get; set; }
+        public string Created { get; set; }
         public string PrintedAt { get; set; }
         public string Status { get; set; }
         public string StatusUpdatedAt { get; set; }
         public string LetterType { get; set; }
         public string DocumentType { get; set; }
-        public List<DocumentLog> Logs { get; set; }
+        public List<Dictionary<string, string>> Logs { get; set; }
     }
 }

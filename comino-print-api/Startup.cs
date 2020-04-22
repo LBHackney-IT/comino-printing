@@ -1,16 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
-// using IHostingEnvironment = Microsoft.Extensions.Hosting.IHostingEnvironment;
 
 namespace comino_print_api
 {
@@ -18,14 +10,17 @@ namespace comino_print_api
     {
         public Startup(IConfiguration configuration)
         {
+            
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services = ConfigureServices().services
             services.AddMvc(option => option.EnableEndpointRouting = false);
+            services.AddCors()
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -33,11 +28,14 @@ namespace comino_print_api
             }
             else
             {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
+
             app.UseMvc();
         }
     }

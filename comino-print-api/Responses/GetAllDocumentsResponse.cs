@@ -5,6 +5,6 @@ namespace comino_print_api.Models
 {
     public class GetAllDocumentsResponse
     {
-        public List<Document> Documents { get; set; }
+        public List<DocumentResponse> Documents { get; set; }
     }
 }

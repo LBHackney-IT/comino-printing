@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using comino_print_api.Models;
+using comino_print_api.Responses;
 using comino_print_api.UseCaseInterFaces;
 using UseCases.GatewayInterfaces;
 
@@ -13,10 +16,29 @@ namespace UseCases
         {
             _localDatabaseGateway = localDatabaseGateway;
         }
-        public Task<GetAllDocumentsResponse> Execute()
+        public async Task<GetAllDocumentsResponse> Execute()
         {
-            // Get all from the database and map to class
-            return null;
+           var documentResponse = await _localDatabaseGateway.GetAllRecords();
+           var documentResponses = documentResponse.Select(record => new DocumentResponse
+           {
+               Id = record.SavedAt,
+               DocNo = record.DocumentId,
+               Sender = record.DocumentCreator,
+               Created = record.SavedAt,
+               Status = record.Status.ToString(),
+               LetterType = record.LetterType,
+               DocumentType = record.DocumentType,
+               Logs = record.Log.Select(x => new Dictionary<string, string>
+               {
+                   {"Date", x.Key},
+                   {"Message", x.Value}
+               }).ToList()
+           }).ToList();
+           
+           return new GetAllDocumentsResponse
+           {
+               Documents = documentResponses
+           };
         }
     }
 }
