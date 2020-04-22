@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.Lambda.SQSEvents;
@@ -79,6 +80,18 @@ namespace UnitTests
             _logger.Verify(l => l.LogMessage(timestamp, "Retrieved Html from Documents API"));
         }
 
+        [Test]
+        public void ExecuteLogsIfRetrievingTheHtmlDocumentThrows()
+        {
+            var timestamp = _fixture.Create<string>();
+            var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
+            var documentDetails = SetupGetDocumentDetails(timestamp);
+            _mockGetHtmlDocument.Setup(x => x.Execute(documentDetails.DocumentId)).ThrowsAsync(new Exception("My exception"));
+
+            AssertExecuteThrows(sqsEventMock);
+
+            _logger.Verify(l => l.LogMessage(timestamp, "Failed getting HTML from Documents API. Error message: My exception"));
+        }
 
         [Test]
         public async Task ParsesRetrievedHtmlToAPdf_AsCorrectDocumentType()
@@ -110,6 +123,22 @@ namespace UnitTests
         }
 
         [Test]
+        public void ExecuteLogsIfConvertingToPdfThrows()
+        {
+            var timestamp = _fixture.Create<string>();
+            var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
+            var documentId = SetupGetDocumentDetails(timestamp).DocumentId;
+
+            _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
+
+            _mockPdfParser.Setup(x => x.Execute(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Throws(new Exception("My exception"));
+
+            AssertExecuteThrows(sqsEventMock);
+
+            _logger.Verify(l => l.LogMessage(timestamp, "Failed converting HTML to PDF. Error message: My exception"));
+        }
+
+        [Test]
         public async Task IfThePdfParserIsSuccessfulSaveToS3()
         {
             var timestamp = _fixture.Create<string>();
@@ -137,6 +166,22 @@ namespace UnitTests
             _logger.Verify(l => l.LogMessage(timestamp, "Stored in S3 - Ready for approval"));
         }
 
+        [Test]
+        public void ExecuteLogsIfSavingInS3Fails()
+        {
+            var timestamp = _fixture.Create<string>();
+            var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
+            var documentId = SetupGetDocumentDetails(timestamp).DocumentId;
+
+            _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
+
+            _sendToS3.Setup(x => x.SavePdfDocument(It.IsAny<string>())).Throws(new Exception("My exception"));
+
+            AssertExecuteThrows(sqsEventMock);
+
+            _logger.Verify(l => l.LogMessage(timestamp, "Failed to save to S3. Error message: My exception"));
+        }
+
         private static SQSEvent CreateSqsEventForDocumentId(string documentId)
         {
             var sqsMessageMock = new Mock<SQSEvent.SQSMessage>();
@@ -153,6 +198,12 @@ namespace UnitTests
             var document = _fixture.Create<DocumentDetails>();
             _mockGetDocDetails.Setup(x => x.Execute(timestamp)).ReturnsAsync(document).Verifiable();
             return document;
+        }
+
+        private void AssertExecuteThrows(SQSEvent sqsEventMock)
+        {
+            var testRun = new AsyncTestDelegate(async () => await _processEvents.Execute(sqsEventMock));
+            Assert.ThrowsAsync<Exception>(testRun);
         }
     }
 }

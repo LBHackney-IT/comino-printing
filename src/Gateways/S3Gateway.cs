@@ -23,24 +23,13 @@ namespace Gateways
             var bucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME");
             var filePath = $"./{documentId}.pdf";
 
-            try
+            await _amazonS3.PutObjectAsync(new PutObjectRequest
             {
-                await _amazonS3.PutObjectAsync(new PutObjectRequest
-                {
-                    Key = documentId,
-                    ContentType = "application/pdf",
-                    FilePath = filePath,
-                    BucketName = bucketName
-                });
-            }
-            catch (AmazonS3Exception e)
-            {
-                return new Response
-                {
-                    Success = false,
-                    Errors = new List<string> { e.Message },
-                };
-            }
+                Key = documentId,
+                ContentType = "application/pdf",
+                FilePath = filePath,
+                BucketName = bucketName
+            });
 
             File.Delete(filePath);
             Console.WriteLine($"> S3Gateway SavePdfDocument documentId: {documentId} to bucket: {bucketName}");

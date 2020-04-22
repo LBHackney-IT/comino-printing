@@ -80,29 +80,6 @@ namespace GatewayTests
             File.Exists(expectedFilePath).Should().BeFalse();
         }
 
-        [Test]
-        public async Task IfUnSuccessfulReturnsErrorMessage()
-        {
-            var documentId = _fixture.Create<string>();
-
-            var expectedFilePath = $"./{documentId}.pdf";
-            File.Create(expectedFilePath);
-
-            var expectedPutRequest = new PutObjectRequest
-            {
-                BucketName = _testBucketName,
-                Key = documentId,
-                ContentType = "application/pdf",
-                FilePath = expectedFilePath
-            };
-            _mockAmazonS3.Setup(x => x.PutObjectAsync(It.Is(Match(expectedPutRequest)), It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new AmazonS3Exception("S3 Adding has failed"));
-
-            var response = await _subject.SavePdfDocument(documentId);
-            response.Success.Should().BeFalse();
-            response.Errors.Should().BeEquivalentTo(new List<string> {"S3 Adding has failed"});
-        }
-
         private static Expression<Func<PutObjectRequest, bool>> Match(PutObjectRequest expectedPutRequest)
         {
             return p => p.BucketName == expectedPutRequest.BucketName

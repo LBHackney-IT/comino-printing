@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Usecases.Domain;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
 using Usecases.UseCaseInterfaces;
@@ -35,26 +36,67 @@ namespace UseCases
             // expected Records count = 1, per batchSize configured in serverless.yml
             var record = sqsEvent.Records.First();
 
-
             var timestamp = record.Body;
 
             Console.WriteLine($"Received from queue [{record.EventSourceArn}] document timestamp = {timestamp}");
             await _logger.LogMessage(timestamp, "Picked up document from queue - Processing");
-            var document = await _getDocumentDetails.Execute(timestamp);
 
+            var document = await _getDocumentDetails.Execute(timestamp);
             Console.WriteLine($"Retrieved from dynamo, getting Html for documentId = {document.DocumentId}");
 
-            var html = await _getHtmlDocument.Execute(document.DocumentId);
-            await _logger.LogMessage(timestamp, "Retrieved Html from Documents API");
-
+            var html = await TryGetDocumentAsHtml(document, timestamp);
             Console.WriteLine($"> htmlDoc:\n{html}");
-            _convertHtmlToPdf.Execute(html, document.LetterType, document.DocumentId);
-            await _logger.LogMessage(timestamp, "Converted To Pdf");
 
+            await TryConvertToPdf(html, document, timestamp);
+            await TryStoreInS3(document, timestamp);
+        }
 
-            var result = _savePdfToS3.SavePdfDocument(document.DocumentId);
+        private async Task TryStoreInS3(DocumentDetails document, string timestamp)
+        {
+            try
+            {
+                var result = _savePdfToS3.SavePdfDocument(document.DocumentId);
+                Console.WriteLine($"> s3PutResult:\n{result}");
+            }
+            catch (Exception error)
+            {
+                await _logger.LogMessage(timestamp, $"Failed to save to S3. Error message: {error.Message}");
+                throw;
+            }
+
             await _logger.LogMessage(timestamp, "Stored in S3 - Ready for approval");
-            Console.WriteLine($"> s3PutResult:\n{result}");
+        }
+
+        private async Task TryConvertToPdf(string html, DocumentDetails document, string timestamp)
+        {
+            try
+            {
+                _convertHtmlToPdf.Execute(html, document.LetterType, document.DocumentId);
+            }
+            catch (Exception error)
+            {
+                await _logger.LogMessage(timestamp, $"Failed converting HTML to PDF. Error message: {error.Message}");
+                throw;
+            }
+
+            await _logger.LogMessage(timestamp, "Converted To Pdf");
+        }
+
+        private async Task<string> TryGetDocumentAsHtml(DocumentDetails document, string timestamp)
+        {
+            string html;
+            try
+            {
+                html = await _getHtmlDocument.Execute(document.DocumentId);
+            }
+            catch (Exception error)
+            {
+                await _logger.LogMessage(timestamp, $"Failed getting HTML from Documents API. Error message: {error.Message}");
+                throw;
+            }
+
+            await _logger.LogMessage(timestamp, "Retrieved Html from Documents API");
+            return html;
         }
     }
 }
