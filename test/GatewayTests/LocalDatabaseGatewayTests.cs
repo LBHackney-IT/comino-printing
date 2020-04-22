@@ -12,7 +12,6 @@ using Usecases.Enums;
 
 namespace GatewayTests
 {
-    [Ignore("to fix")]
     public class LocalDatabaseGatewayTests : DynamoDbTests
     {
         private Fixture _fixture;
