@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using comino_print_api.Models;
-using comino_print_api.Services;
+using comino_print_api.Responses;
+using comino_print_api.UseCaseInterFaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Core;
 
 namespace comino_print_api.Controllers
 {
@@ -10,18 +11,18 @@ namespace comino_print_api.Controllers
     [Route("/[controller]")]
     public class DocumentsController : Controller
     {
-        private readonly IDocumentService _documentService;
+        private readonly IGetAllDocuments _getAllDocuments;
         
-        public DocumentsController(IDocumentService documentService)
+        public DocumentsController(IGetAllDocuments getAllDocuments)
         {
-            _documentService = documentService;   
+            _getAllDocuments = getAllDocuments;   
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Document>> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var documents = await _documentService.ListAsync();
-            return documents;
+            var documents = await _getAllDocuments.Execute();
+            return Ok(documents);
         }
     }
 }
