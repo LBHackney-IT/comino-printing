@@ -9,6 +9,8 @@ namespace UseCases.GatewayInterfaces
         Task<string> SaveDocument(DocumentDetails newDocument);
 
         Task<DocumentDetails> GetRecordByTimeStamp(string currentTimestamp);
-        Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt, LetterStatusEnum newStatus);
+
+        Task UpdateStatus(string savedDocumentSavedAt, LetterStatusEnum newStatus);
+        Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt);
     }
 }

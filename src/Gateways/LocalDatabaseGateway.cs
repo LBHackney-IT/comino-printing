@@ -54,15 +54,25 @@ namespace Gateways
             return MapToDocumentDetails(document);
         }
 
-        public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt, LetterStatusEnum newStatus)
+        public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt)
+        {
+            var updateDoc = new Document
+            {
+                ["InitialTimestamp"] = savedDocumentSavedAt,
+                ["Status"] = LetterStatusEnum.Processing.ToString(),
+            };
+            var response = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
+            return MapToDocumentDetails(response);
+        }
+
+        public async Task UpdateStatus(string savedDocumentSavedAt, LetterStatusEnum newStatus)
         {
             var updateDoc = new Document
             {
                 ["InitialTimestamp"] = savedDocumentSavedAt,
                 ["Status"] = newStatus.ToString(),
             };
-            var response = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
-            return MapToDocumentDetails(response);
+            await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
         }
 
         public async Task LogMessage(string documentSavedAt, string message)

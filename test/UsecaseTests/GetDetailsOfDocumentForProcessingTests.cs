@@ -31,7 +31,7 @@ namespace UnitTests
 
             await _subject.Execute(timeStamp);
 
-            _gateway.Verify(x => x.RetrieveDocumentAndSetStatusToProcessing(timeStamp, LetterStatusEnum.Processing), Times.Once);
+            _gateway.Verify(x => x.RetrieveDocumentAndSetStatusToProcessing(timeStamp), Times.Once);
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace UnitTests
             var timeStamp = _fixture.Create<string>();
             var documentStub = _fixture.Create<DocumentDetails>();
 
-            _gateway.Setup(x => x.RetrieveDocumentAndSetStatusToProcessing(timeStamp, LetterStatusEnum.Processing)).ReturnsAsync(documentStub);
+            _gateway.Setup(x => x.RetrieveDocumentAndSetStatusToProcessing(timeStamp)).ReturnsAsync(documentStub);
 
             var response = await _subject.Execute(timeStamp);
             response.Should().BeEquivalentTo(documentStub);

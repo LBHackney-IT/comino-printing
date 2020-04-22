@@ -17,7 +17,7 @@ namespace UseCases
 
         public async Task<DocumentDetails> Execute(string timeStamp)
         {
-            var response = await _databaseGateway.RetrieveDocumentAndSetStatusToProcessing(timeStamp, LetterStatusEnum.Processing);
+            var response = await _databaseGateway.RetrieveDocumentAndSetStatusToProcessing(timeStamp);
             return response;
         }
     }
