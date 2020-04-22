@@ -14,7 +14,7 @@ using Usecases.UseCaseInterfaces;
 
 namespace GatewayTests
 {
-    [Ignore("to fix")]
+    // [Ignore("to fix")]
     public class LocalDatabaseGatewayTests : DynamoDbTests
     {
         private Fixture _fixture;
