@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\comino-print-api\comino-print-api.csproj" />
       <ProjectReference Include="..\..\src\Usecases\Usecases.csproj" />
     </ItemGroup>
 
