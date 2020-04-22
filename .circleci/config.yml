@@ -64,13 +64,13 @@ jobs:
 
       - run:
           name: Run Test DynamoDb
-          command: docker run --name test-dynamodb --user $(id -u):$(id -g) -d -p 8000:8000 -v $(pwd)/local/dynamodb:/data/ amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /data
+          command: docker run --name test-dynamodb --rm --user $(id -u):$(id -g) -d -p 8000:8000 -v $(pwd)/local/dynamodb:/data amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /data
 
       - run:
           name: Configure AWS
           command: |
-            aws configure set aws_access_key_id access_key --profile testing
-            aws configure set aws_secret_access_key secret_key --profile testing
+            aws configure set aws_access_key_id TestAccessKey --profile testing
+            aws configure set aws_secret_access_key TestSecretKey --profile testing
             aws configure set region eu-west-2 --profile testing
             aws configure set cli_pager "" --profile testing
 

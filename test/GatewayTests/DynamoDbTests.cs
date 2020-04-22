@@ -23,6 +23,7 @@ namespace GatewayTests
 
             var config = new AmazonDynamoDBConfig
             {
+                RegionEndpoint = "eu-west-2",
                 ServiceURL = "http://localhost:8000",
             };
 
