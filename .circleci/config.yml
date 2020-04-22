@@ -64,7 +64,7 @@ jobs:
 
       - run:
           name: Run Test DynamoDb
-          command: docker run --name test-dynamodb -d -p 8000:8000 -v $(pwd)/local/dynamodb:/data/ amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /data
+          command: docker run --name test-dynamodb --user $(id -u):$(id -g) -d -p 8000:8000 -v $(pwd)/local/dynamodb:/data/ amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /data
 
       - run:
           name: Configure AWS
