@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { fetchDocument } from "../../cominoPrintApi";
+import { createBrowserHistory } from "history";
+const history = createBrowserHistory();
 
 const LogRow = (props) => {
   return (
@@ -75,16 +77,20 @@ export default class DocumentView extends Component {
         </div>
 
         <div className="lbh-container buttons">
-          <button className="govuk-button  lbh-button">
-            Approve for sending
-          </button>
-          <button
-            name="Warning"
-            class="govuk-button  lbh-button govuk-button--warning lbh-button--warning"
-            data-module="govuk-button"
-          >
-            Cancel sending
-          </button>
+          {d.status === "Approval required" ? (
+            <button className="govuk-button  lbh-button">
+              Approve for sending
+            </button>
+          ) : null}
+          {d.status === "Approval required" || d.status === "Ready to send" ? (
+            <button
+              name="Warning"
+              class="govuk-button  lbh-button govuk-button--warning lbh-button--warning"
+              data-module="govuk-button"
+            >
+              Cancel sending
+            </button>
+          ) : null}
         </div>
       </div>
     );

@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { fetchDocuments } from "../../cominoPrintApi";
+import { createBrowserHistory } from "history";
+const history = createBrowserHistory();
 
 const DoumentRow = (props) => {
   const dateFormat = (date) => moment(date).format("DD/MM/YYYY HH:MM");
@@ -34,24 +36,30 @@ export default class DocumentListPage extends Component {
     documents: [],
   };
 
-  fetchDocuments = (cb) => {
+  fetchDocuments = () => {
     fetchDocuments(this.state.endId, (err, documents) => {
       this.setState({ documents });
-      cb && cb();
     });
   };
 
   componentDidMount() {
-    this.fetchDocuments();
+    const params = new URLSearchParams(this.props.location.search);
+    this.setState({ endId: params.endId }, () => {
+      this.fetchDocuments();
+    });
   }
+
+  prevPage = () => {
+    history.goBack();
+  };
 
   nextPage = () => {
     const endId = this.state.documents.map((d) => d.id).sort()[0];
     this.setState({ endId }, () => {
-      this.fetchDocuments(() => {
-        window.scrollTo(0, 0);
-      });
+      history.push(`/?endId=${endId}`);
+      this.fetchDocuments();
     });
+    window.scrollTo(0, 0);
   };
 
   render() {
@@ -93,6 +101,14 @@ export default class DocumentListPage extends Component {
           </table>
         </div>
         <div className="lbh-container">
+          {this.state.endId ? (
+            <>
+              <a onClick={this.prevPage} href="#0">
+                Previous 10 documents
+              </a>
+              {" | "}
+            </>
+          ) : null}
           <a onClick={this.nextPage} href="#0">
             Next 10 documents
           </a>

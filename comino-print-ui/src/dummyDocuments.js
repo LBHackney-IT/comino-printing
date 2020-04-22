@@ -308,7 +308,7 @@ export const dummyDocuments = [
     docNo: 43587638,
     created: "2020-04-21T12:12:00Z",
     printed: "2020-04-21T17:11:00Z",
-    status: "Sent to print",
+    status: "Ready to send",
     statusUpdated: "2020-04-21T17:11:00Z",
     sender: "Joe Bloggs",
     logs: [
