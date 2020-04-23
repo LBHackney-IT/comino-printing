@@ -21,6 +21,7 @@ namespace comino_print_api
         {
             services.Configure();
             services.AddMvc();
+            services.AddCors();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -36,16 +37,7 @@ namespace comino_print_api
             }
 
             app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-            app.UseHttpsRedirection();
             app.UseMvc();
-        }
-
-        private IConfigurationRoot BuildConfiguration()
-        {
-            return new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddEnvironmentVariables()
-                .Build();
         }
     }
 }
