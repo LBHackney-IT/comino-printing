@@ -65,6 +65,18 @@ functions:
           path: /api/documents
           method: GET
           cors: true
+  
+          functions:
+          create:
+          handler: posts.post_detail
+            events:
+              - http:
+          path: posts/{id}
+          method: get
+            request:
+          parameters:
+          paths:
+          id: true
 
 resources:
   Resources:

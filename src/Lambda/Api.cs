@@ -59,6 +59,5 @@ namespace AwsDotnetCsharp
                 Formatting = Formatting.Indented
             });
         }
-
     }
 }
