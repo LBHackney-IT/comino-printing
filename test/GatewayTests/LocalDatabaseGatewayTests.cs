@@ -224,7 +224,7 @@ namespace GatewayTests
 
         private static int GetCurrentTimestamp()
         {
-            return Convert.ToInt32((DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds);
+            return Convert.ToInt32((DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds);
         }
 
         private DocumentDetails RandomDocumentDetails()

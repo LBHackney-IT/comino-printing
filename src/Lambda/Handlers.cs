@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
@@ -20,10 +21,18 @@ namespace AwsDotnetCsharp
             _serviceProvider = ConfigureServices.Configure(configuration);
         }
 
-        public void FetchAndQueueDocumentIds(ILambdaContext context)
+        public async Task FetchAndQueueDocumentIds(ILambdaContext context)
         {
-            var getDocumentsUseCse = _serviceProvider.GetService<IFetchAndQueueDocumentIds>();
-            getDocumentsUseCse.Execute();
+            var getDocumentsUseCase = _serviceProvider.GetService<IFetchAndQueueDocumentIds>();
+            try
+            {
+                await getDocumentsUseCase.Execute();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public async Task ListenForSqsEvents(SQSEvent sqsEvent, ILambdaContext context)

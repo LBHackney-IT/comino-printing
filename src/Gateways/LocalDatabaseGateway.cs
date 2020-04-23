@@ -87,7 +87,6 @@ namespace Gateways
             catch (ConditionalCheckFailedException)
             {
                 var createLog = UpdateRequestToCreateLogWithMessage(documentSavedAt, message, timestamp);
-
                 await _databaseClient.UpdateItemAsync(createLog);
             }
         }
@@ -142,7 +141,7 @@ namespace Gateways
 
         private static string CurrentUtcUnixTimestamp()
         {
-            return Convert.ToInt32((DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds).ToString();
+            return Convert.ToInt64((DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds).ToString();
         }
 
         private UpdateItemRequest UpdateRequestToCreateLogWithMessage(string documentSavedAt, string message, string timestamp)

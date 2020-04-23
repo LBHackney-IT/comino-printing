@@ -20,8 +20,9 @@ namespace Gateways
         public List<DocumentDetails> GetDocumentsAfterStartDate(DateTime time)
         {
             var startTime = $"{time.Month}/{time.Day}/{time.Year} {time.Hour}:{time.Minute}:{time.Second}";
+            //TODO Remove top 5 when timespan is set to 1 minute
             var query =
-$@"SELECT DocNo AS DocumentNumber,
+$@"SELECT TOP 5 DocNo AS DocumentNumber,
 StoreDate AS Date,
 strDescription AS LetterType,
 strUser AS UserName,
@@ -31,7 +32,7 @@ JOIN CCDocument on DocNo = nDocNo
 WHERE CCDocument.DocCategory = 'Benefits/Out-Going'
 AND CCDocument.DirectionFg = 'O'
 AND CCDocument.DocSource = 'O'
-AND CCDocument.DocDate > {startTime}
+AND CCDocument.DocDate > '{startTime}'
 ORDER BY CCDocument.DocDate DESC;
 ";
 

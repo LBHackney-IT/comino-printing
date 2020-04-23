@@ -22,6 +22,7 @@ namespace Gateways
             {
                 var client = new AmazonDynamoDBClient(dynamoConfig);
                 DocumentTable = Table.LoadTable(client, tableName);
+                DatabaseClient = client;
             }
         }
 
