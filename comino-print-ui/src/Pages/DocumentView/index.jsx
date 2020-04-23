@@ -19,7 +19,7 @@ export default class DocumentView extends Component {
   };
 
   componentDidMount() {
-    fetchDocument(Number(this.props.match.params.id), (err, document) => {
+    fetchDocument(this.props.match.params.id, (err, document) => {
       this.setState({ document });
     });
   }
@@ -44,31 +44,31 @@ export default class DocumentView extends Component {
         </div>
         <div className="lbh-container">
           <h2 className="govuk-heading-l">
-            Document number <a href="./">{d.id}</a>
+            Document number <a href="./">{d.docNo}</a>
           </h2>
-          <dl class="govuk-summary-list">
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Created By</dt>
-              <dd class="govuk-summary-list__value">{d.sender}</dd>
+          <dl className="govuk-summary-list">
+            <div className="govuk-summary-list__row">
+              <dt className="govuk-summary-list__key">Created By</dt>
+              <dd className="govuk-summary-list__value">{d.sender}</dd>
             </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Original document</dt>
-              <dd class="govuk-summary-list__value">
+            <div className="govuk-summary-list__row">
+              <dt className="govuk-summary-list__key">Original document</dt>
+              <dd className="govuk-summary-list__value">
                 <a href="#0">Download from Comino</a>
               </dd>
             </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Converted document</dt>
-              <dd class="govuk-summary-list__value">
+            <div className="govuk-summary-list__row">
+              <dt className="govuk-summary-list__key">Converted document</dt>
+              <dd className="govuk-summary-list__value">
                 <a href="#0">View PDF</a>
               </dd>
             </div>
-            <div class="govuk-summary-list__row">
-              <dt class="govuk-summary-list__key">Logs</dt>
-              <dd class="govuk-summary-list__value">
+            <div className="govuk-summary-list__row">
+              <dt className="govuk-summary-list__key">Logs</dt>
+              <dd className="govuk-summary-list__value">
                 <ul className="logs">
                   {d.logs.map((log) => (
-                    <LogRow {...log} />
+                    <LogRow key={log.date} {...log} />
                   ))}
                 </ul>
               </dd>
@@ -85,7 +85,7 @@ export default class DocumentView extends Component {
           {d.status === "Approval required" || d.status === "Ready to send" ? (
             <button
               name="Warning"
-              class="govuk-button  lbh-button govuk-button--warning lbh-button--warning"
+              className="govuk-button  lbh-button govuk-button--warning lbh-button--warning"
               data-module="govuk-button"
             >
               Cancel sending

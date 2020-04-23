@@ -1,35 +1,39 @@
-// import { hackneyToken } from "./lib/Cookie";
-import { dummyDocuments } from "./dummyDocuments";
+// import { dummyDocuments } from "./dummyDocuments";
+import { hackneyToken } from "./lib/Cookie";
+let allDocs = null;
+const limit = 10;
 
 export const fetchDocuments = (endId, cb) => {
-  const limit = 10;
-  const docs = endId
-    ? dummyDocuments.filter((d) => d.id < endId)
-    : dummyDocuments;
-  docs.sort((a, b) => a.id < b.id);
-  cb(null, docs.slice(0, limit));
-  // const req = {
-  //   method: "GET",
-  //   mode: "cors",
-  //   headers: {
-  //     Authorization: `Bearer ${hackneyToken}`,
-  //   },
-  //   searchParams: {
-  //     endId,
-  //   },
-  // };
+  if (!allDocs) {
+    const req = {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        Authorization: `Bearer ${hackneyToken()}`,
+      },
+      searchParams: {
+        endId,
+        limit,
+      },
+    };
 
-  // fetch(`${process.env.REACT_APP_HN_API_URL}/documents`, req)
-  //   .then(async function (response) {
-  //     const json = await response.json();
-  //     return json;
-  //   })
-  //   .then(function (myJson) {
-  //     cb(null, myJson);
-  //   });
+    fetch(`${process.env.REACT_APP_API_URL}/documents`, req)
+      .then(async function (response) {
+        const json = await response.json();
+        return json;
+      })
+      .then((docsResult) => {
+        allDocs = docsResult.documents;
+        cb(null, allDocs.sort((a, b) => a.id < b.id).slice(0, 10));
+      });
+  } else {
+    const docs = endId ? allDocs.filter((d) => d.id < endId) : allDocs;
+    docs.sort((a, b) => a.id < b.id);
+    cb(null, docs.slice(0, limit));
+  }
 };
 export const fetchDocument = (id, cb) => {
-  const doc = dummyDocuments.filter((d) => d.id === id)[0];
+  const doc = allDocs.filter((d) => d.id === id)[0];
   cb(null, doc);
   // const req = {
   //   method: "GET",

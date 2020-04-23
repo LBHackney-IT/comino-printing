@@ -5,13 +5,13 @@ import { fetchDocuments } from "../../cominoPrintApi";
 import { createBrowserHistory } from "history";
 const history = createBrowserHistory();
 
-const DoumentRow = (props) => {
+const DocumentRow = (props) => {
   const dateFormat = (date) => moment(date).format("DD/MM/YYYY HH:MM");
   const d = props.document;
   return (
     <tr>
       <td className="govuk-table__cell">
-        <Link to={`/documents/${d.id}`}>{d.id}</Link>
+        <Link to={`/documents/${d.id}`}>{d.docNo}</Link>
       </td>
       <td className="govuk-table__cell">{dateFormat(d.created)}</td>
       <td className="govuk-table__cell">
@@ -95,7 +95,7 @@ export default class DocumentListPage extends Component {
             </thead>
             <tbody>
               {this.state.documents.map((doc) => (
-                <DoumentRow document={doc} />
+                <DocumentRow key={doc.id} document={doc} />
               ))}
             </tbody>
           </table>
