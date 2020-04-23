@@ -6,6 +6,7 @@ using comino_print_api.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Core;
 using UseCases;
+using Usecases.Enums;
 
 namespace comino_print_api.Controllers
 {
@@ -14,18 +15,27 @@ namespace comino_print_api.Controllers
     public class DocumentsController : Controller
     {
         private readonly IGetAllDocuments _getAllDocuments;
+        private IUpdateDocuments _updateDocuments;
 
-        public DocumentsController(IGetAllDocuments getAllDocuments)
+        public DocumentsController(IGetAllDocuments getAllDocuments, IUpdateDocuments updateDocuments)
         {
             _getAllDocuments = getAllDocuments;
+            _updateDocuments = updateDocuments;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync([FromQuery] EndIdParameter endIdParameter)
         {
-            var endId = endIdParameter;
-            var documents = await _getAllDocuments.Execute(endId);
+            var documents = await _getAllDocuments.Execute(endIdParameter);
             return Ok(documents);
+        }
+        
+        [HttpPut]
+        public async Task<IActionResult> UpdateDocumentState([FromBody] string savedDocumentSavedAt, LetterStatusEnum newStatus)
+        {
+            // var documents = await _updateDocuments.Execute(savedDocumentSavedAt, newStatus);
+            // return Ok(documents);
+            return null;
         }
     }
 }
