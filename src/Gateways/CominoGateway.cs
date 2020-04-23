@@ -34,13 +34,25 @@ AND CCDocument.DocSource = 'O'
 AND CCDocument.DocDate > {startTime}
 ORDER BY CCDocument.DocDate DESC;
 ";
-             return _database.Query<W2BatchPrintRow>(query).Select(row =>
-                 new DocumentDetails{
-                     DocumentId = row.DocumentNumber,
-                     DocumentCreator = row.UserName,
-                     LetterType = row.LetterType,
-                     DocumentType = row.DocumentType
-            }).ToList();
+
+            List<DocumentDetails> queryResults;
+            try
+            {
+                queryResults = _database.Query<W2BatchPrintRow>(query).Select(row =>
+                    new DocumentDetails{
+                        DocumentId = row.DocumentNumber,
+                        DocumentCreator = row.UserName,
+                        LetterType = row.LetterType,
+                        DocumentType = row.DocumentType
+                    }).ToList();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            return queryResults;
         }
 
         public class W2BatchPrintRow
