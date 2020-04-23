@@ -38,7 +38,15 @@ namespace AwsDotnetCsharp
         public async Task ListenForSqsEvents(SQSEvent sqsEvent, ILambdaContext context)
         {
             var listenForSqsEventsUseCase = _serviceProvider.GetService<IProcessEvents>();
-            await listenForSqsEventsUseCase.Execute(sqsEvent);
+            try
+            {
+                await listenForSqsEventsUseCase.Execute(sqsEvent);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
 
