@@ -41,8 +41,8 @@ namespace UnitTests
                 DocumentType = record.DocumentType,
                 Logs = record.Log.Select(x => new Dictionary<string, string>
                 {
-                    {"Date", x.Key},
-                    {"Message", x.Value}
+                    {"date", x.Key},
+                    {"message", x.Value}
                 }).ToList()
             });
 
