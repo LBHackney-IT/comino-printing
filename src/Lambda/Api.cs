@@ -30,7 +30,7 @@ namespace AwsDotnetCsharp
             {
                 StatusCode = (int) HttpStatusCode.OK,
                 Body = ConvertToCamelCasedJson(documents),
-                Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}}
+                Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}, {"Access-Control-Allow-Origin", "*"}},
             };
 
             return response;
@@ -45,7 +45,7 @@ namespace AwsDotnetCsharp
                 StatusCode = (int) HttpStatusCode.OK,
                 //TODO
                 Body = "Use Case Response Here",
-                Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}}
+                Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}, {"Access-Control-Allow-Origin", "*"}}
             };
 
             return response;
@@ -58,6 +58,7 @@ namespace AwsDotnetCsharp
             var response = new APIGatewayProxyResponse
             {
                 StatusCode = (int) HttpStatusCode.OK,
+                Headers = new Dictionary<string, string>{{"Access-Control-Allow-Origin", "*"}}
             };
 
             return response;
