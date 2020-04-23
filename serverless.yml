@@ -65,7 +65,15 @@ functions:
       - http:
           path: /api/documents
           method: GET
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
 
   get-document:
     name: ${self:service}-${self:provider.stage}-get-document
@@ -75,6 +83,15 @@ functions:
       - http:
           path: /api/documents/{id}
           method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
           request:
             parameters:
               paths:
@@ -88,6 +105,15 @@ functions:
       - http:
           path: /api/documents/{id}/approve
           method: post
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
           request:
             parameters:
               paths:
