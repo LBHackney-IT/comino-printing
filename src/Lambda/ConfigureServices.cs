@@ -19,10 +19,8 @@ namespace AwsDotnetCsharp
 {
     public static class ConfigureServices
     {
-        public static ServiceProvider Configure(IConfigurationRoot configurationRoot)
+        public static void Configure(this IServiceCollection services)
         {
-            var services = new ServiceCollection();
-
             //Comino Database
             var cominoConnectionString = Environment.GetEnvironmentVariable("COMINO_DB_CONN_STR");
             services.AddTransient<IDbConnection>(sp => new SqlConnection(cominoConnectionString));
@@ -59,9 +57,6 @@ namespace AwsDotnetCsharp
             services.AddScoped<IFetchAndQueueDocumentIds, FetchAndQueueDocumentIds>();
             services.AddScoped<IGetDetailsOfDocumentForProcessing, GetDetailsOfDocumentForProcessing>();
             services.AddScoped<IParseHtmlToPdf, IronPDFParser>();
-
-            return services.BuildServiceProvider();
         }
-
     }
 }

@@ -16,8 +16,9 @@ namespace AwsDotnetCsharp
 
         public Handlers()
         {
-            var configuration = BuildConfiguration();
-            _serviceProvider = ConfigureServices.Configure(configuration);
+            var services = new ServiceCollection();
+            services.Configure();
+            _serviceProvider = services.BuildServiceProvider();
         }
 
         public void FetchAndQueueDocumentIds(ILambdaContext context)
