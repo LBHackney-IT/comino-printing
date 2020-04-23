@@ -48,7 +48,7 @@ namespace GatewayTests
         {
             var newDocument = RandomDocumentDetails();
             await _dbGateway.SaveDocument(newDocument);
-            var expectedTimestamp = GetCurrentTimestamp();
+            var expectedTimestamp = DateTime.Parse(GetCurrentTimestamp());
 
             var response = await GetItemsFromDatabase();
             var savedTimestamp = GetTimestampForDocumentId(response, newDocument);
@@ -60,9 +60,9 @@ namespace GatewayTests
         {
             var newDocument = RandomDocumentDetails();
             var response = await _dbGateway.SaveDocument(newDocument);
-            var currentTimestamp = GetCurrentTimestamp();
+            var currentTimestamp = DateTime.Parse(GetCurrentTimestamp());
 
-            Convert.ToInt64(response).Should().BeCloseTo(currentTimestamp, 100);
+            DateTime.Parse(response).Should().BeCloseTo(currentTimestamp, 100);
         }
 
         [Test]
@@ -93,7 +93,7 @@ namespace GatewayTests
             var document2 = RandomDocumentDetails();
             var response = await _dbGateway.SaveDocument(document2);
 
-            Convert.ToInt64(response).Should().BeGreaterThan(currentTimestamp);
+            DateTime.Parse(response).Should().BeAfter(DateTime.Parse(currentTimestamp));
         }
 
         [Test]
@@ -130,7 +130,8 @@ namespace GatewayTests
         [Test]
         public async Task RetrieveDocumentAndSetStatusToProcessing_IfDocumentAlreadyProcessing_ReturnsNull()
         {
-            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.Processing.ToString());
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails(),
+                status: LetterStatusEnum.Processing.ToString());
 
             var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.SavedAt);
 
@@ -177,7 +178,7 @@ namespace GatewayTests
             {
                 M = new Dictionary<string, AttributeValue>
                 {
-                    {(GetCurrentTimestamp() - 1000).ToString(), new AttributeValue {S = "I was made"}},
+                    {"Yesterday", new AttributeValue {S = "I was made"}},
                 }
             };
 
@@ -215,10 +216,10 @@ namespace GatewayTests
             {
                 M = new Dictionary<string, AttributeValue>
                 {
-                    {(currentTime - 50).ToString(), new AttributeValue {S = "I was made"}},
-                    {(currentTime - 30).ToString(), new AttributeValue {S = "then this happened"}},
-                    {(currentTime - 10).ToString(), new AttributeValue {S = "then something else happened"}},
-                    {currentTime.ToString(), new AttributeValue {S = "that was the end"}}
+                    {"yesterday", new AttributeValue {S = "I was made"}},
+                    {"last week", new AttributeValue {S = "then this happened"}},
+                    {"earlier today", new AttributeValue {S = "then something else happened"}},
+                    {currentTime, new AttributeValue {S = "that was the end"}}
                 }
             };
 
@@ -226,10 +227,10 @@ namespace GatewayTests
 
             var expectedLog = new Dictionary<string, string>
             {
-                {(currentTime - 50).ToString(), "I was made"},
-                {(currentTime - 30).ToString(), "then this happened"},
-                {(currentTime - 10).ToString(), "then something else happened"},
-                {currentTime.ToString(), "that was the end"}
+                {"yesterday", "I was made"},
+                {"last week", "then this happened"},
+                {"earlier today", "then something else happened"},
+                {currentTime, "that was the end"}
             };
             var receivedLog = _dbGateway.GetLogForDocument(savedDocument.SavedAt);
             receivedLog.Entries.Should().BeEquivalentTo(expectedLog);
@@ -254,9 +255,9 @@ namespace GatewayTests
             return savedItems.First(i => i["InitialTimestamp"] == savedAt)["Log"].AsDocument();
         }
 
-        private static long GetCurrentTimestamp()
+        private static string GetCurrentTimestamp()
         {
-            return Convert.ToInt64((DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds);
+            return DateTime.UtcNow.ToString("O");
         }
 
         private DocumentDetails RandomDocumentDetails()
@@ -270,27 +271,28 @@ namespace GatewayTests
             };
         }
 
-        private async Task<DocumentDetails> AddDocumentToDatabase(DocumentDetails document, long? currentTimestamp = null, string status = null)
+        private async Task<DocumentDetails> AddDocumentToDatabase(DocumentDetails document,
+            string currentTimestamp = null, string status = null)
         {
             var timestamp = currentTimestamp ?? GetCurrentTimestamp();
             var documentItem = new Document
             {
                 ["DocumentId"] = document.DocumentId,
                 ["DocumentCreatorUserName"] = document.DocumentCreator,
-                ["InitialTimestamp"] = timestamp.ToString(),
+                ["InitialTimestamp"] = timestamp,
                 ["LetterType"] = document.LetterType,
                 ["DocumentType"] = document.DocumentType,
                 ["Status"] = status ?? LetterStatusEnum.Waiting.ToString()
             };
             await DatabaseClient.DocumentTable.PutItemAsync(documentItem);
 
-            document.SavedAt = timestamp.ToString();
+            document.SavedAt = timestamp;
             return document;
         }
 
-        private static long GetTimestampForDocumentId(List<Document> savedItems, DocumentDetails document)
+        private static DateTime GetTimestampForDocumentId(List<Document> savedItems, DocumentDetails document)
         {
-            return (long) savedItems.First(doc => doc["DocumentId"] == document.DocumentId)["InitialTimestamp"];
+            return DateTime.Parse(savedItems.First(doc => doc["DocumentId"] == document.DocumentId)["InitialTimestamp"]);
         }
 
         private async Task<List<Document>> GetItemsFromDatabase()

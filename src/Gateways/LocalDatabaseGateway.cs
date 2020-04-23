@@ -145,7 +145,7 @@ namespace Gateways
 
         private static string CurrentUtcUnixTimestamp()
         {
-            return Convert.ToInt64((DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds).ToString();
+            return DateTime.UtcNow.ToString("O");
         }
 
         private UpdateItemRequest UpdateRequestToCreateLogWithMessage(string documentSavedAt, string message, string timestamp)
