@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using UseCases;
 using Usecases.Domain;
 using Usecases.Enums;
 using Usecases.GatewayInterfaces;
@@ -48,7 +49,7 @@ namespace Gateways
             return currentTimestamp;
         }
 
-        public async Task<List<DocumentDetails>> GetAllRecords()
+        public async Task<List<DocumentDetails>> GetAllRecords(EndIdParameter endIdParameter)
         {
             var scanFilter = new ScanFilter();
 

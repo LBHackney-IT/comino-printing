@@ -16,9 +16,9 @@ namespace UseCases
         {
             _localDatabaseGateway = localDatabaseGateway;
         }
-        public async Task<GetAllDocumentsResponse> Execute()
+        public async Task<GetAllDocumentsResponse> Execute(EndIdParameter endIdParameter)
         {
-           var documentResponse = await _localDatabaseGateway.GetAllRecords();
+           var documentResponse = await _localDatabaseGateway.GetAllRecords(endIdParameter);
            var documentResponses = documentResponse.Select(record => new DocumentResponse
            {
                Id = record.SavedAt,

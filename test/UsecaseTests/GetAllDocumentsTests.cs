@@ -29,6 +29,7 @@ namespace UnitTests
         public void ExecuteReturnsAllRecordsInDatabaseGateway()
         {
             var savedRecord = _fixture.CreateMany<DocumentDetails>().ToList();
+            var endId = new EndIdParameter();
 
             var expectedResponse = savedRecord.Select(record => new DocumentResponse
             {
@@ -46,9 +47,9 @@ namespace UnitTests
                 }).ToList()
             });
 
-            _dbGatewayMock.Setup(x => x.GetAllRecords()).ReturnsAsync(savedRecord);
+            _dbGatewayMock.Setup(x => x.GetAllRecords(endId)).ReturnsAsync(savedRecord);
 
-            var response = _subject.Execute().Result;
+            var response = _subject.Execute(endId).Result;
             
             response.Documents.Should().BeEquivalentTo(expectedResponse);
         }

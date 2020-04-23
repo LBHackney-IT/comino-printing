@@ -8,6 +8,7 @@ using AutoFixture;
 using FluentAssertions;
 using Gateways;
 using NUnit.Framework;
+using UseCases;
 using Usecases.Domain;
 using Usecases.Enums;
 
@@ -52,8 +53,10 @@ namespace GatewayTests
             await _dbGateway.SaveDocument(savedDocumentTwo);
 
             var expectedResponse = new List<DocumentDetails> {savedDocumentOne, savedDocumentTwo};
+            
+            var endId = new EndIdParameter();
 
-            var response = await _dbGateway.GetAllRecords();
+            var response = await _dbGateway.GetAllRecords(endId);
 
             response.Should().BeEquivalentTo(expectedResponse);
         }

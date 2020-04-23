@@ -15,6 +15,6 @@ namespace UseCases.GatewayInterfaces
         Task UpdateStatus(string savedDocumentSavedAt, LetterStatusEnum newStatus);
         Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt);
 
-        Task<List<DocumentDetails>> GetAllRecords();
+        Task<List<DocumentDetails>> GetAllRecords(EndIdParameter endIdParameter);
     }
 }

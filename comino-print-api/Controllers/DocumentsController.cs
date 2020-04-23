@@ -5,6 +5,7 @@ using Boundary.UseCaseInterfaces;
 using comino_print_api.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Core;
+using UseCases;
 
 namespace comino_print_api.Controllers
 {
@@ -20,9 +21,10 @@ namespace comino_print_api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync([FromQuery] EndIdParameter endIdParameter)
         {
-            var documents = await _getAllDocuments.Execute();
+            var endId = endIdParameter;
+            var documents = await _getAllDocuments.Execute(endId);
             return Ok(documents);
         }
     }
