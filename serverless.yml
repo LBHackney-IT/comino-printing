@@ -55,6 +55,15 @@ functions:
     events:
       - sqs: arn:aws:sqs:eu-west-2:775052747630:sqs-comino-printing-${self:provider.stage}
         batchSize: 1
+  get-all-documents-api:
+    name: ${self:service}-${self:provider.stage}-get-all-documents-api
+    handler: Lambda::AwsDotnetCsharp.Api::GetAllDocuments
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    events:
+      - http:
+          path: /api/documents
+          method: GET
+          cors: true
 
 resources:
   Resources:

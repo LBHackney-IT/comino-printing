@@ -49,14 +49,5 @@ namespace AwsDotnetCsharp
                 throw;
             }
         }
-
-
-        private IConfigurationRoot BuildConfiguration()
-        {
-            return new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddEnvironmentVariables()
-                .Build();
-        }
     }
 }

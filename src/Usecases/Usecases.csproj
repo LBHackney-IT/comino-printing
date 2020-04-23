@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="5.0.0" />
       <PackageReference Include="AWSSDK.SQS" Version="3.3.102.91" />
       <PackageReference Include="Amazon.Lambda.Core" Version="1.1.0" />
       <PackageReference Include="Amazon.Lambda.SQSEvents" Version="1.1.0" />
