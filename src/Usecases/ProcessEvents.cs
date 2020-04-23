@@ -53,7 +53,8 @@ namespace UseCases
             Console.WriteLine($"Retrieved from dynamo, getting Html for documentId = {document.DocumentId}");
 
             var html = await TryGetDocumentAsHtml(document, timestamp);
-            Console.WriteLine($"> htmlDoc:\n{html}");
+            Console.WriteLine($"Received HTML: {html.Substring(0, 100)}");
+
 
             await TryConvertToPdf(html, document, timestamp);
             await TryStoreInS3(document, timestamp);
@@ -68,8 +69,7 @@ namespace UseCases
             }
             catch (Exception error)
             {
-                await _logger.LogMessage(timestamp, $"Failed to save to S3. Error message: {error.Message}");
-                throw;
+                await HandleError(timestamp, error, "Failed to save to S3.");
             }
 
             await _logger.LogMessage(timestamp, "Stored in S3 - Ready for approval");
@@ -83,8 +83,7 @@ namespace UseCases
             }
             catch (Exception error)
             {
-                await _logger.LogMessage(timestamp, $"Failed converting HTML to PDF. Error message: {error.Message}");
-                throw;
+                await HandleError(timestamp, error, "Failed converting HTML to PDF.");
             }
 
             await _logger.LogMessage(timestamp, "Converted To Pdf");
@@ -92,19 +91,26 @@ namespace UseCases
 
         private async Task<string> TryGetDocumentAsHtml(DocumentDetails document, string timestamp)
         {
-            string html;
+            var html = "";
             try
             {
                 html = await _getHtmlDocument.Execute(document.DocumentId);
             }
             catch (Exception error)
             {
-                await _logger.LogMessage(timestamp, $"Failed getting HTML from Documents API. Error message: {error.Message}");
-                throw;
+                await HandleError(timestamp, error, "Failed getting HTML from Documents API.");
             }
 
             await _logger.LogMessage(timestamp, "Retrieved Html from Documents API");
             return html;
+        }
+
+        private async Task HandleError(string timestamp, Exception error, string message)
+        {
+            //TODO Change status to failed
+            await _logger.LogMessage(timestamp, $"{message} {error.Message}");
+            Console.WriteLine($"error {error}");
+            throw error;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Boundary.UseCaseInterfaces;
 using Usecases.Domain;
@@ -19,7 +20,11 @@ namespace UseCases
         public void Execute(string htmlDocument, string documentType, string documentId)
         {
             ILetterParser parser = _getParser.ForType(documentType);
-
+            if (parser == null)
+            {
+                Console.WriteLine($"Letter type invalid {documentType}");
+                throw new NonSupportedException();
+            }
             var htmlInput = parser.Execute(htmlDocument);
 
             var css = CompileCss(htmlInput);
@@ -89,5 +94,9 @@ namespace UseCases
                 {htmlInput.TemplateSpecificCss}
               }}";
         }
+    }
+
+    public class NonSupportedException : Exception
+    {
     }
 }

@@ -118,7 +118,14 @@ namespace Gateways
             catch (ConditionalCheckFailedException)
             {
                 var createLog = UpdateRequestToCreateLogWithMessage(documentSavedAt, message, timestamp);
-                await _databaseClient.UpdateItemAsync(createLog);
+                try
+                {
+                    await _databaseClient.UpdateItemAsync(createLog);
+                }
+                catch (ConditionalCheckFailedException)
+                {
+                    Console.WriteLine($"Cant write log to document id {documentSavedAt}, item doesnt exist in database");
+                }
             }
         }
 
@@ -192,7 +199,7 @@ namespace Gateways
 
         private UpdateItemRequest UpdateRequestToAppendLogMessage(string documentSavedAt, string message, string timestamp)
         {
-            var newLogEntry = new AttributeValue {S = message};
+            var newLogEntry = new AttributeValue (message);
             return new UpdateItemRequest
             {
                 TableName = _documentsTable.TableName,

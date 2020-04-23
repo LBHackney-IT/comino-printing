@@ -39,7 +39,6 @@ namespace Gateways
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(content);
 
             return content;
         }
