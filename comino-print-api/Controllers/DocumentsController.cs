@@ -31,11 +31,11 @@ namespace comino_print_api.Controllers
         }
         
         [HttpPut]
-        public async Task<IActionResult> UpdateDocumentState([FromBody] string savedDocumentSavedAt, LetterStatusEnum newStatus)
+        
+        [HttpPut]
+        public void UpdateDocumentState([FromBody] int id, string newStatus)
         {
-            // var documents = await _updateDocuments.Execute(savedDocumentSavedAt, newStatus);
-            // return Ok(documents);
-            return null;
+            //update the document status.
         }
     }
 }
