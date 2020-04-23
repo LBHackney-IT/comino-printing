@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Boundary.UseCaseInterfaces;
 using Newtonsoft.Json;
 using Usecases.Domain;
+using Usecases.Enums;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
 using Usecases.Interfaces;
@@ -17,17 +18,20 @@ namespace UseCases
         private readonly IGetHtmlDocument _getHtmlDocument;
         private readonly IConvertHtmlToPdf _convertHtmlToPdf;
         private readonly IS3Gateway _savePdfToS3;
-        private IGetDetailsOfDocumentForProcessing _getDocumentDetails;
-        private IDbLogger _logger;
+        private readonly IGetDetailsOfDocumentForProcessing _getDocumentDetails;
+        private readonly IDbLogger _logger;
+        private readonly ILocalDatabaseGateway _localDatabaseGateway;
 
         public ProcessEvents(IGetHtmlDocument getHtmlDocument, IConvertHtmlToPdf convertHtmlToPdf,
-            IS3Gateway savePdfToS3, IGetDetailsOfDocumentForProcessing getDocumentDetails, IDbLogger logger)
+            IS3Gateway savePdfToS3, IGetDetailsOfDocumentForProcessing getDocumentDetails, IDbLogger logger,
+            ILocalDatabaseGateway localDatabaseGateway)
         {
             _getHtmlDocument = getHtmlDocument;
             _convertHtmlToPdf = convertHtmlToPdf;
             _savePdfToS3 = savePdfToS3;
             _getDocumentDetails = getDocumentDetails;
             _logger = logger;
+            _localDatabaseGateway = localDatabaseGateway;
         }
 
         public async Task Execute(SQSEvent sqsEvent)
@@ -107,7 +111,7 @@ namespace UseCases
 
         private async Task HandleError(string timestamp, Exception error, string message)
         {
-            //TODO Change status to failed
+            await _localDatabaseGateway.UpdateStatus(timestamp, LetterStatusEnum.ProcessingError);
             await _logger.LogMessage(timestamp, $"{message} Error message: {error.Message}");
             Console.WriteLine($"error {error}");
             throw error;

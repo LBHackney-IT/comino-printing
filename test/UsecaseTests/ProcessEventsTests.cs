@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using UseCases;
 using Usecases.Domain;
+using Usecases.Enums;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
 using Usecases.Interfaces;
@@ -23,6 +24,7 @@ namespace UnitTests
         private Mock<IS3Gateway> _sendToS3;
         private Mock<IGetDetailsOfDocumentForProcessing> _mockGetDocDetails;
         private Mock<IDbLogger> _logger;
+        private Mock<ILocalDatabaseGateway> _localDbGateway;
 
         [SetUp]
         public void Setup()
@@ -33,8 +35,9 @@ namespace UnitTests
             _sendToS3 = new Mock<IS3Gateway>();
             _mockGetDocDetails = new Mock<IGetDetailsOfDocumentForProcessing>();
             _logger = new Mock<IDbLogger>();
+            _localDbGateway = new Mock<ILocalDatabaseGateway>();
             _processEvents = new ProcessEvents(_mockGetHtmlDocument.Object, _mockPdfParser.Object, _sendToS3.Object,
-                _mockGetDocDetails.Object, _logger.Object);
+                _mockGetDocDetails.Object, _logger.Object, _localDbGateway.Object);
         }
 
         [Test]
@@ -92,6 +95,19 @@ namespace UnitTests
             AssertExecuteThrows(sqsEventMock);
 
             _logger.Verify(l => l.LogMessage(timestamp, "Failed getting HTML from Documents API. Error message: My exception"));
+        }
+
+        [Test]
+        public void ExecuteUpdatesStatusInDynamoWhenLambdaFails()
+        {
+            var timestamp = _fixture.Create<string>();
+            var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
+            var documentDetails = SetupGetDocumentDetails(timestamp);
+            _mockGetHtmlDocument.Setup(x => x.Execute(documentDetails.DocumentId)).ThrowsAsync(new Exception("My exception"));
+
+            AssertExecuteThrows(sqsEventMock);
+
+            _localDbGateway.Verify(x => x.UpdateStatus(timestamp, LetterStatusEnum.ProcessingError));
         }
 
         [Test]
