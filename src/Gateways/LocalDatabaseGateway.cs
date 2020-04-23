@@ -147,7 +147,7 @@ namespace Gateways
         private UpdateItemRequest UpdateRequestToCreateLogWithMessage(string documentSavedAt, string message, string timestamp)
         {
             var log = new AttributeValue
-                {M = new Dictionary<string, AttributeValue> {{timestamp, new AttributeValue {S = message}}}};
+                {M = new Dictionary<string, AttributeValue> {{timestamp, new AttributeValue (message)}}};
             return new UpdateItemRequest
             {
                 TableName = _documentsTable.TableName,
@@ -155,6 +155,7 @@ namespace Gateways
                 Key = new Dictionary<string, AttributeValue> {{"InitialTimestamp", new AttributeValue {S = documentSavedAt}}},
                 ExpressionAttributeNames = new Dictionary<string, string> {{"#atr", "Log"}},
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue> {{":val", log}},
+                ConditionExpression = "attribute_exists(InitialTimestamp)"
             };
         }
 

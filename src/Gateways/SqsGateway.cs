@@ -24,9 +24,9 @@ namespace Gateways
             var sqsMessageRequest = new SendMessageRequest
             {
                 QueueUrl = _queueUrl,
-                MessageBody = $"{documentId}"
+                MessageBody = documentId
             };
-            
+
             return _sqsClient.SendMessageAsync(sqsMessageRequest).Result;
         }
     }

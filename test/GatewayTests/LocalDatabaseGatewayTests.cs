@@ -175,6 +175,20 @@ namespace GatewayTests
         }
 
         [Test]
+        public async Task LogMessage_WhenItemDoesntExist_DoesNothing()
+        {
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
+
+            var logMessage = "Something has happened";
+            await _dbGateway.LogMessage("35672157", logMessage);
+
+            var savedItems = await GetItemsFromDatabase();
+
+            savedItems.First(i => i["InitialTimestamp"] == savedDocument.SavedAt).Should().NotContainKey("Log");
+            savedItems.Count().Should().Be(1);
+        }
+
+        [Test]
         public async Task GetLogForDocument_ReturnsAllLogEntries()
         {
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
