@@ -32,6 +32,7 @@ namespace UseCases
         {
             var documentsToProcess = _getDocumentIds.Execute();
             LambdaLogger.Log("Document ids retrieved" + JsonConvert.SerializeObject(documentsToProcess));
+            Console.Write("Document ids retrieved" + JsonConvert.SerializeObject(documentsToProcess));
 
             if (!documentsToProcess.Any()) { return; }
 
