@@ -52,6 +52,7 @@ namespace Gateways
         public async Task<List<DocumentDetails>> GetAllRecords(EndIdParameter endIdParameter)
         {
             var scanFilter = new ScanFilter();
+            scanFilter.AddCondition("InitialTimestamp", ScanOperator.LessThan, endIdParameter.endId);
 
             var search = _documentsTable.Scan(scanFilter);
             var records = await search.GetRemainingAsync();
