@@ -48,6 +48,24 @@ namespace UnitTests
             _gatewayMock.Verify();
         }
 
+        [Test]
+        public void ExecuteQueriesAndReturnsCominoForNewDocumentsInTimespanSpecifiedByEnvVariableIfExists()
+        {
+            var previouslySetSpan = Environment.GetEnvironmentVariable("DOCUMENTS_QUERY_TIMESPAN_MINUTES");
+            Environment.SetEnvironmentVariable("DOCUMENTS_QUERY_TIMESPAN_MINUTES", "10");
+            var startDate = DateTime.Now.AddMinutes(-10);
+            var documentIds = _fixture.CreateMany<DocumentDetails>().ToList();
+            _gatewayMock
+                .Setup(x => x.GetDocumentsAfterStartDate(CheckDateWithinASecond(startDate)))
+                .Returns(documentIds)
+                .Verifiable();
+            _getDocumentsIds.Execute().Should().BeEquivalentTo(documentIds);
+
+            _gatewayMock.Verify();
+
+            Environment.SetEnvironmentVariable("DOCUMENTS_QUERY_TIMESPAN", previouslySetSpan);
+        }
+
         private static DateTime CheckDateWithinASecond(DateTime startDate)
         {
             return It.Is<DateTime>(time => (time - startDate).TotalMilliseconds < 1000);

@@ -18,7 +18,10 @@ namespace UseCases
 
         public List<DocumentDetails> Execute()
         {
-            return _cominoGateway.GetDocumentsAfterStartDate(DateTime.Now.AddMinutes(-1));
+            var timeSpanInMinutes = Convert.ToInt32(Environment.GetEnvironmentVariable("DOCUMENTS_QUERY_TIMESPAN_MINUTES") ?? "1");
+            var startTime = DateTime.Now.AddMinutes(-timeSpanInMinutes);
+            Console.WriteLine($"Querying database for letter since {startTime}");
+            return _cominoGateway.GetDocumentsAfterStartDate(startTime);
         }
     }
 }
