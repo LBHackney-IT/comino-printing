@@ -13,6 +13,7 @@ namespace AwsDotnetCsharp
     public class Api
     {
         private readonly IGetAllDocuments _getAllDocumentsUseCase;
+//        private IUpdateDocuments _updateDocuments;
 
         public Api()
         {
@@ -35,6 +36,18 @@ namespace AwsDotnetCsharp
             return response;
         }
 
+//        public void Task<APIGatewayProxyResponse> GetById([FromQuery] string id)
+//        {
+            //Get s3 pdf Url from somewhere
+            //use Response.Redirect("")to redirect to the pdf in s3;
+
+//        }
+
+//        public async Task<APIGatewayProxyResponse> UpdateDocumentState([FromBody] string id, string status)
+//        {
+//            _updateDocuments.Execute(id, status);
+//        }
+
         private static string ConvertToCamelCasedJson<T>(T responseBody)
         {
             return JsonConvert.SerializeObject(responseBody, new JsonSerializerSettings
@@ -46,5 +59,6 @@ namespace AwsDotnetCsharp
                 Formatting = Formatting.Indented
             });
         }
+
     }
 }
