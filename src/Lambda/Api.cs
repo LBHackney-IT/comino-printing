@@ -6,6 +6,7 @@ using Amazon.Lambda.Core;
 using Boundary.UseCaseInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace AwsDotnetCsharp
 {
@@ -27,11 +28,23 @@ namespace AwsDotnetCsharp
             var response = new APIGatewayProxyResponse
             {
                 StatusCode = (int) HttpStatusCode.OK,
-                Body = JsonConvert.SerializeObject(documents),
+                Body = ConvertToCamelCasedJson(documents),
                 Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}}
             };
 
             return response;
+        }
+
+        private static string ConvertToCamelCasedJson<T>(T responseBody)
+        {
+            return JsonConvert.SerializeObject(responseBody, new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented
+            });
         }
     }
 }
