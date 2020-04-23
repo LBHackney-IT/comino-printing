@@ -16,7 +16,6 @@ namespace GatewayTests
     public class W2DocumentsGatewayTest
     {
         private W2DocumentsGateway _subject;
-        private HttpClient _httpClientMock;
         private IFixture _fixture;
         private string _url;
         private string _currentEnv;

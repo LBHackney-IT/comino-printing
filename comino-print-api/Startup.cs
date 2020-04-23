@@ -9,20 +9,20 @@ namespace comino_print_api
 {
     public class Startup
     {
-        private readonly ServiceProvider _serviceProvider;
-        
-        
-        public Startup()
+
+        public Startup(IConfiguration configuration)
         {
-            var configuration = BuildConfiguration();
-            _serviceProvider = AwsDotnetCsharp.ConfigureServices.Configure(configuration);
+            Configuration = configuration;
         }
-        
+
+        public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
-        { 
+        {
+            services.Configure();
             services.AddMvc();
         }
-        
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -35,10 +35,11 @@ namespace comino_print_api
                 app.UseHsts();
             }
 
+            app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseHttpsRedirection();
             app.UseMvc();
         }
-        
+
         private IConfigurationRoot BuildConfiguration()
         {
             return new ConfigurationBuilder()

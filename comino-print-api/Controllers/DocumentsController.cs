@@ -12,10 +12,10 @@ namespace comino_print_api.Controllers
     public class DocumentsController : Controller
     {
         private readonly IGetAllDocuments _getAllDocuments;
-        
+
         public DocumentsController(IGetAllDocuments getAllDocuments)
         {
-            _getAllDocuments = getAllDocuments;   
+            _getAllDocuments = getAllDocuments;
         }
 
         [HttpGet]
