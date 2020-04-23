@@ -61,7 +61,11 @@ namespace Gateways
                 ["InitialTimestamp"] = savedDocumentSavedAt,
                 ["Status"] = LetterStatusEnum.Processing.ToString(),
             };
-            var response = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
+            var response = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllOldAttributes});
+            if (response.Count == 0 || response["Status"] == LetterStatusEnum.Processing.ToString() )
+            {
+                return null;
+            }
             return MapToDocumentDetails(response);
         }
 

@@ -30,7 +30,7 @@ namespace Gateways
             var urlToGet = _baseUrl + $"/hncomino/documents/{documentId}/view";
             Console.WriteLine($"Get HTML from {urlToGet}");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-            
+
             var response = await _client.GetAsync(urlToGet);
 
             if (!response.IsSuccessStatusCode)

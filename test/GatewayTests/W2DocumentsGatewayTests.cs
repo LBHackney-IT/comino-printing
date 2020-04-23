@@ -81,7 +81,7 @@ namespace GatewayTests
             var stubbedResponse = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonConvert.SerializeObject(expectedHtml))
+                Content = new StringContent(expectedHtml)
             };
 
             _messageHandler

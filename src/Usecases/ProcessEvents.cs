@@ -35,13 +35,22 @@ namespace UseCases
             Console.WriteLine("Received message from SQS");
             // expected Records count = 1, per batchSize configured in serverless.yml
             var record = sqsEvent.Records.First();
-
+            //TODO Remove message from the queue
             var timestamp = record.Body;
 
             Console.WriteLine($"Received from queue [{record.EventSourceArn}] document timestamp = {timestamp}");
-            await _logger.LogMessage(timestamp, "Picked up document from queue - Processing");
 
+            //TODO Check the status is set to waiting
             var document = await _getDocumentDetails.Execute(timestamp);
+            Console.WriteLine($"Received Document {JsonConvert.SerializeObject(document)}");
+
+            if (document == null)
+            {
+                Console.WriteLine($"Could not find document for ID {timestamp} waiting to be processed in Dynamo");
+                return;
+            }
+
+            await _logger.LogMessage(timestamp, "Picked up document from queue - Processing");
             Console.WriteLine($"Retrieved from dynamo, getting Html for documentId = {document.DocumentId}");
 
             var html = await TryGetDocumentAsHtml(document, timestamp);

@@ -128,6 +128,24 @@ namespace GatewayTests
         }
 
         [Test]
+        public async Task RetrieveDocumentAndSetStatusToProcessing_IfDocumentAlreadyProcessing_ReturnsNull()
+        {
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.Processing.ToString());
+
+            var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.SavedAt);
+
+            response.Should().BeNull();
+        }
+
+        [Test]
+        public async Task RetrieveDocumentAndSetStatusToProcessing_IfDocumentDoesntExist_ReturnsNull()
+        {
+            var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing("317286387");
+
+            response.Should().BeNull();
+        }
+
+        [Test]
         public async Task UpdateStatus_SetsNewStatusForADocument()
         {
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
@@ -252,7 +270,7 @@ namespace GatewayTests
             };
         }
 
-        private async Task<DocumentDetails> AddDocumentToDatabase(DocumentDetails document, long? currentTimestamp = null)
+        private async Task<DocumentDetails> AddDocumentToDatabase(DocumentDetails document, long? currentTimestamp = null, string status = null)
         {
             var timestamp = currentTimestamp ?? GetCurrentTimestamp();
             var documentItem = new Document
@@ -262,7 +280,7 @@ namespace GatewayTests
                 ["InitialTimestamp"] = timestamp.ToString(),
                 ["LetterType"] = document.LetterType,
                 ["DocumentType"] = document.DocumentType,
-                ["Status"] = LetterStatusEnum.Waiting.ToString()
+                ["Status"] = status ?? LetterStatusEnum.Waiting.ToString()
             };
             await DatabaseClient.DocumentTable.PutItemAsync(documentItem);
 
