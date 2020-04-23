@@ -30,6 +30,12 @@ namespace comino_print_api.Controllers
             return Ok(documents);
         }
         
+        public void GetById([FromQuery] string id)
+        {
+            //Get s3 pdf Url from somewhere
+            //use Response.Redirect("")to redirect to the pdf in s3;
+        }
+        
         [HttpPut]
         public void UpdateDocumentState([FromBody] string id, string status)
         {
