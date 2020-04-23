@@ -40,7 +40,6 @@ namespace UseCases
 
             Console.WriteLine($"Received from queue [{record.EventSourceArn}] document timestamp = {timestamp}");
 
-            //TODO Check the status is set to waiting
             var document = await _getDocumentDetails.Execute(timestamp);
             Console.WriteLine($"Received Document {JsonConvert.SerializeObject(document)}");
 
