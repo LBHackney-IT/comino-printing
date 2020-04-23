@@ -48,11 +48,11 @@ namespace GatewayTests
         {
             var newDocument = RandomDocumentDetails();
             await _dbGateway.SaveDocument(newDocument);
-            var expectedTimestamp = Convert.ToInt32((DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds);
+            var expectedTimestamp = GetCurrentTimestamp();
 
             var response = await GetItemsFromDatabase();
             var savedTimestamp = GetTimestampForDocumentId(response, newDocument);
-            savedTimestamp.Should().BeCloseTo(expectedTimestamp, 1);
+            savedTimestamp.Should().BeCloseTo(expectedTimestamp, 100);
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace GatewayTests
             var response = await _dbGateway.SaveDocument(newDocument);
             var currentTimestamp = GetCurrentTimestamp();
 
-            Convert.ToInt32(response).Should().BeCloseTo(currentTimestamp, 1);
+            Convert.ToInt64(response).Should().BeCloseTo(currentTimestamp, 100);
         }
 
         [Test]
@@ -93,7 +93,7 @@ namespace GatewayTests
             var document2 = RandomDocumentDetails();
             var response = await _dbGateway.SaveDocument(document2);
 
-            Convert.ToInt32(response).Should().BeGreaterThan(currentTimestamp);
+            Convert.ToInt64(response).Should().BeGreaterThan(currentTimestamp);
         }
 
         [Test]
@@ -222,9 +222,9 @@ namespace GatewayTests
             return savedItems.First(i => i["InitialTimestamp"] == savedAt)["Log"].AsDocument();
         }
 
-        private static int GetCurrentTimestamp()
+        private static long GetCurrentTimestamp()
         {
-            return Convert.ToInt32((DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds);
+            return Convert.ToInt64((DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds);
         }
 
         private DocumentDetails RandomDocumentDetails()
@@ -238,7 +238,7 @@ namespace GatewayTests
             };
         }
 
-        private async Task<DocumentDetails> AddDocumentToDatabase(DocumentDetails document, int? currentTimestamp = null)
+        private async Task<DocumentDetails> AddDocumentToDatabase(DocumentDetails document, long? currentTimestamp = null)
         {
             var timestamp = currentTimestamp ?? GetCurrentTimestamp();
             var documentItem = new Document
@@ -256,9 +256,9 @@ namespace GatewayTests
             return document;
         }
 
-        private static int GetTimestampForDocumentId(List<Document> savedItems, DocumentDetails document)
+        private static long GetTimestampForDocumentId(List<Document> savedItems, DocumentDetails document)
         {
-            return (int) savedItems.First(doc => doc["DocumentId"] == document.DocumentId)["InitialTimestamp"];
+            return (long) savedItems.First(doc => doc["DocumentId"] == document.DocumentId)["InitialTimestamp"];
         }
 
         private async Task<List<Document>> GetItemsFromDatabase()
