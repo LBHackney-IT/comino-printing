@@ -7,13 +7,14 @@ using Boundary.UseCaseInterfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Usecases.Interfaces;
 
 namespace AwsDotnetCsharp
 {
     public class Api
     {
         private readonly IGetAllDocuments _getAllDocumentsUseCase;
-//        private IUpdateDocuments _updateDocuments;
+        private IUpdateDocumentState _updateDocumentUsecase;
 
         public Api()
         {
@@ -54,6 +55,20 @@ namespace AwsDotnetCsharp
         public async Task<APIGatewayProxyResponse> ApproveDocument(string id)
         {
 //            _updateDocuments.Execute(id, status);
+
+            var response = new APIGatewayProxyResponse
+            {
+                StatusCode = (int) HttpStatusCode.OK,
+                Headers = new Dictionary<string, string>{{"Access-Control-Allow-Origin", "*"}}
+            };
+
+            return response;
+        }
+        
+        public async Task<APIGatewayProxyResponse> UpdateDocumentStatus(string id, string status )
+        {   
+            // get status from the request from API gateway
+            // await _updateDocumentUsecase.Execute(id, status);
 
             var response = new APIGatewayProxyResponse
             {
