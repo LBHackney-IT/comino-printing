@@ -1,6 +1,4 @@
 using System.Text;
-using Boundary.UseCaseInterfaces;
-using IronPdf;
 using Usecases.Interfaces;
 
 namespace UseCases.UntestedParsers
