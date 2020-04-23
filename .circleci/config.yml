@@ -121,7 +121,7 @@ jobs:
 
       - run:
           name: Set AWS credentials
-          command: serverless config credentials -p aws -s staging --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile hackney
+          command: serverless config credentials -p aws --stage staging --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile hackney
 
       - run:
           name: Deploy application
@@ -146,7 +146,7 @@ jobs:
 
       - run:
           name: Set AWS credentials
-          command: serverless config credentials -p aws -s staging --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile hackney
+          command: serverless config credentials -p aws --stage production --key ${AWS_ACCESS_KEY_ID} --secret ${AWS_SECRET_ACCESS_KEY} --profile hackney
 
       - run:
           name: Deploy application
