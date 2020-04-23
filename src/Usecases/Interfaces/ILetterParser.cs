@@ -1,6 +1,7 @@
-using RtfParseSpike.Templates;
 
-namespace Usecases.UseCaseInterfaces
+using Usecases.Domain;
+
+namespace Usecases.Interfaces
 {
     public interface ILetterParser
     {

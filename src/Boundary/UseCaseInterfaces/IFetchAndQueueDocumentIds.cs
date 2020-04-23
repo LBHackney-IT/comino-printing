@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Usecases.UseCaseInterfaces
+namespace Boundary.UseCaseInterfaces
 {
     public interface IFetchAndQueueDocumentIds
     {

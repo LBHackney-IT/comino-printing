@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
-using AwsDotnetCsharp.UsecaseInterfaces;
 using Moq;
 using NUnit.Framework;
 using UseCases;
 using Usecases.Domain;
 using Usecases.GatewayInterfaces;
-using Usecases.UseCaseInterfaces;
+using Usecases.Interfaces;
 
 namespace UnitTests
 {

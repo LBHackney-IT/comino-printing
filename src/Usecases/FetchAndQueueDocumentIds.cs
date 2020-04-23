@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Amazon.SQS.Model;
-using AwsDotnetCsharp.UsecaseInterfaces;
+using Boundary.UseCaseInterfaces;
 using Newtonsoft.Json;
 using Usecases.Domain;
 using Usecases.GatewayInterfaces;
-using Usecases.UseCaseInterfaces;
+using Usecases.Interfaces;
 
 namespace UseCases
 {

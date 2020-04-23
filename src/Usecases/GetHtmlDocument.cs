@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AwsDotnetCsharp.UsecaseInterfaces;
+using Boundary.UseCaseInterfaces;
 using UseCases.GatewayInterfaces;
-using Usecases.UseCaseInterfaces;
+using Usecases.Interfaces;
 
 namespace UseCases
 {

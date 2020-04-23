@@ -1,7 +1,7 @@
 using System.Linq;
 using HtmlAgilityPack;
-using RtfParseSpike.Templates;
-using Usecases.UseCaseInterfaces;
+using Usecases.Domain;
+using Usecases.Interfaces;
 
 namespace Usecases.UntestedParsers
 {

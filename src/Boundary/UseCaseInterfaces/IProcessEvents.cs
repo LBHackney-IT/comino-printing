@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Amazon.Lambda.SQSEvents;
 
-namespace Usecases.UseCaseInterfaces
+namespace Boundary.UseCaseInterfaces
 {
     public interface IProcessEvents
     {

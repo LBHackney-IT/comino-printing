@@ -1,6 +1,7 @@
 using System.IO;
-using RtfParseSpike.Templates;
-using Usecases.UseCaseInterfaces;
+using Boundary.UseCaseInterfaces;
+using Usecases.Domain;
+using Usecases.Interfaces;
 
 namespace UseCases
 {

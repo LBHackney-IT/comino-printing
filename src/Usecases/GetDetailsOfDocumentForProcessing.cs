@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Usecases.Domain;
 using Usecases.Enums;
 using UseCases.GatewayInterfaces;
-using Usecases.UseCaseInterfaces;
+using Usecases.Interfaces;
 
 namespace UseCases
 {

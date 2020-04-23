@@ -6,13 +6,14 @@ using Amazon.DynamoDBv2;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.SQS;
+using Boundary.UseCaseInterfaces;
 using Gateways;
 using Microsoft.Extensions.DependencyInjection;
 using UseCases;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
+using Usecases.Interfaces;
 using UseCases.UntestedParsers;
-using Usecases.UseCaseInterfaces;
 
 namespace AwsDotnetCsharp
 {
@@ -56,6 +57,7 @@ namespace AwsDotnetCsharp
             services.AddScoped<IFetchAndQueueDocumentIds, FetchAndQueueDocumentIds>();
             services.AddScoped<IGetDetailsOfDocumentForProcessing, GetDetailsOfDocumentForProcessing>();
             services.AddScoped<IParseHtmlToPdf, IronPDFParser>();
+            services.AddScoped<IGetAllDocuments, GetAllDocuments>();
         }
     }
 }

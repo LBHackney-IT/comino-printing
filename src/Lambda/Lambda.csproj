@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Boundary\Boundary.csproj" />
         <ProjectReference Include="..\Gateways\Gateways.csproj" />
         <ProjectReference Include="..\Usecases\Usecases.csproj" />
     </ItemGroup>

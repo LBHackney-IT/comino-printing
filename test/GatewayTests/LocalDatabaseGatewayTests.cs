@@ -10,7 +10,6 @@ using Gateways;
 using NUnit.Framework;
 using Usecases.Domain;
 using Usecases.Enums;
-using Usecases.UseCaseInterfaces;
 
 namespace GatewayTests
 {
