@@ -43,7 +43,7 @@ namespace AwsDotnetCsharp
             var response = new APIGatewayProxyResponse
             {
                 StatusCode = (int) HttpStatusCode.OK,
-                //TODO 
+                //TODO
                 Body = "Use Case Response Here",
                 Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}}
             };
@@ -51,10 +51,17 @@ namespace AwsDotnetCsharp
             return response;
         }
 
-//        public async Task<APIGatewayProxyResponse> UpdateDocumentState([FromBody] string id, string status)
-//        {
+        public async Task<APIGatewayProxyResponse> ApproveDocument(string id)
+        {
 //            _updateDocuments.Execute(id, status);
-//        }
+
+            var response = new APIGatewayProxyResponse
+            {
+                StatusCode = (int) HttpStatusCode.OK,
+            };
+
+            return response;
+        }
 
         private static string ConvertToCamelCasedJson<T>(T responseBody)
         {

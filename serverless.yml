@@ -56,6 +56,7 @@ functions:
     events:
       - sqs: arn:aws:sqs:eu-west-2:775052747630:sqs-comino-printing-${self:provider.stage}
         batchSize: 1
+
   get-all-documents-api:
     name: ${self:service}-${self:provider.stage}-get-all-documents-api
     handler: Lambda::AwsDotnetCsharp.Api::GetAllDocuments
@@ -65,6 +66,7 @@ functions:
           path: /api/documents
           method: GET
           cors: true
+
   get-document:
     name: ${self:service}-${self:provider.stage}-get-document
     handler: Lambda::AwsDotnetCsharp.Api::GetById
@@ -73,9 +75,22 @@ functions:
       - http:
           path: /api/documents/{id}
           method: get
-            request:
-              parameters:
-                paths:
+          request:
+            parameters:
+              paths:
+                id: true
+  
+  approve-document:
+    name: ${self:service}-${self:provider.stage}-approve-document
+    handler: Lambda::AwsDotnetCsharp.Api::ApproveDocument
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    events:
+      - http:
+          path: /api/documents/{id}/approve
+          method: post
+          request:
+            parameters:
+              paths:
                 id: true
 
 resources:
