@@ -36,12 +36,20 @@ namespace AwsDotnetCsharp
             return response;
         }
 
-//        public void Task<APIGatewayProxyResponse> GetById([FromQuery] string id)
-//        {
-            //Get s3 pdf Url from somewhere
-            //use Response.Redirect("")to redirect to the pdf in s3;
+        public APIGatewayProxyResponse GetById(string id)
+        {
+//            Get s3 pdf Url from somewhere
+//            use Response.Redirect("")to redirect to the pdf in s3;
+            var response = new APIGatewayProxyResponse
+            {
+                StatusCode = (int) HttpStatusCode.OK,
+                //TODO 
+                Body = "Use Case Response Here",
+                Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}}
+            };
 
-//        }
+            return response;
+        }
 
 //        public async Task<APIGatewayProxyResponse> UpdateDocumentState([FromBody] string id, string status)
 //        {

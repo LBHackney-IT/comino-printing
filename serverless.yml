@@ -65,18 +65,18 @@ functions:
           path: /api/documents
           method: GET
           cors: true
-  
-          functions:
-          create:
-          handler: posts.post_detail
-            events:
-              - http:
-          path: posts/{id}
+  get-document:
+    name: ${self:service}-${self:provider.stage}-get-document
+    handler: Lambda::AwsDotnetCsharp.Api::GetById
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    events:
+      - http:
+          path: /api/documents/{id}
           method: get
             request:
-          parameters:
-          paths:
-          id: true
+              parameters:
+                paths:
+                id: true
 
 resources:
   Resources:
