@@ -28,13 +28,13 @@ namespace UseCases
                Status = record.Status.ToString(),
                LetterType = record.LetterType,
                DocumentType = record.DocumentType,
-               Logs = record.Log.Select(x => new Dictionary<string, string>
+               Logs = record.Log?.Select(x => new Dictionary<string, string>
                {
                    {"Date", x.Key},
                    {"Message", x.Value}
                }).ToList()
            }).ToList();
-           
+
            return new GetAllDocumentsResponse
            {
                Documents = documentResponses

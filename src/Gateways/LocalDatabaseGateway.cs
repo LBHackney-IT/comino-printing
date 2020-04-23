@@ -57,7 +57,10 @@ namespace Gateways
             return records.ToList().Select(document =>
             {
                 var logEntries = new Dictionary<string, string>();
-                document["Log"].AsDocument().ToList().ForEach( x => logEntries[x.Key] = x.Value.ToString());
+                if (document.ContainsKey("Log"))
+                {
+                    document["Log"].AsDocument().ToList().ForEach( x => logEntries[x.Key] = x.Value.ToString());
+                }
 
                 return new DocumentDetails
                 {

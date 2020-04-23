@@ -47,7 +47,7 @@ namespace GatewayTests
         {
             var savedDocumentOne = RandomDocumentDetails();
             await _dbGateway.SaveDocument(savedDocumentOne);
-            
+
             var savedDocumentTwo = RandomDocumentDetails();
             await _dbGateway.SaveDocument(savedDocumentTwo);
 
