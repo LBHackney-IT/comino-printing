@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 // using System.IO;
@@ -15,16 +16,22 @@ namespace Gateways
     {
         private readonly string _baseUrl;
         private readonly HttpClient _client;
+        private readonly string _token;
 
         public W2DocumentsGateway(HttpClient client)
         {
             _client = client;
             _baseUrl = Environment.GetEnvironmentVariable("W2_DOCUMENT_BASE_URL");
+            _token = Environment.GetEnvironmentVariable("DOCUMENTS_API_TOKEN");
         }
 
         public async Task<string> GetHtmlDocument(string documentId)
         {
-            var response = await _client.GetAsync(_baseUrl + $"/hncomino/documents/{documentId}/view");
+            var urlToGet = _baseUrl + $"/hncomino/documents/{documentId}/view";
+            Console.WriteLine($"Get HTML from {urlToGet}");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            
+            var response = await _client.GetAsync(urlToGet);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -32,9 +39,9 @@ namespace Gateways
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var html = JsonConvert.DeserializeObject<string>(content);
+            Console.WriteLine(content);
 
-            return html;
+            return content;
         }
     }
 }

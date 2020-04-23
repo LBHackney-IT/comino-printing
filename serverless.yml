@@ -31,6 +31,7 @@ provider:
     LETTERS_TABLE_NAME: "${self:service}-${self:provider.stage}-letters-2"
     W2_DOCUMENT_BASE_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/W2_DOCUMENTS_API}
     GENERATED_PDF_BUCKET_NAME: "${self:service}-${self:provider.stage}-generated-pdfs"
+    DOCUMENTS_API_TOKEN:  ${ssm:/hn-comino-printing/${self:provider.stage}/DOCUMENTS_API_TOKEN}
 
 package:
   artifact: ./src/Lambda/bin/release/netcoreapp2.1/comino-printing.zip
