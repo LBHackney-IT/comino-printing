@@ -53,7 +53,7 @@ namespace UseCases
             Console.WriteLine($"Retrieved from dynamo, getting Html for documentId = {document.DocumentId}");
 
             var html = await TryGetDocumentAsHtml(document, timestamp);
-            Console.WriteLine($"Received HTML: {html.Substring(0, 100)}");
+            Console.WriteLine($"Received HTML: {(html == null ? "" : (html.Length < 100 ? html : html.Substring(0, 100)))}");
 
 
             await TryConvertToPdf(html, document, timestamp);
@@ -108,7 +108,7 @@ namespace UseCases
         private async Task HandleError(string timestamp, Exception error, string message)
         {
             //TODO Change status to failed
-            await _logger.LogMessage(timestamp, $"{message} {error.Message}");
+            await _logger.LogMessage(timestamp, $"{message} Error message: {error.Message}");
             Console.WriteLine($"error {error}");
             throw error;
         }
