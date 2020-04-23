@@ -81,13 +81,6 @@ namespace Gateways
             return MapToDocumentDetails(document);
         }
         
-        public async Task<DocumentDetails> UpdateStatusFromRequest(string savedDocumentSavedAt, string requestedStatus)
-        {
-            var newStatus = Enum.Parse<LetterStatusEnum>(requestedStatus);
-            await UpdateStatus(savedDocumentSavedAt, newStatus);
-            return await GetRecordByTimeStamp(savedDocumentSavedAt);
-        }
-        
         public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt)
         {
             var updateDoc = new Document

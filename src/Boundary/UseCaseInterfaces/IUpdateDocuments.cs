@@ -2,6 +2,6 @@ namespace Boundary.UseCaseInterfaces
 {
     public interface IUpdateDocuments
     {
-        // void Execute(string savedDocumentSavedAt, LetterStatusEnum newStatus);
+        void Execute(string id, string status);
     }
 }

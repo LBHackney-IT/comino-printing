@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
@@ -28,46 +29,12 @@ namespace UnitTests
         [Test]
         public void ExecuteWillUpdateTheStatusOfTheDocument()
         {
-            var savedRecord = _fixture.Create<DocumentDetails>();
-            savedRecord.Status = LetterStatusEnum.Waiting;
+            var putRequestId = _fixture.Create<DocumentDetails>().SavedAt;
+            var requestedStatus = _fixture.Create<DocumentDetails>().Status;
 
-            var newStatus = LetterStatusEnum.Processing;
+            _subject.Execute(putRequestId, requestedStatus.ToString());
             
-            var expectedResponse = new DocumentResponse
-            {
-                Id = savedRecord.SavedAt,
-                DocNo = savedRecord.DocumentId,
-                Sender = savedRecord.DocumentCreator,
-                Created = savedRecord.SavedAt,
-                Status = newStatus.ToString(),
-                LetterType = savedRecord.LetterType,
-                DocumentType = savedRecord.DocumentType,
-                Logs = savedRecord.Log.Select(x => new Dictionary<string, string>
-                {
-                    {"Date", x.Key},
-                    {"Message", x.Value}
-
-                }).ToList()
-            };
-
-            // _dbGatewayMock.Setup(x => x.UpdateStatus(savedRecord.SavedAt, newStatus));
-            // _subject.Execute();
-            //
-            // _dbGatewayMock.Verify(x => x.);
-            //
-            // response.Documents.Should().BeEquivalentTo(expectedResponse);
-        }
-    }
-
-    internal class UpdateDocumentStatus
-    {
-        public UpdateDocumentStatus(ILocalDatabaseGateway localDatabaseGateway)
-        {
-        }
-
-        public void Execute()
-        {
-            throw new System.NotImplementedException();
+            _dbGatewayMock.Verify(x => x.UpdateStatus(putRequestId, requestedStatus));
         }
     }
 }

@@ -31,11 +31,9 @@ namespace comino_print_api.Controllers
         }
         
         [HttpPut]
-        
-        [HttpPut]
-        public void UpdateDocumentState([FromBody] int id, string newStatus)
+        public void UpdateDocumentState([FromBody] string id, string status)
         {
-            //update the document status.
+            _updateDocuments.Execute(id, status);
         }
     }
 }
