@@ -1,4 +1,4 @@
-namespace Usecases.UseCaseInterfaces
+namespace Usecases.Interfaces
 {
     public interface IGetParser
     {

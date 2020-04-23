@@ -1,14 +1,14 @@
 using Amazon.Lambda.SQSEvents;
-using AwsDotnetCsharp.UsecaseInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Boundary.UseCaseInterfaces;
 using Newtonsoft.Json;
 using Usecases.Domain;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
-using Usecases.UseCaseInterfaces;
+using Usecases.Interfaces;
 
 namespace UseCases
 {

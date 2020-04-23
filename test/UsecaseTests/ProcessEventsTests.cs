@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.Lambda.SQSEvents;
 using AutoFixture;
+using Boundary.UseCaseInterfaces;
 using Moq;
 using NUnit.Framework;
 using UseCases;
 using Usecases.Domain;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
-using Usecases.UseCaseInterfaces;
+using Usecases.Interfaces;
 
 namespace UnitTests
 {

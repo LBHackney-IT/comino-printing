@@ -1,5 +1,5 @@
+using Usecases.Interfaces;
 using Usecases.UntestedParsers;
-using Usecases.UseCaseInterfaces;
 
 namespace UseCases
 {

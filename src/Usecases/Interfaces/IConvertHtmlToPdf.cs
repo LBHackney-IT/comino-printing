@@ -1,6 +1,4 @@
-using System.IO;
-
-namespace Usecases.UseCaseInterfaces
+namespace Usecases.Interfaces
 {
     public interface IConvertHtmlToPdf
     {

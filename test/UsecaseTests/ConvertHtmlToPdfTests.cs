@@ -1,12 +1,13 @@
 using System.IO;
 using System.Linq;
 using AutoFixture;
+using Boundary.UseCaseInterfaces;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using RtfParseSpike.Templates;
 using UseCases;
-using Usecases.UseCaseInterfaces;
+using Usecases.Domain;
+using Usecases.Interfaces;
 
 namespace UnitTests
 {

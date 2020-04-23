@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Usecases.Domain;
 
-namespace Usecases.UseCaseInterfaces
+namespace Usecases.Interfaces
 {
     public interface IGetDocumentsIds
     {

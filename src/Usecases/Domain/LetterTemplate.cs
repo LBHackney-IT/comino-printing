@@ -1,5 +1,5 @@
 
-namespace RtfParseSpike.Templates
+namespace Usecases.Domain
 {
     public class LetterTemplate
     {

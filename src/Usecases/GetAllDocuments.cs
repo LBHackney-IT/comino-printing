@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Boundary.UseCaseInterfaces;
 using comino_print_api.Models;
 using comino_print_api.Responses;
-using comino_print_api.UseCaseInterFaces;
 using UseCases.GatewayInterfaces;
 
 namespace UseCases

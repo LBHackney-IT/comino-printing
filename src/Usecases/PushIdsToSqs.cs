@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Amazon.SQS.Model;
-using AwsDotnetCsharp.UsecaseInterfaces;
 using UseCases.GatewayInterfaces;
-using Usecases.UseCaseInterfaces;
+using Usecases.Interfaces;
 
 namespace UseCases
 {
