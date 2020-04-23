@@ -38,8 +38,10 @@ namespace UseCases
         {
             Console.WriteLine("Received message from SQS");
             // expected Records count = 1, per batchSize configured in serverless.yml
+            // Messages will be removed from the queue upon successful response of this lambda.
+            // If no successful response within 30sec then they will be available to pick up from the queue again.
+
             var record = sqsEvent.Records.First();
-            //TODO Remove message from the queue
             var timestamp = record.Body;
 
             Console.WriteLine($"Received from queue [{record.EventSourceArn}] document timestamp = {timestamp}");
