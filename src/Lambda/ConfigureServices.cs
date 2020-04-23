@@ -7,7 +7,6 @@ using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.SQS;
 using Gateways;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UseCases;
 using Usecases.GatewayInterfaces;

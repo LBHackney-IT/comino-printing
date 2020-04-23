@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using comino_print_api.Responses;
 using comino_print_api.UseCaseInterFaces;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Core;
 namespace comino_print_api.Controllers
 {
     [ApiController]
-    [Route("/[controller]")]
+    [Route("/api/[controller]")]
     public class DocumentsController : Controller
     {
         private readonly IGetAllDocuments _getAllDocuments;
