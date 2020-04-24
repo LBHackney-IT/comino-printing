@@ -80,6 +80,16 @@ namespace Gateways
                 .Take(limit).ToList();
         }
 
+        public async Task SetStatusToReadyForNotify(string savedDocumentSavedAt)
+        {
+            var updateDoc = new Document
+            {
+                ["InitialTimestamp"] = savedDocumentSavedAt,
+                ["Status"] = LetterStatusEnum.ReadyForGovNotify.ToString(),
+            };
+            await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
+        }
+
         public async Task<DocumentDetails> GetRecordByTimeStamp(string currentTimestamp)
         {
             var config = new GetItemOperationConfig{ ConsistentRead = true };

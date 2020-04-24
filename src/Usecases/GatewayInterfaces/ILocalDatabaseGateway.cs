@@ -16,5 +16,6 @@ namespace UseCases.GatewayInterfaces
         Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt);
 
         Task<List<DocumentDetails>> GetAllRecords(int limit, string cursor);
+        Task SetStatusToReadyForNotify(string putRequestId);
     }
 }

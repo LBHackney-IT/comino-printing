@@ -15,7 +15,7 @@ namespace AwsDotnetCsharp
     public class Api
     {
         private readonly IGetAllDocuments _getAllDocumentsUseCase;
-        private IUpdateDocumentState _updateDocumentUsecase;
+        private IApproveDocument _approveDocumentUsecase;
 
         public Api()
         {
@@ -61,21 +61,8 @@ namespace AwsDotnetCsharp
 
         public async Task<APIGatewayProxyResponse> ApproveDocument(APIGatewayProxyRequest request, ILambdaContext context)
         {
-//            _updateDocuments.Execute(id, status);
-
-            var response = new APIGatewayProxyResponse
-            {
-                StatusCode = (int) HttpStatusCode.OK,
-                Headers = new Dictionary<string, string>{{"Access-Control-Allow-Origin", "*"}}
-            };
-
-            return response;
-        }
-        
-        public async Task<APIGatewayProxyResponse> UpdateDocumentStatus(string id, string status )
-        {   
-            // get status from the request from API gateway
-            // await _updateDocumentUsecase.Execute(id, status);
+            var id = request.PathParameters["id"];
+            await _approveDocumentUsecase.Execute(id);
 
             var response = new APIGatewayProxyResponse
             {

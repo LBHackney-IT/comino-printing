@@ -7,29 +7,29 @@ using UseCases.GatewayInterfaces;
 
 namespace UnitTests
 {
-    public class UpdateDocumentStatusTests
+    public class ApproveDocumentTests
     {
         private Mock<ILocalDatabaseGateway> _dbGatewayMock;
-        private UpdateDocumentState _subject;
+        private ApproveDocument _subject;
         private Fixture _fixture;
 
         [SetUp]
         public void Setup()
         {
             _dbGatewayMock = new Mock<ILocalDatabaseGateway>();
-            _subject = new UpdateDocumentState(_dbGatewayMock.Object);
+            _subject = new ApproveDocument(_dbGatewayMock.Object);
             _fixture = new Fixture();
         }
 
         [Test]
-        public void ExecuteWillUpdateTheStatusOfTheDocument()
+        public void ExecuteWillCallTheGatewayToUpdateTheStatusOfTheDocumentAfterApproval()
         {
             var putRequestId = _fixture.Create<DocumentDetails>().SavedAt;
             var requestedStatus = _fixture.Create<DocumentDetails>().Status;
 
-            _subject.Execute(putRequestId, requestedStatus.ToString());
+            _subject.Execute(putRequestId);
             
-            _dbGatewayMock.Verify(x => x.UpdateStatus(putRequestId, requestedStatus));
+            _dbGatewayMock.Verify(x => x.SetStatusToReadyForNotify(putRequestId));
         }
     }
 }
