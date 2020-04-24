@@ -81,7 +81,7 @@ namespace GatewayTests
 
             var savedDocumentThree = await AddDocumentToDatabase(RandomDocumentDetails());
 
-            var expectedResponse = new List<DocumentDetails> {savedDocumentThree};
+            var expectedResponse = new List<DocumentDetails> {savedDocumentOne};
 
             var response = await _dbGateway.GetAllRecords(2, savedDocumentTwo.SavedAt);
 

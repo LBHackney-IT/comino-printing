@@ -76,7 +76,7 @@ namespace Gateways
             });
 
             return parsedRecords.OrderByDescending(doc => DateTime.Parse(doc.SavedAt))
-                .Where(doc => cursor == null || DateTime.Parse(doc.SavedAt) > DateTime.Parse(cursor))
+                .Where(doc => cursor == null || DateTime.Parse(doc.SavedAt) < DateTime.Parse(cursor))
                 .Take(limit).ToList();
         }
 
