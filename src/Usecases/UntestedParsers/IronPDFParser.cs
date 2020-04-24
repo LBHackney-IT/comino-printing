@@ -6,7 +6,7 @@ namespace UseCases.UntestedParsers
 {
     public class IronPDFParser : IParseHtmlToPdf
     {
-        public void Execute(string fullHtml, string filePath, int marginTop = 5, int marginRight = 15, int marginBottom = 5,
+        public void Execute(string fullHtml, string documentId, int marginTop = 5, int marginRight = 15, int marginBottom = 5,
             int marginLeft = 15)
         {
             var renderer = new HtmlToPdf {PrintOptions =
@@ -19,7 +19,7 @@ namespace UseCases.UntestedParsers
                 MarginRight = marginRight
             }};
             var pdf = renderer.RenderHtmlAsPdf(fullHtml);
-            pdf.SaveAs($"./{filePath}.pdf");
+            pdf.SaveAs($"/tmp/{documentId}.pdf");
         }
     }
 }

@@ -1,8 +1,5 @@
-using System.IO;
-using System.Linq;
+using System;
 using AutoFixture;
-using Boundary.UseCaseInterfaces;
-using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using UseCases;
@@ -18,14 +15,23 @@ namespace UnitTests
         private Mock<IGetParser> _getParsers;
         private Mock<IParseHtmlToPdf> _parseHtmlToPdf;
         private Mock<ILetterParser> _mockLetterTypeParser;
+        private string _convertHtmlToPdfEnvVar;
 
         [SetUp]
         public void Setup()
         {
+            _convertHtmlToPdfEnvVar = Environment.GetEnvironmentVariable("CONVERT_HTML_TO_PDF");
+            Environment.SetEnvironmentVariable("CONVERT_HTML_TO_PDF", "true");
             _fixture = new Fixture();
             _getParsers = new Mock<IGetParser>();
             _parseHtmlToPdf = new Mock<IParseHtmlToPdf>();
             _convertHtmlToPdf = new ConvertHtmlToPdf(_parseHtmlToPdf.Object, _getParsers.Object);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            Environment.SetEnvironmentVariable("CONVERT_HTML_TO_PDF", _convertHtmlToPdfEnvVar);
         }
 
         [Test]

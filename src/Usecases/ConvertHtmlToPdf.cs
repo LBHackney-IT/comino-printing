@@ -36,7 +36,15 @@ namespace UseCases
                            + htmlInput.MainBody
                            + "</body></html>";
 
-            _parseHtmlToPdf.Execute(fullHtml, documentId);
+            var convertToPdf = Convert.ToBoolean(Environment.GetEnvironmentVariable("CONVERT_HTML_TO_PDF"));
+            if (convertToPdf)
+            {
+                _parseHtmlToPdf.Execute(fullHtml, documentId);
+            }
+            else
+            {
+                File.WriteAllText($"/tmp/{documentId}.html", fullHtml);
+            }
         }
 
         private static string CompileCss(LetterTemplate htmlInput)

@@ -43,6 +43,7 @@ namespace Gateways
                 ORDER BY CCDocument.DocDate DESC;
                 ";
 
+            Console.WriteLine(query);
             List<DocumentDetails> queryResults;
 
             try
