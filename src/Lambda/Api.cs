@@ -46,8 +46,6 @@ namespace AwsDotnetCsharp
 
         public APIGatewayProxyResponse GetById(APIGatewayProxyRequest request, ILambdaContext context)
         {
-//            Get s3 pdf Url from somewhere
-//            use Response.Redirect("")to redirect to the pdf in s3;
             var response = new APIGatewayProxyResponse
             {
                 StatusCode = (int) HttpStatusCode.OK,
@@ -63,7 +61,6 @@ namespace AwsDotnetCsharp
         {
             var id = request.PathParameters["id"];
             await _approveDocumentUsecase.Execute(id);
-            //return whether this worked or not to the UI
 
             var response = new APIGatewayProxyResponse
             {
@@ -74,8 +71,11 @@ namespace AwsDotnetCsharp
             return response;
         }
 
-        public async Task<APIGatewayProxyResponse> ViewDocument(APIGatewayProxyRequest request, ILambdaContext context)
+        public async Task<APIGatewayProxyResponse> ViewDocumentPdf(APIGatewayProxyRequest request, ILambdaContext context)
         {
+            // Get s3 presigned Url from S3 client
+            // use Response.Redirect("")to redirect to the pdf in s3;
+            
             return null;
         }
 

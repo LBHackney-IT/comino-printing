@@ -101,6 +101,20 @@ functions:
               paths:
                 id: true
 
+  view-document-pdf:
+    name: ${self:service}-${self:provider.stage}-view-document-pdf
+    handler: Lambda::AwsDotnetCsharp.Api::ViewDocumentPdf
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    events:
+      - http:
+          path: /api/documents/{id}/view
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
+
 resources:
   Resources:
     cominoLetters:
