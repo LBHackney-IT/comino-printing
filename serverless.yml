@@ -94,7 +94,7 @@ functions:
     events:
       - http:
           path: /api/documents/{id}/approve
-          method: post
+          method: put
           cors: true
           request:
             parameters:
