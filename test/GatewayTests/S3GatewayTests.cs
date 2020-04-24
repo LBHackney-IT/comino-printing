@@ -43,7 +43,8 @@ namespace GatewayTests
         [Test]
         public async Task SavePdfDocument_SendsTheFileToS3()
         {
-            var documentId = _fixture.Create<string>();
+            var date = new DateTime(2020, 02, 25, 12, 45, 27);
+            var documentId = date.ToString("O");
             await _subject.SavePdfDocument(documentId);
 
             var expectedFilePath = $"/tmp/{documentId}.pdf";
@@ -52,17 +53,19 @@ namespace GatewayTests
             var expectedPutRequest = new PutObjectRequest
             {
                 BucketName = _testBucketName,
-                Key = documentId,
+                Key = $"2020/02/25/{documentId}.pdf",
                 ContentType = "application/pdf",
                 FilePath = expectedFilePath
             };
-            _mockAmazonS3.Verify(x => x.PutObjectAsync(It.Is(Match(expectedPutRequest)), It.IsAny<CancellationToken>()));
+            _mockAmazonS3.Verify(x =>
+                x.PutObjectAsync(It.Is(Match(expectedPutRequest)), It.IsAny<CancellationToken>()));
         }
 
         [Test]
         public async Task SavePdfDocument_RemovesFileFromTmp()
         {
-            var documentId = _fixture.Create<string>();
+            var date = new DateTime(2018, 03, 02, 12, 45, 27);
+            var documentId = date.ToString("O");
 
             var expectedFilePath = $"/tmp/{documentId}.pdf";
             File.Create(expectedFilePath);
@@ -70,7 +73,7 @@ namespace GatewayTests
             var expectedPutRequest = new PutObjectRequest
             {
                 BucketName = _testBucketName,
-                Key = documentId,
+                Key = $"2018/03/02/{documentId}.pdf",
                 ContentType = "application/pdf",
                 FilePath = expectedFilePath
             };
