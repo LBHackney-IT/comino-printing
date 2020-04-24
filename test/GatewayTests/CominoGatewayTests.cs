@@ -58,7 +58,7 @@ namespace GatewayTests
                 AND CCDocument.DocDesc IN ('Income Verification Document')
                 AND CCDocument.DirectionFg = 'O'
                 AND CCDocument.DocSource = 'O'
-                AND CCDocument.DocDate > 12/30/6 0:38:54
+                AND CCDocument.DocDate > '12/30/6 0:38:54'
                 ORDER BY CCDocument.DocDate DESC;
                 ";
 

@@ -35,15 +35,14 @@ namespace Gateways
                 RefType AS DocumentType
                 FROM W2BatchPrint
                 JOIN CCDocument on DocNo = nDocNo
-                WHERE CCDocument.DocCategory IN ({String.Join(",", categories)})
-                AND CCDocument.DocDesc IN ({String.Join(",", descriptions)})
+                WHERE CCDocument.DocCategory IN ('{string.Join("','", categories)}')
+                AND CCDocument.DocDesc IN ('{string.Join("','", descriptions)}')
                 AND CCDocument.DirectionFg = 'O'
                 AND CCDocument.DocSource = 'O'
                 AND CCDocument.DocDate > '{startTime}'
                 ORDER BY CCDocument.DocDate DESC;
                 ";
 
-            Console.WriteLine(query);
             List<DocumentDetails> queryResults;
 
             try
