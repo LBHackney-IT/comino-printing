@@ -32,19 +32,20 @@ const DocumentRow = (props) => {
 
 export default class DocumentListPage extends Component {
   state = {
-    endId: null,
+    cursor: null,
     documents: [],
   };
 
   fetchDocuments = () => {
-    fetchDocuments(this.state.endId, (err, documents) => {
+    fetchDocuments(this.state.cursor, (err, documents) => {
       this.setState({ documents });
     });
   };
 
   componentDidMount() {
     const params = new URLSearchParams(this.props.location.search);
-    this.setState({ endId: params.endId }, () => {
+
+    this.setState({ cursor: params.cursor }, () => {
       this.fetchDocuments();
     });
   }
@@ -54,9 +55,9 @@ export default class DocumentListPage extends Component {
   };
 
   nextPage = () => {
-    const endId = this.state.documents.map((d) => d.id).sort()[0];
-    this.setState({ endId }, () => {
-      history.push(`/?endId=${endId}`);
+    const cursor = this.state.documents.map((d) => d.id).sort()[0];
+    this.setState({ cursor }, () => {
+      history.push(`/?cursor=${cursor}`);
       this.fetchDocuments();
     });
     window.scrollTo(0, 0);
@@ -101,7 +102,7 @@ export default class DocumentListPage extends Component {
           </table>
         </div>
         <div className="lbh-container">
-          {this.state.endId ? (
+          {this.state.cursor ? (
             <>
               <a onClick={this.prevPage} href="#0">
                 Previous 10 documents

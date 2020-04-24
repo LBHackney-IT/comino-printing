@@ -1,40 +1,33 @@
 // import { dummyDocuments } from "./dummyDocuments";
 import { hackneyToken } from "./lib/Cookie";
-let allDocs = null;
 const limit = 10;
+const allDocs = {};
 
-export const fetchDocuments = (endId, cb) => {
-  if (!allDocs) {
-    const req = {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Authorization: `Bearer ${hackneyToken()}`,
-      },
-      searchParams: {
-        endId,
-        limit,
-      },
-    };
+export const fetchDocuments = (cursor, cb) => {
+  const options = {
+    method: "GET",
+    mode: "cors",
+    headers: {
+      Authorization: `Bearer ${hackneyToken()}`,
+    },
+    searchParams: {
+      cursor,
+      limit,
+    },
+  };
+  let cursorStr = cursor ? `&cursor=${cursor}` : "";
 
-    fetch(`${process.env.REACT_APP_API_URL}/documents`, req)
-      .then(async function (response) {
-        const json = await response.json();
-        return json;
-      })
-      .then((docsResult) => {
-        allDocs = docsResult.documents;
-        cb(null, allDocs.sort((a, b) => a.id < b.id).slice(0, 10));
-      });
-  } else {
-    const docs = endId ? allDocs.filter((d) => d.id < endId) : allDocs;
-    docs.sort((a, b) => a.id < b.id);
-    cb(null, docs.slice(0, limit));
-  }
+  fetch(
+    `${process.env.REACT_APP_API_URL}/documents?limit=10${cursorStr}`,
+    options
+  ).then(async (response) => {
+    const json = await response.json();
+    json.documents.forEach((doc) => (allDocs[doc.id] = doc));
+    cb(null, json.documents);
+  });
 };
 export const fetchDocument = (id, cb) => {
-  const doc = allDocs.filter((d) => d.id === id)[0];
-  cb(null, doc);
+  cb(null, allDocs[id]);
   // const req = {
   //   method: "GET",
   //   mode: "cors",
