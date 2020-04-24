@@ -63,6 +63,7 @@ namespace AwsDotnetCsharp
         {
             var id = request.PathParameters["id"];
             await _approveDocumentUsecase.Execute(id);
+            //return whether this worked or not to the UI
 
             var response = new APIGatewayProxyResponse
             {
@@ -71,6 +72,11 @@ namespace AwsDotnetCsharp
             };
 
             return response;
+        }
+
+        public async Task<APIGatewayProxyResponse> ViewDocument(APIGatewayProxyRequest request, ILambdaContext context)
+        {
+            return null;
         }
 
         private static string ConvertToCamelCasedJson<T>(T responseBody)
