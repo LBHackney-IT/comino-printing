@@ -13,7 +13,6 @@ using UseCases;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
 using Usecases.Interfaces;
-using UseCases.UntestedParsers;
 
 namespace AwsDotnetCsharp
 {
@@ -56,7 +55,7 @@ namespace AwsDotnetCsharp
             services.AddScoped<IConvertHtmlToPdf, ConvertHtmlToPdf>();
             services.AddScoped<IFetchAndQueueDocumentIds, FetchAndQueueDocumentIds>();
             services.AddScoped<IGetDetailsOfDocumentForProcessing, GetDetailsOfDocumentForProcessing>();
-            services.AddScoped<IParseHtmlToPdf, IronPDFParser>();
+            services.AddScoped<IParseHtmlToPdf, HtmlToPdfConversionGateway>();
             services.AddScoped<IGetAllDocuments, GetAllDocuments>();
         }
     }

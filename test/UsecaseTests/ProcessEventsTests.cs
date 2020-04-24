@@ -122,7 +122,7 @@ namespace UnitTests
 
             await _processEvents.Execute(sqsEventMock);
 
-            _mockPdfParser.Verify(x => x.Execute(stubbedReturnHtml, document.LetterType, document.DocumentId), Times.Once);
+            _mockPdfParser.Verify(x => x.Execute(stubbedReturnHtml, document.LetterType, document.SavedAt), Times.Once);
         }
 
         [Test]
@@ -160,7 +160,7 @@ namespace UnitTests
         {
             var timestamp = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
-            var documentId = SetupGetDocumentDetails(timestamp).DocumentId;
+            var documentId = SetupGetDocumentDetails(timestamp).SavedAt;
 
             _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
 

@@ -21,7 +21,6 @@ namespace GatewayTests
         private string _currentBucketName;
         private Fixture _fixture;
         private string _testBucketName;
-        private string _convertHtmlToPdfEnvVar;
 
         [SetUp]
         public void SetUp()
@@ -31,8 +30,6 @@ namespace GatewayTests
             _subject = new S3Gateway(_mockAmazonS3.Object);
 
             _currentBucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME");
-            _convertHtmlToPdfEnvVar = Environment.GetEnvironmentVariable("CONVERT_HTML_TO_PDF");
-            Environment.SetEnvironmentVariable("CONVERT_HTML_TO_PDF", "true");
             _testBucketName = _fixture.Create<string>();
             Environment.SetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME", _testBucketName);
         }
@@ -40,7 +37,6 @@ namespace GatewayTests
         [TearDown]
         public void TearDown()
         {
-            Environment.SetEnvironmentVariable("CONVERT_HTML_TO_PDF", _convertHtmlToPdfEnvVar);
             Environment.SetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME", _currentBucketName);
         }
 

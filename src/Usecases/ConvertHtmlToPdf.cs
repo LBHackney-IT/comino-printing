@@ -1,7 +1,8 @@
 using System;
 using System.IO;
-using Boundary.UseCaseInterfaces;
+using System.Threading.Tasks;
 using Usecases.Domain;
+using Usecases.GatewayInterfaces;
 using Usecases.Interfaces;
 
 namespace UseCases
@@ -17,7 +18,7 @@ namespace UseCases
             _getParser = getParser;
         }
 
-        public void Execute(string htmlDocument, string documentType, string documentId)
+        public async Task Execute(string htmlDocument, string documentType, string documentId)
         {
             ILetterParser parser = _getParser.ForType(documentType);
             if (parser == null)
@@ -36,21 +37,19 @@ namespace UseCases
                            + htmlInput.MainBody
                            + "</body></html>";
 
-            var convertToPdf = Convert.ToBoolean(Environment.GetEnvironmentVariable("CONVERT_HTML_TO_PDF"));
-            if (convertToPdf)
-            {
-                _parseHtmlToPdf.Execute(fullHtml, documentId);
-            }
-            else
-            {
-                File.WriteAllText($"/tmp/{documentId}.html", fullHtml);
-            }
+            var pdfBytes = await _parseHtmlToPdf.Convert(fullHtml, documentId);
+
+            Console.WriteLine("Writing PDF to temp file");
+            await File.WriteAllBytesAsync($"/tmp/{documentId}.pdf", pdfBytes);
+            Console.WriteLine("Successfully written to file");
         }
 
         private static string CompileCss(LetterTemplate htmlInput)
         {
             return $@"@media print {{
-                body {{ font-family: Helvetica, sans-serif; }}
+                body {{
+                    font-family: Helvetica, sans-serif;
+                }}
                 .header-table {{
                     width: 180mm;
                     min-height: 90mm;

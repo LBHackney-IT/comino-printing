@@ -70,8 +70,8 @@ namespace UseCases
         {
             try
             {
-                var result = _savePdfToS3.SavePdfDocument(document.DocumentId);
-                Console.WriteLine($"> s3PutResult:\n{result}");
+                var result = await _savePdfToS3.SavePdfDocument(document.SavedAt);
+                Console.WriteLine($"> s3PutResult: \n{JsonConvert.SerializeObject(result)}");
             }
             catch (Exception error)
             {
@@ -85,7 +85,7 @@ namespace UseCases
         {
             try
             {
-                _convertHtmlToPdf.Execute(html, document.LetterType, document.DocumentId);
+                await _convertHtmlToPdf.Execute(html, document.LetterType, document.SavedAt);
             }
             catch (Exception error)
             {
