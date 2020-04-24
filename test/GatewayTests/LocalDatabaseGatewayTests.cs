@@ -43,19 +43,49 @@ namespace GatewayTests
         }
 
         [Test]
-        public async Task GetAllRecordsReturnsAllDocumentRecords()
+        public async Task GetAllRecordsReturnsAllDocumentRecordsIfThereAreLessThanTheLimit()
         {
-            var savedDocumentOne = RandomDocumentDetails();
-            await _dbGateway.SaveDocument(savedDocumentOne);
+            var savedDocumentOne = await AddDocumentToDatabase(RandomDocumentDetails());
 
-            var savedDocumentTwo = RandomDocumentDetails();
-            await _dbGateway.SaveDocument(savedDocumentTwo);
+            var savedDocumentTwo = await AddDocumentToDatabase(RandomDocumentDetails());
 
             var expectedResponse = new List<DocumentDetails> {savedDocumentOne, savedDocumentTwo};
 
-            var response = await _dbGateway.GetAllRecords();
+            var response = await _dbGateway.GetAllRecords(10, null);
 
-            response.Should().BeEquivalentTo(expectedResponse);
+            response.Should().BeEquivalentTo(expectedResponse, options => options.Excluding(d => d.Log));
+        }
+
+        [Test]
+        public async Task GetAllRecordsReturnsAllDocumentRecordsWithinLimit()
+        {
+            var savedDocumentOne = await AddDocumentToDatabase(RandomDocumentDetails());
+
+            var savedDocumentTwo = await AddDocumentToDatabase(RandomDocumentDetails());
+
+            var savedDocumentThree = await AddDocumentToDatabase(RandomDocumentDetails());
+
+            var expectedResponse = new List<DocumentDetails> {savedDocumentTwo, savedDocumentThree};
+
+            var response = await _dbGateway.GetAllRecords(2, null);
+
+            response.Should().BeEquivalentTo(expectedResponse, options => options.Excluding(d => d.Log));
+        }
+
+        [Test]
+        public async Task GetAllRecordsReturnsAllDocumentRecordsLaterThanTheCursor()
+        {
+            var savedDocumentOne = await AddDocumentToDatabase(RandomDocumentDetails());
+
+            var savedDocumentTwo = await AddDocumentToDatabase(RandomDocumentDetails());
+
+            var savedDocumentThree = await AddDocumentToDatabase(RandomDocumentDetails());
+
+            var expectedResponse = new List<DocumentDetails> {savedDocumentThree};
+
+            var response = await _dbGateway.GetAllRecords(2, savedDocumentTwo.SavedAt);
+
+            response.Should().BeEquivalentTo(expectedResponse, options => options.Excluding(d => d.Log));
         }
 
         [Test]

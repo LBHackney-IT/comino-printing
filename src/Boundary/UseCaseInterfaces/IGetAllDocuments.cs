@@ -5,6 +5,6 @@ namespace Boundary.UseCaseInterfaces
 {
     public interface IGetAllDocuments
     {
-        Task<GetAllDocumentsResponse> Execute();
+        Task<GetAllDocumentsResponse> Execute(string limit, string cursor);
     }
 }

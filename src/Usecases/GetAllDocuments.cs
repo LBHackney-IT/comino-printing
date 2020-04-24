@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,15 +11,16 @@ namespace UseCases
 {
     public class GetAllDocuments : IGetAllDocuments
     {
-        private ILocalDatabaseGateway _localDatabaseGateway;
+        private readonly ILocalDatabaseGateway _localDatabaseGateway;
 
         public GetAllDocuments(ILocalDatabaseGateway localDatabaseGateway)
         {
             _localDatabaseGateway = localDatabaseGateway;
         }
-        public async Task<GetAllDocumentsResponse> Execute()
+        public async Task<GetAllDocumentsResponse> Execute(string limit, string cursor)
         {
-           var documentResponse = await _localDatabaseGateway.GetAllRecords();
+            var parsedLimit = Convert.ToInt32(limit);
+           var documentResponse = await _localDatabaseGateway.GetAllRecords(parsedLimit, cursor);
            var documentResponses = documentResponse.Select(record => new DocumentResponse
            {
                Id = record.SavedAt,

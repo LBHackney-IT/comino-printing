@@ -66,6 +66,11 @@ functions:
           path: /api/documents
           method: GET
           cors: true
+          request:
+            parameters:
+              query:
+                - limit
+                - cursor
   update-document-status:
     name: ${self:service}-${self:provider.stage}-update-document-status
     handler: Lambda::AwsDotnetCsharp.Api::UpdateDocumentStatus

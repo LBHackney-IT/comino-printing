@@ -48,13 +48,14 @@ namespace Gateways
             return currentTimestamp;
         }
 
-        public async Task<List<DocumentDetails>> GetAllRecords()
+        public async Task<List<DocumentDetails>> GetAllRecords(int limit, string cursor)
         {
             var scanFilter = new ScanFilter();
 
             var search = _documentsTable.Scan(scanFilter);
             var records = await search.GetRemainingAsync();
-            return records.ToList().Select(document =>
+
+            var parsedRecords = records.ToList().Select(document =>
             {
                 var logEntries = new Dictionary<string, string>();
                 if (document.ContainsKey("Log"))
@@ -72,7 +73,11 @@ namespace Gateways
                     Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
                     Log = logEntries
                 };
-            }).ToList();
+            });
+
+            return parsedRecords.OrderByDescending(doc => DateTime.Parse(doc.SavedAt))
+                .Where(doc => cursor == null || DateTime.Parse(doc.SavedAt) > DateTime.Parse(cursor))
+                .Take(limit).ToList();
         }
 
         public async Task<DocumentDetails> GetRecordByTimeStamp(string currentTimestamp)

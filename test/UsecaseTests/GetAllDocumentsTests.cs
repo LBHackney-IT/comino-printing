@@ -26,9 +26,11 @@ namespace UnitTests
         }
 
         [Test]
-        public void ExecuteReturnsAllRecordsInDatabaseGateway()
+        public void ExecuteReturnsAllRecordsSubjectToLimitAndCursorFromDatabaseGateway()
         {
             var savedRecord = _fixture.CreateMany<DocumentDetails>().ToList();
+            var limit = _fixture.Create<int>();
+            var cursor = _fixture.Create<string>();
 
             var expectedResponse = savedRecord.Select(record => new DocumentResponse
             {
@@ -46,10 +48,10 @@ namespace UnitTests
                 }).ToList()
             });
 
-            _dbGatewayMock.Setup(x => x.GetAllRecords()).ReturnsAsync(savedRecord);
+            _dbGatewayMock.Setup(x => x.GetAllRecords(limit, cursor)).ReturnsAsync(savedRecord);
 
-            var response = _subject.Execute().Result;
-            
+            var response = _subject.Execute(limit.ToString(), cursor).Result;
+
             response.Documents.Should().BeEquivalentTo(expectedResponse);
         }
     }

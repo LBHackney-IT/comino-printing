@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -24,9 +25,11 @@ namespace AwsDotnetCsharp
             _getAllDocumentsUseCase = serviceProvider.GetService<IGetAllDocuments>();
         }
 
-        public async Task<APIGatewayProxyResponse> GetAllDocuments(ILambdaContext context)
+        public async Task<APIGatewayProxyResponse> GetAllDocuments(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            var documents = await _getAllDocumentsUseCase.Execute();
+            var limit = request.QueryStringParameters["limit"];
+            var cursor = request.QueryStringParameters["cursor"];
+            var documents = await _getAllDocumentsUseCase.Execute(limit, cursor);
             var response = new APIGatewayProxyResponse
             {
                 StatusCode = (int) HttpStatusCode.OK,
@@ -37,7 +40,7 @@ namespace AwsDotnetCsharp
             return response;
         }
 
-        public APIGatewayProxyResponse GetById(string id)
+        public APIGatewayProxyResponse GetById(APIGatewayProxyRequest request, ILambdaContext context)
         {
 //            Get s3 pdf Url from somewhere
 //            use Response.Redirect("")to redirect to the pdf in s3;
@@ -52,7 +55,7 @@ namespace AwsDotnetCsharp
             return response;
         }
 
-        public async Task<APIGatewayProxyResponse> ApproveDocument(string id)
+        public async Task<APIGatewayProxyResponse> ApproveDocument(APIGatewayProxyRequest request, ILambdaContext context)
         {
 //            _updateDocuments.Execute(id, status);
 
