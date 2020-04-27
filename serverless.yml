@@ -100,7 +100,7 @@ functions:
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
       - http:
-          path: /api/documents/{id}/approve
+          path: /api/documents/{id}
           method: put
           cors: true
           request:
