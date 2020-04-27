@@ -36,7 +36,7 @@ namespace AwsDotnetCsharp
             }
         }
 
-        public async Task ListenForSqsEvents(SQSEvent sqsEvent, ILambdaContext context)
+        public async Task ConvertDocumentToPdf(SQSEvent sqsEvent, ILambdaContext context)
         {
             var listenForSqsEventsUseCase = _serviceProvider.GetService<IProcessEvents>();
             try
