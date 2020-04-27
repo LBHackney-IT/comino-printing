@@ -21,7 +21,7 @@ namespace Gateways
         public LocalDatabaseGateway(IDynamoDBHandler database)
         {
             _documentsTable = database.DocumentTable;
-            _databaseClient = database.DatabaseClient;
+            _databaseClient = database.DynamoDBClient;
         }
 
         public async Task<string> SaveDocument(DocumentDetails newDocument)

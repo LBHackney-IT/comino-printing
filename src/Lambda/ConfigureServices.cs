@@ -28,7 +28,8 @@ namespace AwsDotnetCsharp
             var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
             LambdaLogger.Log($"Dynamo table name {tableName}");
             var dynamoConfig = new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest2};
-            services.AddTransient<IDynamoDBHandler>(sp => new DynamoDBHandler(dynamoConfig, tableName));
+            var dynamoDBClient = new DynamoDBClient(dynamoConfig);
+            services.AddTransient<IDynamoDBHandler>(sp => new DynamoDBHandler(tableName, dynamoDBClient));
 
             //SQS
             services.AddTransient<IAmazonSQS>(sp => new AmazonSQSClient(RegionEndpoint.EUWest2));

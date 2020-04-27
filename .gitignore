@@ -12,3 +12,6 @@ RtfParseTests/BlankBenefitsRtf/
 node_modules
 .serverless
 
+*.testlog
+*.manifest
+*.suo
