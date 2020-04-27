@@ -13,5 +13,6 @@ namespace Usecases.Domain
         public string DocumentType { get; set; }
         public LetterStatusEnum Status { get; set; }
         public Dictionary<string, string> Log { get; set; }
+        public string GovNotifyNotificationId { get; set; }
     }
 }

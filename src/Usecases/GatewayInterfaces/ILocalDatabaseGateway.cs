@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Usecases.Domain;
@@ -12,8 +11,7 @@ namespace UseCases.GatewayInterfaces
 
         Task<DocumentDetails> GetRecordByTimeStamp(string currentTimestamp);
 
-        Task UpdateStatus(string savedDocumentSavedAt, LetterStatusEnum newStatus);
-
+        Task<UpdateStatusResponse> UpdateStatus(string savedDocumentSavedAt, LetterStatusEnum newStatus);
         Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt);
 
         Task<List<DocumentDetails>> GetAllRecords(int limit, string cursor);
@@ -21,5 +19,6 @@ namespace UseCases.GatewayInterfaces
         Task SetStatusToReadyForNotify(string putRequestId);
 
         Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify();
+        Task<List<DocumentDetails>> GetLettersWaitingForGovNotify();
     }
 }

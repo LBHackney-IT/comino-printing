@@ -95,6 +95,7 @@ namespace Gateways
             return MapToDocumentDetails(response);
         }
 
+<<<<<<< HEAD
         public async Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify()
         {
             var scanFilter = new ScanFilter();
@@ -112,8 +113,7 @@ namespace Gateways
 
             return ParseRecords(records);
         }
-
-        public async Task UpdateStatus(string savedDocumentSavedAt, LetterStatusEnum newStatus)
+        public async Task<UpdateStatusResponse> UpdateStatus(string savedDocumentSavedAt, LetterStatusEnum newStatus)
         {
             var updateDoc = new Document
             {
@@ -121,6 +121,7 @@ namespace Gateways
                 ["Status"] = newStatus.ToString(),
             };
             await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
+            return new UpdateStatusResponse();
         }
 
         public async Task LogMessage(string documentSavedAt, string message)
@@ -177,6 +178,11 @@ namespace Gateways
             });
 
             return parsedRecords.ToList();
+        }
+
+        public async Task<List<DocumentDetails>> GetLettersWaitingForGovNotify()
+        {
+            return new List<DocumentDetails>();
         }
 
         private static Document ConstructDocument(DocumentDetails newDocument, string currentTimestamp)
