@@ -56,7 +56,7 @@ namespace UseCases
             }
 
             await _logger.LogMessage(timestamp, "Picked up document from queue - Processing");
-            Console.WriteLine($"Retrieved from dynamo, getting Html for documentId = {document.DocumentId}");
+            Console.WriteLine($"Retrieved from dynamo, getting Html for documentId = {document.CominoDocumentNumber}");
 
             var html = await TryGetDocumentAsHtml(document, timestamp);
             Console.WriteLine($"Received HTML: {(html == null ? "" : (html.Length < 100 ? html : html.Substring(0, 100)))}");
@@ -70,7 +70,7 @@ namespace UseCases
         {
             try
             {
-                var result = await _savePdfToS3.SavePdfDocument(document.SavedAt);
+                var result = await _savePdfToS3.SavePdfDocument(document.Id);
                 Console.WriteLine($"> s3PutResult: \n{JsonConvert.SerializeObject(result)}");
             }
             catch (Exception error)
@@ -85,7 +85,7 @@ namespace UseCases
         {
             try
             {
-                await _convertHtmlToPdf.Execute(html, document.LetterType, document.SavedAt);
+                await _convertHtmlToPdf.Execute(html, document.LetterType, document.Id);
             }
             catch (Exception error)
             {
@@ -100,7 +100,7 @@ namespace UseCases
             var html = "";
             try
             {
-                html = await _getHtmlDocument.Execute(document.DocumentId);
+                html = await _getHtmlDocument.Execute(document.CominoDocumentNumber);
             }
             catch (Exception error)
             {

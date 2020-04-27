@@ -22,7 +22,7 @@ namespace UseCases
             foreach (var document in documentsToSave)
             {
                 var timestamp = await _databaseGateway.SaveDocument(document);
-                document.SavedAt = timestamp;
+                document.Id = timestamp;
             }
             return documentsToSave.ToList();
         }

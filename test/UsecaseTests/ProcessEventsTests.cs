@@ -70,7 +70,7 @@ namespace UnitTests
             var documentDetails = SetupGetDocumentDetails(timestamp);
 
             await _processEvents.Execute(sqsEventMock);
-            _mockGetHtmlDocument.Verify(x => x.Execute(documentDetails.DocumentId), Times.Once);
+            _mockGetHtmlDocument.Verify(x => x.Execute(documentDetails.CominoDocumentNumber), Times.Once);
         }
 
         [Test]
@@ -90,7 +90,8 @@ namespace UnitTests
             var timestamp = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
             var documentDetails = SetupGetDocumentDetails(timestamp);
-            _mockGetHtmlDocument.Setup(x => x.Execute(documentDetails.DocumentId)).ThrowsAsync(new Exception("My exception"));
+            _mockGetHtmlDocument.Setup(x => x.Execute(documentDetails.CominoDocumentNumber))
+                .ThrowsAsync(new Exception("My exception"));
 
             AssertExecuteThrows(sqsEventMock);
 
@@ -103,7 +104,8 @@ namespace UnitTests
             var timestamp = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
             var documentDetails = SetupGetDocumentDetails(timestamp);
-            _mockGetHtmlDocument.Setup(x => x.Execute(documentDetails.DocumentId)).ThrowsAsync(new Exception("My exception"));
+            _mockGetHtmlDocument.Setup(x => x.Execute(documentDetails.CominoDocumentNumber))
+                .ThrowsAsync(new Exception("My exception"));
 
             AssertExecuteThrows(sqsEventMock);
 
@@ -118,11 +120,11 @@ namespace UnitTests
             var document = SetupGetDocumentDetails(timestamp);
 
             var stubbedReturnHtml = _fixture.Create<string>();
-            _mockGetHtmlDocument.Setup(x => x.Execute(document.DocumentId)).ReturnsAsync(stubbedReturnHtml);
+            _mockGetHtmlDocument.Setup(x => x.Execute(document.CominoDocumentNumber)).ReturnsAsync(stubbedReturnHtml);
 
             await _processEvents.Execute(sqsEventMock);
 
-            _mockPdfParser.Verify(x => x.Execute(stubbedReturnHtml, document.LetterType, document.SavedAt), Times.Once);
+            _mockPdfParser.Verify(x => x.Execute(stubbedReturnHtml, document.LetterType, document.Id), Times.Once);
         }
 
         [Test]
@@ -130,7 +132,7 @@ namespace UnitTests
         {
             var timestamp = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
-            var documentId = SetupGetDocumentDetails(timestamp).DocumentId;
+            var documentId = SetupGetDocumentDetails(timestamp).CominoDocumentNumber;
 
             _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
 
@@ -144,7 +146,7 @@ namespace UnitTests
         {
             var timestamp = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
-            var documentId = SetupGetDocumentDetails(timestamp).DocumentId;
+            var documentId = SetupGetDocumentDetails(timestamp).CominoDocumentNumber;
 
             _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
 
@@ -160,7 +162,7 @@ namespace UnitTests
         {
             var timestamp = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
-            var documentId = SetupGetDocumentDetails(timestamp).SavedAt;
+            var documentId = SetupGetDocumentDetails(timestamp).Id;
 
             _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
 
@@ -174,7 +176,7 @@ namespace UnitTests
         {
             var timestamp = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
-            var documentId = SetupGetDocumentDetails(timestamp).DocumentId;
+            var documentId = SetupGetDocumentDetails(timestamp).CominoDocumentNumber;
 
             _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
 
@@ -188,7 +190,7 @@ namespace UnitTests
         {
             var timestamp = _fixture.Create<string>();
             var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
-            var documentId = SetupGetDocumentDetails(timestamp).DocumentId;
+            var documentId = SetupGetDocumentDetails(timestamp).CominoDocumentNumber;
 
             _mockGetHtmlDocument.Setup(x => x.Execute(documentId)).ReturnsAsync(_fixture.Create<string>());
 

@@ -116,7 +116,7 @@ namespace GatewayTests
             return stubbedResponseFromDb.Select(doc => new DocumentDetails
             {
                 DocumentCreator = doc.UserName,
-                DocumentId = doc.DocumentNumber,
+                CominoDocumentNumber = doc.DocumentNumber,
                 LetterType = doc.LetterType,
                 DocumentType = doc.DocumentType,
             });

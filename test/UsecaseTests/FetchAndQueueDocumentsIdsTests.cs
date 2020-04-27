@@ -55,7 +55,7 @@ namespace UnitTests
             var documents = SetupGetDocuments();
             var docsWithTimestamps = SetupSaveToLocalDatabase(documents);
             await _subject.Execute();
-            docsWithTimestamps.ForEach(doc => _logger.Verify(x => x.LogMessage(doc.SavedAt, "Retrieved ID from Comino and stored")));
+            docsWithTimestamps.ForEach(doc => _logger.Verify(x => x.LogMessage(doc.Id, "Retrieved ID from Comino and stored")));
         }
 
         [Test]
@@ -65,7 +65,7 @@ namespace UnitTests
             var docsWithTimestamps = SetupSaveToLocalDatabase(documents);
             await _subject.Execute();
 
-            var expectedTimestamps = docsWithTimestamps.Select(x => x.SavedAt).ToList();
+            var expectedTimestamps = docsWithTimestamps.Select(x => x.Id).ToList();
             _pushIdsToSqs.Verify(x => x.Execute(expectedTimestamps), Times.Once);
         }
 
@@ -75,7 +75,7 @@ namespace UnitTests
             var documents = SetupGetDocuments();
             var docsWithTimestamps = SetupSaveToLocalDatabase(documents);
             await _subject.Execute();
-            docsWithTimestamps.ForEach(doc => _logger.Verify(x => x.LogMessage(doc.SavedAt, "Document added to SQS queue")));
+            docsWithTimestamps.ForEach(doc => _logger.Verify(x => x.LogMessage(doc.Id, "Document added to SQS queue")));
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace UnitTests
 
             var testRun = new AsyncTestDelegate(async () => await _subject.Execute());
             Assert.ThrowsAsync<Exception>(testRun);
-            docsWithTimestamps.ForEach(doc => _logger.Verify(x => x.LogMessage(doc.SavedAt, "Failed adding to queue. Error message My custom exception")));
+            docsWithTimestamps.ForEach(doc => _logger.Verify(x => x.LogMessage(doc.Id, "Failed adding to queue. Error message My custom exception")));
         }
 
         private List<DocumentDetails> SetupGetDocuments()

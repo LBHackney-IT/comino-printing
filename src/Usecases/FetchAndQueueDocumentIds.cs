@@ -40,7 +40,7 @@ namespace UseCases
 
             await AddLogMessageForEachDocument(docsWithTimestamps, "Retrieved ID from Comino and stored");
 
-            var documentIds = docsWithTimestamps.Select(documentDetail => documentDetail.SavedAt).ToList();
+            var documentIds = docsWithTimestamps.Select(documentDetail => documentDetail.Id).ToList();
             List<SendMessageResponse> sqsOutput;
             try
             {
@@ -61,7 +61,7 @@ namespace UseCases
         {
             foreach (var doc in docsWithTimestamps)
             {
-                await _logger.LogMessage(doc.SavedAt, message);
+                await _logger.LogMessage(doc.Id, message);
             }
         }
     }

@@ -56,35 +56,35 @@ namespace Gateways
 
             var parsedRecords = ParseRecords(records);
 
-            return parsedRecords.OrderByDescending(doc => DateTime.Parse(doc.SavedAt))
-                .Where(doc => cursor == null || DateTime.Parse(doc.SavedAt) < DateTime.Parse(cursor))
+            return parsedRecords.OrderByDescending(doc => DateTime.Parse(doc.Id))
+                .Where(doc => cursor == null || DateTime.Parse(doc.Id) < DateTime.Parse(cursor))
                 .Take(limit).ToList();
         }
 
-        public async Task SetStatusToReadyForNotify(string savedDocumentSavedAt)
+        public async Task SetStatusToReadyForNotify(string id)
         {
             var updateDoc = new Document
             {
-                ["InitialTimestamp"] = savedDocumentSavedAt,
+                ["InitialTimestamp"] = id,
                 ["Status"] = LetterStatusEnum.ReadyForGovNotify.ToString(),
             };
             await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
         }
 
-        public async Task<DocumentDetails> GetRecordByTimeStamp(string currentTimestamp)
+        public async Task<DocumentDetails> GetRecordByTimeStamp(string id)
         {
             var config = new GetItemOperationConfig{ ConsistentRead = true };
-            var document = await _documentsTable.GetItemAsync(currentTimestamp, config);
+            var document = await _documentsTable.GetItemAsync(id, config);
             return MapToDocumentDetails(document);
         }
 
         // New gateway method to return all (DynamoDB scans)
 
-        public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt)
+        public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string id)
         {
             var updateDoc = new Document
             {
-                ["InitialTimestamp"] = savedDocumentSavedAt,
+                ["InitialTimestamp"] = id,
                 ["Status"] = LetterStatusEnum.Processing.ToString(),
             };
             var response = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllOldAttributes});
@@ -112,21 +112,21 @@ namespace Gateways
 
             return ParseRecords(records);
         }
-        public async Task<UpdateStatusResponse> UpdateStatus(string savedDocumentSavedAt, LetterStatusEnum newStatus)
+        public async Task<UpdateStatusResponse> UpdateStatus(string id, LetterStatusEnum newStatus)
         {
             var updateDoc = new Document
             {
-                ["InitialTimestamp"] = savedDocumentSavedAt,
+                ["InitialTimestamp"] = id,
                 ["Status"] = newStatus.ToString(),
             };
             await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
             return new UpdateStatusResponse();
         }
 
-        public async Task LogMessage(string documentSavedAt, string message)
+        public async Task LogMessage(string id, string message)
         {
             var timestamp = CurrentUtcUnixTimestamp();
-            var update = UpdateRequestToAppendLogMessage(documentSavedAt, message, timestamp);
+            var update = UpdateRequestToAppendLogMessage(id, message, timestamp);
 
             try
             {
@@ -134,21 +134,21 @@ namespace Gateways
             }
             catch (ConditionalCheckFailedException)
             {
-                var createLog = UpdateRequestToCreateLogWithMessage(documentSavedAt, message, timestamp);
+                var createLog = UpdateRequestToCreateLogWithMessage(id, message, timestamp);
                 try
                 {
                     await _databaseClient.UpdateItemAsync(createLog);
                 }
                 catch (ConditionalCheckFailedException)
                 {
-                    Console.WriteLine($"Cant write log to document id {documentSavedAt}, item doesnt exist in database");
+                    Console.WriteLine($"Cant write log to document id {id}, item doesnt exist in database");
                 }
             }
         }
 
-        public DocumentLog GetLogForDocument(string savedDocumentSavedAt)
+        public DocumentLog GetLogForDocument(string id)
         {
-            var log = _documentsTable.GetItemAsync(savedDocumentSavedAt).Result["Log"];
+            var log = _documentsTable.GetItemAsync(id).Result["Log"];
             var logEntries = new Dictionary<string, string>();
             log.AsDocument().ToList().ForEach( x => logEntries[x.Key] = x.Value.ToString());
             return new DocumentLog{Entries = logEntries};
@@ -167,10 +167,10 @@ namespace Gateways
                 return new DocumentDetails
                 {
                     DocumentCreator = document["DocumentCreatorUserName"],
-                    DocumentId = document["DocumentId"],
+                    CominoDocumentNumber = document["CominoDocumentNumber"],
                     DocumentType = document["DocumentType"],
                     LetterType = document["LetterType"],
-                    SavedAt = document["InitialTimestamp"],
+                    Id = document["InitialTimestamp"],
                     Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
                     Log = logEntries
                 };
@@ -200,10 +200,10 @@ namespace Gateways
             return results.Select(entry => new DocumentDetails
             {
                 DocumentCreator = entry["DocumentCreatorUserName"]?.S?.ToString(),
-                DocumentId = entry["DocumentId"]?.S?.ToString(),
+                CominoDocumentNumber = entry["CominoDocumentNumber"]?.S?.ToString(),
                 DocumentType = entry["DocumentType"]?.S?.ToString(),
                 LetterType = entry["LetterType"]?.S?.ToString(),
-                SavedAt = entry["InitialTimestamp"]?.S?.ToString(),
+                Id = entry["InitialTimestamp"]?.S?.ToString(),
                 Status = Enum.Parse<LetterStatusEnum>(entry["Status"]?.S?.ToString())
             }).ToList();
         }
@@ -212,7 +212,7 @@ namespace Gateways
         {
             return new Document
             {
-                ["DocumentId"] = newDocument.DocumentId,
+                ["CominoDocumentNumber"] = newDocument.CominoDocumentNumber,
                 ["DocumentCreatorUserName"] = newDocument.DocumentCreator,
                 ["LetterType"] = newDocument.LetterType,
                 ["DocumentType"] = newDocument.DocumentType,
@@ -226,14 +226,14 @@ namespace Gateways
             return new DocumentDetails
             {
                 DocumentCreator = document["DocumentCreatorUserName"],
-                DocumentId = document["DocumentId"],
+                CominoDocumentNumber = document["CominoDocumentNumber"],
                 DocumentType = document["DocumentType"],
                 LetterType = document["LetterType"],
-                SavedAt = document["InitialTimestamp"],
+                Id = document["InitialTimestamp"],
             };
         }
 
-        private static PutItemOperationConfig ConditionalOnTimestampUniqueness(string currentTimestamp)
+        private static PutItemOperationConfig ConditionalOnTimestampUniqueness(string id)
         {
             return new PutItemOperationConfig
             {
@@ -242,7 +242,7 @@ namespace Gateways
                     ExpressionStatement = "InitialTimestamp <> :t",
                     ExpressionAttributeValues = new Dictionary<string, DynamoDBEntry>{
                     {
-                        ":t", currentTimestamp
+                        ":t", id
                     }}
                 },
             };
@@ -253,7 +253,7 @@ namespace Gateways
             return DateTime.UtcNow.ToString("O");
         }
 
-        private UpdateItemRequest UpdateRequestToCreateLogWithMessage(string documentSavedAt, string message, string timestamp)
+        private UpdateItemRequest UpdateRequestToCreateLogWithMessage(string id, string message, string timestamp)
         {
             var log = new AttributeValue
                 {M = new Dictionary<string, AttributeValue> {{timestamp, new AttributeValue (message)}}};
@@ -261,21 +261,21 @@ namespace Gateways
             {
                 TableName = _documentsTable.TableName,
                 UpdateExpression = "SET #atr = :val",
-                Key = new Dictionary<string, AttributeValue> {{"InitialTimestamp", new AttributeValue {S = documentSavedAt}}},
+                Key = new Dictionary<string, AttributeValue> {{"InitialTimestamp", new AttributeValue {S = id}}},
                 ExpressionAttributeNames = new Dictionary<string, string> {{"#atr", "Log"}},
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue> {{":val", log}},
                 ConditionExpression = "attribute_exists(InitialTimestamp)"
             };
         }
 
-        private UpdateItemRequest UpdateRequestToAppendLogMessage(string documentSavedAt, string message, string timestamp)
+        private UpdateItemRequest UpdateRequestToAppendLogMessage(string id, string message, string timestamp)
         {
             var newLogEntry = new AttributeValue (message);
             return new UpdateItemRequest
             {
                 TableName = _documentsTable.TableName,
                 UpdateExpression = "SET #atr.#timestamp = :val",
-                Key = new Dictionary<string, AttributeValue> {{"InitialTimestamp", new AttributeValue {S = documentSavedAt}}},
+                Key = new Dictionary<string, AttributeValue> {{"InitialTimestamp", new AttributeValue {S = id}}},
                 ExpressionAttributeNames = new Dictionary<string, string> {{"#atr", "Log"}, {"#timestamp", timestamp}},
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue> {{":val", newLogEntry}},
                 ConditionExpression = "attribute_exists(#atr)"

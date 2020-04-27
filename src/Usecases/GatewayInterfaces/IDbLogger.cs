@@ -5,8 +5,8 @@ namespace Usecases.GatewayInterfaces
 {
     public interface IDbLogger
     {
-        Task LogMessage(string documentSavedAt, string message);
+        Task LogMessage(string id, string message);
 
-        DocumentLog GetLogForDocument(string savedDocumentSavedAt);
+        DocumentLog GetLogForDocument(string id);
     }
 }

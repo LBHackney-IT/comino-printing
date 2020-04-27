@@ -34,10 +34,10 @@ namespace UnitTests
 
             var expectedResponse = savedRecord.Select(record => new DocumentResponse
             {
-                Id = record.SavedAt,
-                DocNo = record.DocumentId,
+                Id = record.Id,
+                DocNo = record.CominoDocumentNumber,
                 Sender = record.DocumentCreator,
-                Created = record.SavedAt,
+                Created = record.Id,
                 Status = record.Status.ToString(),
                 LetterType = record.LetterType,
                 DocumentType = record.DocumentType,
