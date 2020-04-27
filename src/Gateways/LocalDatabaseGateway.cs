@@ -65,7 +65,7 @@ namespace Gateways
         {
             var config = new GetItemOperationConfig{ ConsistentRead = true };
             var document = await _documentsTable.GetItemAsync(id, config);
-            return MapDynamoDocumentToDocumentDetails(document);
+            return ParseRecord(document);
         }
 
         public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string id)
@@ -80,7 +80,7 @@ namespace Gateways
             {
                 return null;
             }
-            return MapDynamoDocumentToDocumentDetails(response);
+            return ParseRecord(response);
         }
 
         public async Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify()
@@ -145,27 +145,27 @@ namespace Gateways
 
         private List<DocumentDetails> ParseRecords(List<Document> records)
         {
-            var parsedRecords = records.ToList().Select(document =>
+            return records.Select(ParseRecord).ToList();
+        }
+
+        private static DocumentDetails ParseRecord(Document document)
+        {
+            var logEntries = new Dictionary<string, string>();
+            if (document.ContainsKey("Log"))
             {
-                var logEntries = new Dictionary<string, string>();
-                if (document.ContainsKey("Log"))
-                {
-                    document["Log"].AsDocument().ToList().ForEach( x => logEntries[x.Key] = x.Value.ToString());
-                }
+                document["Log"].AsDocument().ToList().ForEach(x => logEntries[x.Key] = x.Value.ToString());
+            }
 
-                return new DocumentDetails
-                {
-                    DocumentCreator = document["DocumentCreatorUserName"],
-                    CominoDocumentNumber = document["CominoDocumentNumber"],
-                    DocumentType = document["DocumentType"],
-                    LetterType = document["LetterType"],
-                    Id = document["InitialTimestamp"],
-                    Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
-                    Log = logEntries
-                };
-            });
-
-            return parsedRecords.ToList();
+            return new DocumentDetails
+            {
+                DocumentCreator = document["DocumentCreatorUserName"],
+                CominoDocumentNumber = document["CominoDocumentNumber"],
+                DocumentType = document["DocumentType"],
+                LetterType = document["LetterType"],
+                Id = document["InitialTimestamp"],
+                Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
+                Log = logEntries
+            };
         }
 
         private async Task<List<DocumentDetails>> GetLettersWithStatus(LetterStatusEnum status)
@@ -191,7 +191,7 @@ namespace Gateways
                 DocumentType = entry["DocumentType"]?.S?.ToString(),
                 LetterType = entry["LetterType"]?.S?.ToString(),
                 Id = entry["InitialTimestamp"]?.S?.ToString(),
-                Status = Enum.Parse<LetterStatusEnum>(entry["Status"]?.S?.ToString())
+                Status = Enum.Parse<LetterStatusEnum>(entry["Status"]?.S?.ToString()),
             }).ToList();
         }
         private static Document ConstructDynamoDocument(DocumentDetails newDocument, string currentTimestamp)
@@ -204,18 +204,6 @@ namespace Gateways
                 ["DocumentType"] = newDocument.DocumentType,
                 ["InitialTimestamp"] = currentTimestamp,
                 ["Status"] = "Waiting",
-            };
-        }
-
-        private static DocumentDetails MapDynamoDocumentToDocumentDetails(Document document)
-        {
-            return new DocumentDetails
-            {
-                DocumentCreator = document["DocumentCreatorUserName"],
-                CominoDocumentNumber = document["CominoDocumentNumber"],
-                DocumentType = document["DocumentType"],
-                LetterType = document["LetterType"],
-                Id = document["InitialTimestamp"],
             };
         }
 

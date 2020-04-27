@@ -195,7 +195,7 @@ namespace GatewayTests
                 await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.Processing);
 
             var response = await _dbGateway.GetLettersWaitingForGovNotify();
-            response.Should().BeEquivalentTo(new List<DocumentDetails> {document1ToReturn, document2ToReturn});
+            response.Should().BeEquivalentTo(new List<DocumentDetails> {document1ToReturn, document2ToReturn}, options => options.Excluding(x => x.Log));
         }
 
         [Test]
@@ -208,7 +208,7 @@ namespace GatewayTests
                 await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.Processing);
 
             var response = await _dbGateway.GetLettersWaitingForGovNotify();
-            response.Should().BeEquivalentTo(new List<DocumentDetails> {document1ToReturn, document2ToReturn});
+            response.Should().BeEquivalentTo(new List<DocumentDetails> {document1ToReturn, document2ToReturn}, options => options.Excluding(x => x.Log));
         }
 
         [Test]
@@ -370,6 +370,7 @@ namespace GatewayTests
 
             document.Id = timestamp;
             document.Status = status;
+            document.Log = new Dictionary<string, string>();
             return document;
         }
 
