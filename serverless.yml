@@ -34,6 +34,7 @@ provider:
     W2_DOCUMENT_BASE_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/W2_DOCUMENTS_API}
     GENERATED_PDF_BUCKET_NAME: "${self:service}-${self:provider.stage}-generated-pdfs"
     DOCUMENTS_API_TOKEN: ${ssm:/hn-comino-printing/${self:provider.stage}/DOCUMENTS_API_TOKEN}
+    GOV_NOTIFY_API_KEY: ${ssm:/hn-comino-printing/${self:provider.stage}/GOV_NOTIFY_API_KEY}
 
 package:
   artifact: ./src/Lambda/bin/release/netcoreapp2.1/comino-printing.zip
