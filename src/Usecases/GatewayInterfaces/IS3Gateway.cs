@@ -6,5 +6,6 @@ namespace UseCases.GatewayInterfaces
     public interface IS3Gateway
     {
         Task<Response> SavePdfDocument(string documentId);
+        string GeneratePdfUrl(string docId);
     }
 }

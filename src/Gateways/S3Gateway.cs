@@ -39,5 +39,21 @@ namespace Gateways
             Console.WriteLine($"> S3Gateway SavePdfDocument documentId: {documentId} to bucket: {bucketName} and path {s3FilePath}");
             return new Response { Success = true };
         }
+
+        public string GeneratePdfUrl(string docId)
+        {
+            var bucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME");
+            var date = DateTime.Parse(docId);
+            var s3FilePath = $"{date:yyyy}/{date:MM}/{date:dd}/{docId}.pdf";
+            
+            var pdfUrl= _amazonS3.GetPreSignedURL(new GetPreSignedUrlRequest
+            {
+                BucketName = bucketName,
+                Key = s3FilePath,
+                Expires = DateTime.Now.AddMinutes(5)
+            });
+
+            return pdfUrl;
+        }
     }
 }
