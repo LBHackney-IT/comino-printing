@@ -70,17 +70,37 @@ namespace Gateways
 
         public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string id)
         {
-            var updateDoc = new Document
+            var updateRequest =  new UpdateItemRequest
             {
-                ["InitialTimestamp"] = id,
-                ["Status"] = LetterStatusEnum.Processing.ToString(),
+                TableName = _documentsTable.TableName,
+                UpdateExpression = "SET #status = :new_status",
+                Key = new Dictionary<string, AttributeValue> {{"InitialTimestamp", new AttributeValue {S = id}}},
+                ExpressionAttributeNames = new Dictionary<string, string> {{"#status", "Status"}},
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":new_status", new AttributeValue{ S = LetterStatusEnum.Processing.ToString()}},
+                    {":prev_status", new AttributeValue{ S = LetterStatusEnum.Waiting.ToString()}}
+                },
+                ConditionExpression = "#status = :prev_status",
+                ReturnValues = ReturnValue.ALL_NEW,
             };
-            var response = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllOldAttributes});
-            if (response.Count == 0 || response["Status"] == LetterStatusEnum.Processing.ToString() )
+            try
+            {
+                var response = await _databaseClient.UpdateItemAsync(updateRequest);
+                return new DocumentDetails
+                {
+                    DocumentCreator = response.Attributes["DocumentCreatorUserName"]?.S,
+                    CominoDocumentNumber = response.Attributes["CominoDocumentNumber"]?.S,
+                    DocumentType = response.Attributes["DocumentType"]?.S,
+                    LetterType = response.Attributes["LetterType"]?.S,
+                    Id = response.Attributes["InitialTimestamp"]?.S,
+                    Status = Enum.Parse<LetterStatusEnum>(response.Attributes["Status"]?.S),
+                };
+            }
+            catch (ConditionalCheckFailedException)
             {
                 return null;
             }
-            return ParseRecord(response);
         }
 
         public async Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify()

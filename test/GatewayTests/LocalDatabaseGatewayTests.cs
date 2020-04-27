@@ -163,7 +163,8 @@ namespace GatewayTests
 
             var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.Id);
 
-            response.Should().BeEquivalentTo(savedDocument);
+            savedDocument.Status = LetterStatusEnum.Processing;
+            response.Should().BeEquivalentTo(savedDocument, options => options.Excluding(x => x.Log));
         }
 
         [Test]
@@ -174,6 +175,18 @@ namespace GatewayTests
 
             var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.Id);
 
+            response.Should().BeNull();
+        }
+
+        [Test]
+        public async Task RetrieveDocumentAndSetStatusToProcessing_IfDocumentIsNotWaiting_DoesNotChangeStatus()
+        {
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails(),
+                status: LetterStatusEnum.ProcessingError);
+
+            var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.Id);
+            var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.Id);
+            savedDoc["Status"].ToString().Should().Be(LetterStatusEnum.ProcessingError.ToString());
             response.Should().BeNull();
         }
 
