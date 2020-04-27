@@ -11,6 +11,7 @@ RtfParseTests/BlankBenefitsRtf/
 **/.env
 node_modules
 .serverless
+local
 
 *.testlog
 *.manifest

@@ -189,7 +189,7 @@ namespace GatewayTests
 
             response.Should().BeNull();
         }
-        
+
         [Test]
         public async Task SetStatusToReadyForNotify_SetsStatusAsReadyForSendingToNotify()
         {
@@ -212,6 +212,22 @@ namespace GatewayTests
 
             var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.SavedAt);
             savedDoc["Status"].ToString().Should().Be(newStatus.ToString());
+        }
+
+        [Test]
+        public async Task GetDocumentsThatAreReadyForGovNotify_GetsCorrectDocuments()
+        {
+
+            var readyDocument = RandomDocumentDetails();
+            var savedReadyDocument = await AddDocumentToDatabase(readyDocument, null, LetterStatusEnum.ReadyForGovNotify.ToString());
+
+            var notReadyDocument = RandomDocumentDetails();
+            var savedNotReadyDocument = await AddDocumentToDatabase(notReadyDocument, null, LetterStatusEnum.Processing.ToString());
+
+            var expected = new List<DocumentDetails> { savedReadyDocument };
+            var received = await _dbGateway.GetDocumentsThatAreReadyForGovNotify();
+
+            expected.Should().BeEquivalentTo(received, options => options.Excluding(d => d.Log));
         }
 
         [Test]
@@ -330,6 +346,7 @@ namespace GatewayTests
         private async Task<DocumentDetails> AddDocumentToDatabase(DocumentDetails document,
             string currentTimestamp = null, string status = null)
         {
+            var docStatus = status ?? LetterStatusEnum.Waiting.ToString();
             var timestamp = currentTimestamp ?? GetCurrentTimestamp();
             var documentItem = new Document
             {
@@ -338,11 +355,14 @@ namespace GatewayTests
                 ["InitialTimestamp"] = timestamp,
                 ["LetterType"] = document.LetterType,
                 ["DocumentType"] = document.DocumentType,
-                ["Status"] = status ?? LetterStatusEnum.Waiting.ToString()
+                ["Status"] = docStatus
             };
+
             await DatabaseClient.DocumentTable.PutItemAsync(documentItem);
 
             document.SavedAt = timestamp;
+            document.Status = Enum.Parse<LetterStatusEnum>(docStatus);
+
             return document;
         }
 

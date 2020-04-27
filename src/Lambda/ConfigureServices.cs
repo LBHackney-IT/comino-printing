@@ -44,6 +44,7 @@ namespace AwsDotnetCsharp
             services.AddScoped<ISqsGateway, SqsGateway>();
             services.AddScoped<ILocalDatabaseGateway, LocalDatabaseGateway>();
             services.AddScoped<IDbLogger, LocalDatabaseGateway>();
+            services.AddScoped<IGovNotifyGateway, GovNotifyGateway>();
 
             //UseCases
             services.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
@@ -58,6 +59,7 @@ namespace AwsDotnetCsharp
             services.AddScoped<IGetDetailsOfDocumentForProcessing, GetDetailsOfDocumentForProcessing>();
             services.AddScoped<IParseHtmlToPdf, HtmlToPdfConversionGateway>();
             services.AddScoped<IGetAllDocuments, GetAllDocuments>();
+            services.AddScoped<IQueryDocumentsAndSendToNotify, QueryDocumentsAndSendToNotify>();
         }
     }
 }

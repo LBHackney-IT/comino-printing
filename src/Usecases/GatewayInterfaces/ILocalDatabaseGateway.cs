@@ -13,9 +13,13 @@ namespace UseCases.GatewayInterfaces
         Task<DocumentDetails> GetRecordByTimeStamp(string currentTimestamp);
 
         Task UpdateStatus(string savedDocumentSavedAt, LetterStatusEnum newStatus);
+
         Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt);
 
         Task<List<DocumentDetails>> GetAllRecords(int limit, string cursor);
+
         Task SetStatusToReadyForNotify(string putRequestId);
+
+        Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify();
     }
 }

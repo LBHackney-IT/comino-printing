@@ -7,5 +7,6 @@ namespace UseCases.GatewayInterfaces
     {
         Task<Response> SavePdfDocument(string documentId);
         string GeneratePdfUrl(string docId);
+        Task<byte[]> GetPdfDocumentAsByteArray(string cominoDocumentNumber);
     }
 }

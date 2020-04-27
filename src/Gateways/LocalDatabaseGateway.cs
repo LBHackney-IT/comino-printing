@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,25 +54,7 @@ namespace Gateways
             var search = _documentsTable.Scan(scanFilter);
             var records = await search.GetRemainingAsync();
 
-            var parsedRecords = records.ToList().Select(document =>
-            {
-                var logEntries = new Dictionary<string, string>();
-                if (document.ContainsKey("Log"))
-                {
-                    document["Log"].AsDocument().ToList().ForEach( x => logEntries[x.Key] = x.Value.ToString());
-                }
-
-                return new DocumentDetails
-                {
-                    DocumentCreator = document["DocumentCreatorUserName"],
-                    DocumentId = document["DocumentId"],
-                    DocumentType = document["DocumentType"],
-                    LetterType = document["LetterType"],
-                    SavedAt = document["InitialTimestamp"],
-                    Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
-                    Log = logEntries
-                };
-            });
+            var parsedRecords = ParseRecords(records);
 
             return parsedRecords.OrderByDescending(doc => DateTime.Parse(doc.SavedAt))
                 .Where(doc => cursor == null || DateTime.Parse(doc.SavedAt) < DateTime.Parse(cursor))
@@ -96,9 +77,9 @@ namespace Gateways
             var document = await _documentsTable.GetItemAsync(currentTimestamp, config);
             return MapToDocumentDetails(document);
         }
-        
+
         // New gateway method to return all (DynamoDB scans)
-        
+
         public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string savedDocumentSavedAt)
         {
             var updateDoc = new Document
@@ -112,6 +93,24 @@ namespace Gateways
                 return null;
             }
             return MapToDocumentDetails(response);
+        }
+
+        public async Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify()
+        {
+            var scanFilter = new ScanFilter();
+            scanFilter.AddCondition(
+                "Status",
+                ScanOperator.Equal,
+                LetterStatusEnum.ReadyForGovNotify.ToString()
+            );
+
+            var search = _documentsTable.Scan(scanFilter);
+            var records = await search.GetRemainingAsync();
+
+            Console.WriteLine("> records[0].Status:");
+            Console.WriteLine(records[0]["Status"]);
+
+            return ParseRecords(records);
         }
 
         public async Task UpdateStatus(string savedDocumentSavedAt, LetterStatusEnum newStatus)
@@ -153,6 +152,31 @@ namespace Gateways
             var logEntries = new Dictionary<string, string>();
             log.AsDocument().ToList().ForEach( x => logEntries[x.Key] = x.Value.ToString());
             return new DocumentLog{Entries = logEntries};
+        }
+
+        private List<DocumentDetails> ParseRecords(List<Document> records)
+        {
+            var parsedRecords = records.ToList().Select(document =>
+            {
+                var logEntries = new Dictionary<string, string>();
+                if (document.ContainsKey("Log"))
+                {
+                    document["Log"].AsDocument().ToList().ForEach( x => logEntries[x.Key] = x.Value.ToString());
+                }
+
+                return new DocumentDetails
+                {
+                    DocumentCreator = document["DocumentCreatorUserName"],
+                    DocumentId = document["DocumentId"],
+                    DocumentType = document["DocumentType"],
+                    LetterType = document["LetterType"],
+                    SavedAt = document["InitialTimestamp"],
+                    Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
+                    Log = logEntries
+                };
+            });
+
+            return parsedRecords.ToList();
         }
 
         private static Document ConstructDocument(DocumentDetails newDocument, string currentTimestamp)

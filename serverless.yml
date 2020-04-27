@@ -73,6 +73,20 @@ functions:
                 - limit
                 - cursor
 
+  update-document-status:
+    name: ${self:service}-${self:provider.stage}-update-document-status
+    handler: Lambda::AwsDotnetCsharp.Api::UpdateDocumentStatus
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    events:
+      - http:
+          path: /api/document/{id}
+          method: put
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
+
   get-document:
     name: ${self:service}-${self:provider.stage}-get-document
     handler: Lambda::AwsDotnetCsharp.Api::GetById
@@ -86,7 +100,7 @@ functions:
             parameters:
               paths:
                 id: true
-  
+
   approve-document:
     name: ${self:service}-${self:provider.stage}-approve-document
     handler: Lambda::AwsDotnetCsharp.Api::ApproveDocument
@@ -114,6 +128,16 @@ functions:
             parameters:
               paths:
                 id: true
+
+  # DISABLED UNTIL WORK COMPLETE
+  # query-documents-and-send-to-notify:
+  #   name: ${self:service}-${self:provider.stage}-query-documents-and-send-to-notify
+  #   handler: Lambda::AwsDotnetCsharp.Handlers::QueryDocumentsAndSendToNotify
+  #   role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+  #   environment:
+  #     GOV_NOTIFY_API_KEY: ${ssm:/hn-comino-printing/${self:provider.stage}/GOV_NOTIFY_API_KEY}
+  #   events:
+  #     - schedule: cron(0 15 * * MON-FRI *) # every weekday at 3pm UTC
 
 resources:
   Resources:
