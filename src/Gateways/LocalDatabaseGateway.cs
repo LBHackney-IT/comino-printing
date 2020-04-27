@@ -28,7 +28,7 @@ namespace Gateways
             var currentTimestamp = CurrentUtcUnixTimestamp();
             while (true)
             {
-                var documentItem = ConstructDocument(newDocument, currentTimestamp);
+                var documentItem = ConstructDynamoDocument(newDocument, currentTimestamp);
 
                 try
                 {
@@ -61,24 +61,12 @@ namespace Gateways
                 .Take(limit).ToList();
         }
 
-        public async Task SetStatusToReadyForNotify(string id)
-        {
-            var updateDoc = new Document
-            {
-                ["InitialTimestamp"] = id,
-                ["Status"] = LetterStatusEnum.ReadyForGovNotify.ToString(),
-            };
-            await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
-        }
-
         public async Task<DocumentDetails> GetRecordByTimeStamp(string id)
         {
             var config = new GetItemOperationConfig{ ConsistentRead = true };
             var document = await _documentsTable.GetItemAsync(id, config);
-            return MapToDocumentDetails(document);
+            return MapDynamoDocumentToDocumentDetails(document);
         }
-
-        // New gateway method to return all (DynamoDB scans)
 
         public async Task<DocumentDetails> RetrieveDocumentAndSetStatusToProcessing(string id)
         {
@@ -92,7 +80,7 @@ namespace Gateways
             {
                 return null;
             }
-            return MapToDocumentDetails(response);
+            return MapDynamoDocumentToDocumentDetails(response);
         }
 
         public async Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify()
@@ -154,6 +142,14 @@ namespace Gateways
             return new DocumentLog{Entries = logEntries};
         }
 
+        public async Task<List<DocumentDetails>> GetLettersWaitingForGovNotify()
+        {
+            var sentToGovNotifyStatus = await GetLettersWithStatus(LetterStatusEnum.SentToGovNotify);
+            var pendingVirusCheckStatus = await GetLettersWithStatus(LetterStatusEnum.GovNotifyPendingVirusCheck);
+
+            return sentToGovNotifyStatus.Concat(pendingVirusCheckStatus).ToList();
+        }
+
         private List<DocumentDetails> ParseRecords(List<Document> records)
         {
             var parsedRecords = records.ToList().Select(document =>
@@ -179,25 +175,24 @@ namespace Gateways
             return parsedRecords.ToList();
         }
 
-        public async Task<List<DocumentDetails>> GetLettersWaitingForGovNotify()
+
+        private async Task<List<DocumentDetails>> GetLettersWithStatus(LetterStatusEnum status)
         {
             var tableName = _documentsTable.TableName;
-            var queryRequest = new Func<string, QueryRequest>(status =>  new QueryRequest
+            var queryRequest = new QueryRequest
             {
                 TableName = tableName,
                 IndexName = "Status",
                 ScanIndexForward = true,
                 KeyConditionExpression = "#status = :value",
                 ExpressionAttributeNames = new Dictionary<string, string> {{"#status", "Status"}},
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    {":value", new AttributeValue { S =  status }},
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {":value", new AttributeValue {S = status.ToString()}},
                 },
-            });
-            var sentToGovNotifyStatus = await _databaseClient.QueryAsync(queryRequest(LetterStatusEnum.SentToGovNotify.ToString()));
-            var pendingVirusCheckStatus = await _databaseClient.QueryAsync(queryRequest(LetterStatusEnum.GovNotifyPendingVirusCheck.ToString()));
-
-            var results = sentToGovNotifyStatus.Items.Concat(pendingVirusCheckStatus.Items);
-            return results.Select(entry => new DocumentDetails
+            };
+            var results = await _databaseClient.QueryAsync(queryRequest);
+            return results.Items.Select(entry => new DocumentDetails
             {
                 DocumentCreator = entry["DocumentCreatorUserName"]?.S?.ToString(),
                 CominoDocumentNumber = entry["CominoDocumentNumber"]?.S?.ToString(),
@@ -207,8 +202,7 @@ namespace Gateways
                 Status = Enum.Parse<LetterStatusEnum>(entry["Status"]?.S?.ToString())
             }).ToList();
         }
-
-        private static Document ConstructDocument(DocumentDetails newDocument, string currentTimestamp)
+        private static Document ConstructDynamoDocument(DocumentDetails newDocument, string currentTimestamp)
         {
             return new Document
             {
@@ -221,7 +215,7 @@ namespace Gateways
             };
         }
 
-        private static DocumentDetails MapToDocumentDetails(Document document)
+        private static DocumentDetails MapDynamoDocumentToDocumentDetails(Document document)
         {
             return new DocumentDetails
             {

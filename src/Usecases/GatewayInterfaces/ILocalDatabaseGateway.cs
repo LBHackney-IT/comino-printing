@@ -16,8 +16,6 @@ namespace UseCases.GatewayInterfaces
 
         Task<List<DocumentDetails>> GetAllRecords(int limit, string cursor);
 
-        Task SetStatusToReadyForNotify(string id);
-
         Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify();
         Task<List<DocumentDetails>> GetLettersWaitingForGovNotify();
     }

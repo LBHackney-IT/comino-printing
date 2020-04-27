@@ -218,18 +218,6 @@ namespace GatewayTests
         }
 
         [Test]
-        public async Task SetStatusToReadyForNotify_SetsStatusAsReadyForSendingToNotify()
-        {
-            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
-            var expectedStatus = LetterStatusEnum.ReadyForGovNotify;
-
-            await _dbGateway.SetStatusToReadyForNotify(savedDocument.Id);
-
-            var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.Id);
-            savedDoc["Status"].ToString().Should().Be(expectedStatus.ToString());
-        }
-
-        [Test]
         public async Task UpdateStatus_SetsNewStatusForADocument()
         {
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());

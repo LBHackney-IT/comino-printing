@@ -1,8 +1,10 @@
+using System.Threading.Tasks;
 using AutoFixture;
 using Moq;
 using NUnit.Framework;
 using UseCases;
 using Usecases.Domain;
+using Usecases.Enums;
 using UseCases.GatewayInterfaces;
 
 namespace UnitTests
@@ -22,14 +24,14 @@ namespace UnitTests
         }
 
         [Test]
-        public void ExecuteWillCallTheGatewayToUpdateTheStatusOfTheDocumentAfterApproval()
+        public async Task ExecuteWillCallTheGatewayToUpdateTheStatusOfTheDocumentAfterApproval()
         {
             var putRequestId = _fixture.Create<DocumentDetails>().Id;
             var requestedStatus = _fixture.Create<DocumentDetails>().Status;
 
-            _subject.Execute(putRequestId);
+            await _subject.Execute(putRequestId);
 
-            _dbGatewayMock.Verify(x => x.SetStatusToReadyForNotify(putRequestId));
+            _dbGatewayMock.Verify(x => x.UpdateStatus(putRequestId, LetterStatusEnum.ReadyForGovNotify));
         }
     }
 }
