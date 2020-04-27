@@ -40,3 +40,46 @@ This repo contains a UML sequence diagram, which can be updated as follows:
 1. Run `docker pull think/plantuml` to download [this useful PlantUML image](https://hub.docker.com/r/think/plantuml/)
 2. Edit `./sequenceDiagram/source.uml` as needed
 3. Run `cat sequenceDiagram/source.uml | docker run --rm -i think/plantuml -tpng > sequenceDiagram/source.png` to output
+
+## Workflow
+
+The process of converting and sending a document is handled by a number of interrelated services:
+
+### Fetch task (run once a minute)
+
+- Fetch all new documents in the print queue from comino (compare with latest document in Dynamo)
+- Store in Dynamo (state = `Waiting`)
+- Push document ID into SQS
+
+### Conversion task
+
+- Triggered with document ID from SQS
+- Look up document from Dynamo and fetch HTML from documents API
+- Convert HTML to PDF
+- Store converted document in S3
+- Update data in Dynamo (state = `WaitingForApproval` / `ProcessingError`)
+
+### UI
+
+- Display all documents
+- User approves document in `WaitingForApproval` state
+- Update data in Dynamo (state = `ReadyForGovNotify`)
+
+### Send to notify task (runs once per day at 3pm)
+
+- Fetch all documents from Dynamo that have state = `ReadyForGovNotify`
+- Send to Notify
+  - If successful:
+    - Update Comino - remove from queue and update print date if successful
+    - Update data in Dynamo (state = `SentToNotify`)
+  - If unsuccessful:
+    - Update data in Dynamo (state = `FailedToSend`)
+
+### Check notify task (runs once per hour)
+
+- Check state of documents with state `Sent to notify`
+- If Notify state has changed, update data in Dynamo. There are 4 options for the state:
+  - `LetterSent` - the letter has been printed and sent
+  - `GovNotifyPendingVirusCheck` - the letter is waiting to be virus checked
+  - `GovNotifyVirusScanFailed` - the letter failed the virus check
+  - `GovNotifyValidationFailed` - the letter failed the validation
