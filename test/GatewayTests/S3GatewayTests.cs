@@ -94,6 +94,17 @@ namespace GatewayTests
             _mockAmazonS3.Verify(x => x.GetPreSignedURL(It.IsAny<GetPreSignedUrlRequest>()));
         }
 
+        [Test]
+        [Ignore("todo")]
+        public async Task GetPdfDocumentAsByteArray_GetsAPdf()
+        {
+            var cominoDocumentNumber = "123456";
+
+            await _subject.GetPdfDocumentAsByteArray(cominoDocumentNumber);
+
+            "todo".Should().BeEquivalentTo("done");
+        }
+
         private static Expression<Func<PutObjectRequest, bool>> Match(PutObjectRequest expectedPutRequest)
         {
             return p => p.BucketName == expectedPutRequest.BucketName

@@ -1,10 +1,10 @@
 using System;
-using System.IO;
+// using System.IO;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
 using Boundary.UseCaseInterfaces;
-using Microsoft.Extensions.Configuration;
+// using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly:LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -42,6 +42,20 @@ namespace AwsDotnetCsharp
             try
             {
                 await listenForSqsEventsUseCase.Execute(sqsEvent);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public async Task QueryDocumentsAndSendToNotify(ILambdaContext context)
+        {
+            var queryDocsForNotifyUseCase = _serviceProvider.GetService<IQueryDocumentsAndSendToNotify>();
+            try
+            {
+                await queryDocsForNotifyUseCase.Execute();
             }
             catch (Exception e)
             {

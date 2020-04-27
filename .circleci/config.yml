@@ -65,7 +65,6 @@ jobs:
       - run:
           name: Run Test DynamoDb
           command: docker run --rm --name test-dynamodb -d -p 8000:8000 -v $(pwd)/local/dynamodb:/data/ amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /data
-          # DEBUG: could also test `--user $(id -u):$(id -g)`
 
       - run:
           name: Configure AWS
@@ -74,7 +73,7 @@ jobs:
             aws configure set aws_secret_access_key TestSecretKey
             aws configure set region eu-west-2
             aws configure set cli_pager ""
-      
+
       - run:
           name: Install dependencies
           command: dotnet restore

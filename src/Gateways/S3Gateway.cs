@@ -45,7 +45,7 @@ namespace Gateways
             var bucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME");
             var date = DateTime.Parse(docId);
             var s3FilePath = $"{date:yyyy}/{date:MM}/{date:dd}/{docId}.pdf";
-            
+
             var pdfUrl= _amazonS3.GetPreSignedURL(new GetPreSignedUrlRequest
             {
                 BucketName = bucketName,
@@ -54,6 +54,21 @@ namespace Gateways
             });
 
             return pdfUrl;
+        }
+
+        public async Task<byte[]> GetPdfDocumentAsByteArray(string cominoDocumentNumber)
+        {
+            var objReq = new GetObjectRequest
+            {
+                BucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME"),
+                Key = $"{cominoDocumentNumber}.pdf",
+            };
+
+            var objResp = await _amazonS3.GetObjectAsync(objReq);
+            var ms = new MemoryStream();
+            await objResp.ResponseStream.CopyToAsync(ms);
+
+            return ms.ToArray();
         }
     }
 }

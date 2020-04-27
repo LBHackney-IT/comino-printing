@@ -28,7 +28,7 @@ namespace UnitTests
             var requestedStatus = _fixture.Create<DocumentDetails>().Status;
 
             _subject.Execute(putRequestId);
-            
+
             _dbGatewayMock.Verify(x => x.SetStatusToReadyForNotify(putRequestId));
         }
     }

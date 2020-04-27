@@ -29,7 +29,7 @@ namespace UnitTests
         }
 
         [Test]
-        public void ExecuteGetParserBasedOnDocType()
+        public async Task ExecuteGetParserBasedOnDocType()
         {
             var documentType = _fixture.Create<string>();
             var htmlDocument = _fixture.Create<string>();
@@ -38,7 +38,7 @@ namespace UnitTests
             SetupLetterMockLetterTypeParser(htmlDocument);
             SetUpGetParser(documentType);
 
-            _convertHtmlToPdf.Execute(htmlDocument, documentType, documentId);
+            await _convertHtmlToPdf.Execute(htmlDocument, documentType, documentId);
             _getParsers.Verify();
         }
 
