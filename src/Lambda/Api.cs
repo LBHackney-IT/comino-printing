@@ -32,11 +32,11 @@ namespace AwsDotnetCsharp
 
         public async Task<APIGatewayProxyResponse> GetAllDocuments(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            var limit = request.QueryStringParameters.ContainsKey("limit")
+            var limit = request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("limit")
                 ? request.QueryStringParameters["limit"]
                 : "10";
 
-            var cursor = request.QueryStringParameters.ContainsKey("cursor")
+            var cursor = request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("cursor")
                 ? request.QueryStringParameters["cursor"]
                 : null;
 
