@@ -175,7 +175,7 @@ namespace GatewayTests
         public async Task RetrieveDocumentAndSetStatusToProcessing_IfDocumentAlreadyProcessing_ReturnsNull()
         {
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails(),
-                status: LetterStatusEnum.Processing.ToString());
+                status: LetterStatusEnum.Processing);
 
             var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.SavedAt);
 
@@ -188,6 +188,32 @@ namespace GatewayTests
             var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing("317286387");
 
             response.Should().BeNull();
+        }
+
+        [Test]
+        public async Task GetLettersWaitingForGovNotify_GetAnyLettersMarkedAsSentToGovNotify()
+        {
+            var document1ToReturn = await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.SentToGovNotify);
+            var document2ToReturn = await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.SentToGovNotify);
+
+            var documentNotToReturn =
+                await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.Processing);
+
+            var response = await _dbGateway.GetLettersWaitingForGovNotify();
+            response.Should().BeEquivalentTo(new List<DocumentDetails> {document1ToReturn, document2ToReturn});
+        }
+
+        [Test]
+        public async Task GetLettersWaitingForGovNotify_GetAnyLettersMarkedAsGovNotifyPendingVirusCheck()
+        {
+            var document1ToReturn = await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.GovNotifyPendingVirusCheck);
+            var document2ToReturn = await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.GovNotifyPendingVirusCheck);
+
+            var documentNotToReturn =
+                await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.Processing);
+
+            var response = await _dbGateway.GetLettersWaitingForGovNotify();
+            response.Should().BeEquivalentTo(new List<DocumentDetails> {document1ToReturn, document2ToReturn});
         }
 
         [Test]
@@ -219,10 +245,10 @@ namespace GatewayTests
         {
 
             var readyDocument = RandomDocumentDetails();
-            var savedReadyDocument = await AddDocumentToDatabase(readyDocument, null, LetterStatusEnum.ReadyForGovNotify.ToString());
+            var savedReadyDocument = await AddDocumentToDatabase(readyDocument, null, LetterStatusEnum.ReadyForGovNotify);
 
             var notReadyDocument = RandomDocumentDetails();
-            var savedNotReadyDocument = await AddDocumentToDatabase(notReadyDocument, null, LetterStatusEnum.Processing.ToString());
+            var savedNotReadyDocument = await AddDocumentToDatabase(notReadyDocument, null, LetterStatusEnum.Processing);
 
             var expected = new List<DocumentDetails> { savedReadyDocument };
             var received = await _dbGateway.GetDocumentsThatAreReadyForGovNotify();
@@ -344,9 +370,8 @@ namespace GatewayTests
         }
 
         private async Task<DocumentDetails> AddDocumentToDatabase(DocumentDetails document,
-            string currentTimestamp = null, string status = null)
+            string currentTimestamp = null, LetterStatusEnum status = LetterStatusEnum.Waiting)
         {
-            var docStatus = status ?? LetterStatusEnum.Waiting.ToString();
             var timestamp = currentTimestamp ?? GetCurrentTimestamp();
             var documentItem = new Document
             {
@@ -355,14 +380,13 @@ namespace GatewayTests
                 ["InitialTimestamp"] = timestamp,
                 ["LetterType"] = document.LetterType,
                 ["DocumentType"] = document.DocumentType,
-                ["Status"] = docStatus
+                ["Status"] = status.ToString()
             };
 
             await DatabaseClient.DocumentTable.PutItemAsync(documentItem);
 
             document.SavedAt = timestamp;
-            document.Status = Enum.Parse<LetterStatusEnum>(docStatus);
-
+            document.Status = status;
             return document;
         }
 

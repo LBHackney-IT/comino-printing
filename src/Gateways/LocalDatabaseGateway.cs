@@ -182,7 +182,31 @@ namespace Gateways
 
         public async Task<List<DocumentDetails>> GetLettersWaitingForGovNotify()
         {
-            return new List<DocumentDetails>();
+            var tableName = _documentsTable.TableName;
+            var queryRequest = new Func<string, QueryRequest>(status =>  new QueryRequest
+            {
+                TableName = tableName,
+                IndexName = "Status",
+                ScanIndexForward = true,
+                KeyConditionExpression = "#status = :value",
+                ExpressionAttributeNames = new Dictionary<string, string> {{"#status", "Status"}},
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                    {":value", new AttributeValue { S =  status }},
+                },
+            });
+            var sentToGovNotifyStatus = await _databaseClient.QueryAsync(queryRequest(LetterStatusEnum.SentToGovNotify.ToString()));
+            var pendingVirusCheckStatus = await _databaseClient.QueryAsync(queryRequest(LetterStatusEnum.GovNotifyPendingVirusCheck.ToString()));
+
+            var results = sentToGovNotifyStatus.Items.Concat(pendingVirusCheckStatus.Items);
+            return results.Select(entry => new DocumentDetails
+            {
+                DocumentCreator = entry["DocumentCreatorUserName"]?.S?.ToString(),
+                DocumentId = entry["DocumentId"]?.S?.ToString(),
+                DocumentType = entry["DocumentType"]?.S?.ToString(),
+                LetterType = entry["LetterType"]?.S?.ToString(),
+                SavedAt = entry["InitialTimestamp"]?.S?.ToString(),
+                Status = Enum.Parse<LetterStatusEnum>(entry["Status"]?.S?.ToString())
+            }).ToList();
         }
 
         private static Document ConstructDocument(DocumentDetails newDocument, string currentTimestamp)
