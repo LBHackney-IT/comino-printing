@@ -85,21 +85,14 @@ namespace Gateways
 
         public async Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify()
         {
-            var scanFilter = new ScanFilter();
-            scanFilter.AddCondition(
-                "Status",
-                ScanOperator.Equal,
-                LetterStatusEnum.ReadyForGovNotify.ToString()
-            );
-
-            var search = _documentsTable.Scan(scanFilter);
-            var records = await search.GetRemainingAsync();
+            var records = await GetLettersWithStatus(LetterStatusEnum.ReadyForGovNotify);
 
             Console.WriteLine("> records[0].Status:");
-            Console.WriteLine(records[0]["Status"]);
+            Console.WriteLine(records[0].Status);
 
-            return ParseRecords(records);
+            return records.ToList();
         }
+
         public async Task<UpdateStatusResponse> UpdateStatus(string id, LetterStatusEnum newStatus)
         {
             var updateDoc = new Document
@@ -174,7 +167,6 @@ namespace Gateways
 
             return parsedRecords.ToList();
         }
-
 
         private async Task<List<DocumentDetails>> GetLettersWithStatus(LetterStatusEnum status)
         {

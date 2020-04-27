@@ -46,7 +46,6 @@ namespace GatewayTests
         public async Task GetAllRecordsReturnsAllDocumentRecordsIfThereAreLessThanTheLimit()
         {
             var savedDocumentOne = await AddDocumentToDatabase(RandomDocumentDetails());
-
             var savedDocumentTwo = await AddDocumentToDatabase(RandomDocumentDetails());
 
             var expectedResponse = new List<DocumentDetails> {savedDocumentOne, savedDocumentTwo};
@@ -60,9 +59,7 @@ namespace GatewayTests
         public async Task GetAllRecordsReturnsAllDocumentRecordsWithinLimit()
         {
             var savedDocumentOne = await AddDocumentToDatabase(RandomDocumentDetails());
-
             var savedDocumentTwo = await AddDocumentToDatabase(RandomDocumentDetails());
-
             var savedDocumentThree = await AddDocumentToDatabase(RandomDocumentDetails());
 
             var expectedResponse = new List<DocumentDetails> {savedDocumentTwo, savedDocumentThree};
@@ -76,9 +73,7 @@ namespace GatewayTests
         public async Task GetAllRecordsReturnsAllDocumentRecordsLaterThanTheCursor()
         {
             var savedDocumentOne = await AddDocumentToDatabase(RandomDocumentDetails());
-
             var savedDocumentTwo = await AddDocumentToDatabase(RandomDocumentDetails());
-
             var savedDocumentThree = await AddDocumentToDatabase(RandomDocumentDetails());
 
             var expectedResponse = new List<DocumentDetails> {savedDocumentOne};
