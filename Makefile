@@ -12,7 +12,9 @@ invoke-listen-to-sqs-lambda:
 
 .PHONY: run-local-dynamo-db
 run-local-dynamo-db:
-	sls -s test dynamodb start & DYNAMO_ENDPOINT=http://localhost:8000 dynamodb-admin
+	-docker kill test-dynamodb
+	-docker rm test-dynamodb
+	docker run --rm --name test-dynamodb -d -p 8000:8000 -v $(pwd)/local/dynamodb:/data/ amazon/dynamodb-local -jar DynamoDBLocal.jar -sharedDb -dbPath /data
 
 .PHONY: stop-local-db
 stop-local-db:
