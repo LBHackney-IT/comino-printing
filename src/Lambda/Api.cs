@@ -23,6 +23,8 @@ namespace AwsDotnetCsharp
             services.Configure();
             var serviceProvider = services.BuildServiceProvider();
             _getAllDocumentsUseCase = serviceProvider.GetService<IGetAllDocuments>();
+            _approveDocumentUsecase = serviceProvider.GetService<IApproveDocument>();
+            _generatePdfInS3UrlUsecase = serviceProvider.GetService<IGeneratePdfInS3Url>();
         }
 
         public async Task<APIGatewayProxyResponse> GetAllDocuments(APIGatewayProxyRequest request, ILambdaContext context)
