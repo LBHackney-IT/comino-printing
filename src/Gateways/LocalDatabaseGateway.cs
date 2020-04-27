@@ -100,8 +100,12 @@ namespace Gateways
                 ["InitialTimestamp"] = id,
                 ["Status"] = newStatus.ToString(),
             };
-            await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.AllNewAttributes});
-            return new UpdateStatusResponse();
+            var oldAttributes = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.UpdatedOldAttributes});
+            var statusChange = oldAttributes["Status"].ToString() != newStatus.ToString();
+            return new UpdateStatusResponse
+            {
+                StatusUpdated = statusChange
+            };
         }
 
         public async Task LogMessage(string id, string message)

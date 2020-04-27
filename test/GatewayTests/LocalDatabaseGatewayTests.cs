@@ -91,7 +91,7 @@ namespace GatewayTests
 
             var response = await GetItemsFromDatabase();
             var savedTimestamp = GetTimestampForDocumentId(response, newDocument);
-            savedTimestamp.Should().BeCloseTo(expectedTimestamp, 100);
+            savedTimestamp.Should().BeCloseTo(expectedTimestamp, 1000);
         }
 
         [Test]
@@ -101,7 +101,7 @@ namespace GatewayTests
             var response = await _dbGateway.SaveDocument(newDocument);
             var currentTimestamp = DateTime.Parse(GetCurrentTimestamp());
 
-            DateTime.Parse(response).Should().BeCloseTo(currentTimestamp, 100);
+            DateTime.Parse(response).Should().BeCloseTo(currentTimestamp, 1000);
         }
 
         [Test]
@@ -221,6 +221,26 @@ namespace GatewayTests
 
             var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.Id);
             savedDoc["Status"].ToString().Should().Be(newStatus.ToString());
+        }
+
+        [Test]
+        public async Task UpdateStatus_ReturnsTrueIfStatusIsChanged()
+        {
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
+            var newStatus = LetterStatusEnum.ProcessingError;
+
+            var response = await _dbGateway.UpdateStatus(savedDocument.Id, newStatus);
+            response.StatusUpdated.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task UpdateStatus_ReturnsFalseIfStatusIsNotChanged()
+        {
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.ProcessingError);
+            var newStatus = LetterStatusEnum.ProcessingError;
+
+            var response = await _dbGateway.UpdateStatus(savedDocument.Id, newStatus);
+            response.StatusUpdated.Should().BeFalse();
         }
 
         [Test]
