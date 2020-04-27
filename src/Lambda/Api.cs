@@ -53,8 +53,8 @@ namespace AwsDotnetCsharp
 
         public async Task<APIGatewayProxyResponse> GetById(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            Console.Write(JsonConvert.SerializeObject(request));
             var id = request.PathParameters["id"];
+            Console.Write(id);
             var documentInfo = await _getSingleDocumentInfoUseCase.Execute(id);
             
             var response = new APIGatewayProxyResponse
