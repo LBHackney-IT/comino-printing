@@ -5,6 +5,7 @@ using comino_print_api.Responses;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Usecases;
 using UseCases;
 using Usecases.Domain;
 using UseCases.GatewayInterfaces;
@@ -38,7 +39,7 @@ namespace UnitTests
                 DocNo = record.CominoDocumentNumber,
                 Sender = record.DocumentCreator,
                 Created = record.Id,
-                Status = record.Status.ToString(),
+                Status = record.Status.PrettierStatusName(),
                 LetterType = record.LetterType,
                 DocumentType = record.DocumentType,
                 Logs = record.Log.Select(x => new Dictionary<string, string>
