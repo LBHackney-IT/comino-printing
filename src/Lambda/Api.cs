@@ -14,9 +14,9 @@ namespace AwsDotnetCsharp
     public class Api
     {
         private readonly IGetAllDocuments _getAllDocumentsUseCase;
-        private IApproveDocument _approveDocumentUsecase;
-        private IGeneratePdfInS3Url _generatePdfInS3UrlUsecase;
-        private IGetSingleDocumentInfo _getSingleDocumentInfoUseCase;
+        private readonly IApproveDocument _approveDocumentUseCase;
+        private readonly IGeneratePdfInS3Url _generatePdfInS3UrlUseCase;
+        private readonly IGetSingleDocumentInfo _getSingleDocumentInfoUseCase;
 
         public Api()
         {
@@ -24,8 +24,8 @@ namespace AwsDotnetCsharp
             services.Configure();
             var serviceProvider = services.BuildServiceProvider();
             _getAllDocumentsUseCase = serviceProvider.GetService<IGetAllDocuments>();
-            _approveDocumentUsecase = serviceProvider.GetService<IApproveDocument>();
-            _generatePdfInS3UrlUsecase = serviceProvider.GetService<IGeneratePdfInS3Url>();
+            _approveDocumentUseCase = serviceProvider.GetService<IApproveDocument>();
+            _generatePdfInS3UrlUseCase = serviceProvider.GetService<IGeneratePdfInS3Url>();
             _getSingleDocumentInfoUseCase = serviceProvider.GetService<IGetSingleDocumentInfo>();
         }
 
@@ -66,7 +66,7 @@ namespace AwsDotnetCsharp
         public async Task<APIGatewayProxyResponse> ApproveDocument(APIGatewayProxyRequest request, ILambdaContext context)
         {
             var id = request.PathParameters["id"];
-            await _approveDocumentUsecase.Execute(id);
+            await _approveDocumentUseCase.Execute(id);
 
             var response = new APIGatewayProxyResponse
             {
@@ -81,7 +81,7 @@ namespace AwsDotnetCsharp
         {
             
             var id = request.PathParameters["id"];
-            var redirectUrl = _generatePdfInS3UrlUsecase.Execute(id);
+            var redirectUrl = _generatePdfInS3UrlUseCase.Execute(id);
             
             var response = new APIGatewayProxyResponse
             {
