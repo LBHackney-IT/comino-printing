@@ -9,6 +9,8 @@ using Amazon.SQS;
 using Boundary.UseCaseInterfaces;
 using Gateways;
 using Microsoft.Extensions.DependencyInjection;
+using Notify.Client;
+using Notify.Interfaces;
 using Usecases;
 using UseCases;
 using Usecases.GatewayInterfaces;
@@ -29,8 +31,12 @@ namespace AwsDotnetCsharp
             var tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME");
             LambdaLogger.Log($"Dynamo table name {tableName}");
             var dynamoConfig = new AmazonDynamoDBConfig {RegionEndpoint = RegionEndpoint.EUWest2};
-            var dynamoDBClient = new DynamoDBClient(dynamoConfig);
-            services.AddTransient<IDynamoDBHandler>(sp => new DynamoDBHandler(tableName, dynamoDBClient));
+            var dynamoDbClient = new DynamoDBClient(dynamoConfig);
+            services.AddTransient<IDynamoDBHandler>(sp => new DynamoDBHandler(tableName, dynamoDbClient));
+
+            //GovNotify Client
+            var govNotifyApiKey = Environment.GetEnvironmentVariable("GOV_NOTIFY_API_KEY");
+            services.AddTransient<INotificationClient>(sp => new NotificationClient(govNotifyApiKey));
 
             //SQS
             services.AddTransient<IAmazonSQS>(sp => new AmazonSQSClient(RegionEndpoint.EUWest2));

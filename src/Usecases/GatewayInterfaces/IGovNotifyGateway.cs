@@ -1,7 +1,6 @@
 using Notify.Models.Responses;
 using System.Threading.Tasks;
 using Usecases.Domain;
-using Usecases.Enums;
 
 namespace UseCases.GatewayInterfaces
 {

@@ -1,16 +1,17 @@
-using Notify.Client;
 using Notify.Models.Responses;
 using System.Threading.Tasks;
+using Notify.Interfaces;
 using Usecases.Domain;
+using Usecases.Enums;
 using UseCases.GatewayInterfaces;
 
 namespace Gateways
 {
-    public class GovNotifyGateway : IGovNotifyGateway //, IDbLogger
+    public class GovNotifyGateway : IGovNotifyGateway
     {
-        private readonly NotificationClient _govNotifyClient;
+        private readonly INotificationClient _govNotifyClient;
 
-        public GovNotifyGateway(NotificationClient govNotifyClient)
+        public GovNotifyGateway(INotificationClient govNotifyClient)
         {
             _govNotifyClient = govNotifyClient;
         }
@@ -26,7 +27,28 @@ namespace Gateways
 
         public GovNotifyResponse GetStatusForLetter(string documentId, string govNotifyNotificationId)
         {
-            return new GovNotifyResponse();
+            var response = _govNotifyClient.GetNotificationById(govNotifyNotificationId);
+
+            return new GovNotifyResponse
+            {
+                Status = GetStatus(response.status),
+                SentAt = response.completedAt
+            };
+        }
+
+        private static LetterStatusEnum GetStatus(string govNotifyStatus)
+        {
+            switch (govNotifyStatus)
+            {
+                case "pending-virus-check":
+                    return LetterStatusEnum.GovNotifyPendingVirusCheck;
+                case "virus-scan-failed":
+                    return LetterStatusEnum.GovNotifyVirusScanFailed;
+                case "validation-failed":
+                    return LetterStatusEnum.GovNotifyValidationFailed;
+                default:
+                    return LetterStatusEnum.LetterSent;
+            }
         }
     }
 }
