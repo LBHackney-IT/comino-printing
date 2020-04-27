@@ -13,7 +13,7 @@ using Usecases.Enums;
 
 namespace GatewayTests
 {
-    [Ignore("To Fix")]
+    [Ignore("To fix")]
     public class LocalDatabaseGatewayTests : DynamoDbTests
     {
         private Fixture _fixture;
@@ -35,7 +35,7 @@ namespace GatewayTests
             var response = await GetItemsFromDatabase();
 
             response
-                .Where(doc => doc["DocumentId"] == newDocument.CominoDocumentNumber)
+                .Where(doc => doc["CominoDocumentNumber"] == newDocument.CominoDocumentNumber)
                 .Where(doc => doc["LetterType"] == newDocument.LetterType)
                 .Where(doc => doc["DocumentType"] == newDocument.DocumentType)
                 .Count(doc => doc["DocumentCreatorUserName"] == newDocument.DocumentCreator)
@@ -123,8 +123,8 @@ namespace GatewayTests
 
             var savedItems = await GetItemsFromDatabase();
 
-            savedItems.Count(doc => doc["DocumentId"] == document1.CominoDocumentNumber).Should().Be(1);
-            savedItems.Count(doc => doc["DocumentId"] == document2.CominoDocumentNumber).Should().Be(1);
+            savedItems.Count(doc => doc["CominoDocumentNumber"] == document1.CominoDocumentNumber).Should().Be(1);
+            savedItems.Count(doc => doc["CominoDocumentNumber"] == document2.CominoDocumentNumber).Should().Be(1);
         }
 
         [Test]
@@ -376,7 +376,7 @@ namespace GatewayTests
             var timestamp = currentTimestamp ?? GetCurrentTimestamp();
             var documentItem = new Document
             {
-                ["DocumentId"] = document.CominoDocumentNumber,
+                ["CominoDocumentNumber"] = document.CominoDocumentNumber,
                 ["DocumentCreatorUserName"] = document.DocumentCreator,
                 ["InitialTimestamp"] = timestamp,
                 ["LetterType"] = document.LetterType,
@@ -393,7 +393,7 @@ namespace GatewayTests
 
         private static DateTime GetTimestampForDocumentId(List<Document> savedItems, DocumentDetails document)
         {
-            return DateTime.Parse(savedItems.First(doc => doc["DocumentId"] == document.CominoDocumentNumber)["InitialTimestamp"]);
+            return DateTime.Parse(savedItems.First(doc => doc["CominoDocumentNumber"] == document.CominoDocumentNumber)["InitialTimestamp"]);
         }
 
         private async Task<List<Document>> GetItemsFromDatabase()

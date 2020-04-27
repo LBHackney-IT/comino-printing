@@ -167,7 +167,7 @@ namespace Gateways
                 return new DocumentDetails
                 {
                     DocumentCreator = document["DocumentCreatorUserName"],
-                    CominoDocumentNumber = document["DocumentId"],
+                    CominoDocumentNumber = document["CominoDocumentNumber"],
                     DocumentType = document["DocumentType"],
                     LetterType = document["LetterType"],
                     Id = document["InitialTimestamp"],
@@ -200,7 +200,7 @@ namespace Gateways
             return results.Select(entry => new DocumentDetails
             {
                 DocumentCreator = entry["DocumentCreatorUserName"]?.S?.ToString(),
-                CominoDocumentNumber = entry["DocumentId"]?.S?.ToString(),
+                CominoDocumentNumber = entry["CominoDocumentNumber"]?.S?.ToString(),
                 DocumentType = entry["DocumentType"]?.S?.ToString(),
                 LetterType = entry["LetterType"]?.S?.ToString(),
                 Id = entry["InitialTimestamp"]?.S?.ToString(),
@@ -212,7 +212,7 @@ namespace Gateways
         {
             return new Document
             {
-                ["DocumentId"] = newDocument.CominoDocumentNumber,
+                ["CominoDocumentNumber"] = newDocument.CominoDocumentNumber,
                 ["DocumentCreatorUserName"] = newDocument.DocumentCreator,
                 ["LetterType"] = newDocument.LetterType,
                 ["DocumentType"] = newDocument.DocumentType,
@@ -226,7 +226,7 @@ namespace Gateways
             return new DocumentDetails
             {
                 DocumentCreator = document["DocumentCreatorUserName"],
-                CominoDocumentNumber = document["DocumentId"],
+                CominoDocumentNumber = document["CominoDocumentNumber"],
                 DocumentType = document["DocumentType"],
                 LetterType = document["LetterType"],
                 Id = document["InitialTimestamp"],
