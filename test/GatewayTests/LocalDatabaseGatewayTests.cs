@@ -13,7 +13,6 @@ using Usecases.Enums;
 
 namespace GatewayTests
 {
-    [Ignore("to fix")]
     public class LocalDatabaseGatewayTests : DynamoDbTests
     {
         private Fixture _fixture;
@@ -304,7 +303,7 @@ namespace GatewayTests
                 ExpressionAttributeNames = new Dictionary<string, string> {{"#atr", "Log"}},
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue> {{":val", logEntries}}
             };
-            await DatabaseClient.DatabaseClient.UpdateItemAsync(update);
+            await DatabaseClient.DynamoDBClient.UpdateItemAsync(update);
         }
 
         private static Document GetLog(List<Document> savedItems, string savedAt)

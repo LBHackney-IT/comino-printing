@@ -1,34 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.Runtime;
+using System;
 
 namespace Gateways
 {
     public class DynamoDBHandler : IDynamoDBHandler
     {
-        public DynamoDBHandler(AmazonDynamoDBConfig dynamoConfig, string tableName)
+        private readonly AmazonDynamoDBClient _client;
+
+        public DynamoDBHandler(string tableName, DynamoDBClient dynamoDBClient)
         {
-            // TEMPORARY: debugging AWS SDK DynamoDB tests - hanging due to auth issue?
-            if (Environment.GetEnvironmentVariable("DYNAMODB_SET_DUMMY_AUTH") == "true")
-            {
-                var credentials = new BasicAWSCredentials("TestAccessKey", "TestSecretKey");
-                var client = new AmazonDynamoDBClient(credentials, dynamoConfig);
-                Console.WriteLine($"> setting DocumentTable: {tableName}");
-                DocumentTable = Table.LoadTable(client, tableName);
-                DatabaseClient = client;
-            }
-            else
-            {
-                var client = new AmazonDynamoDBClient(dynamoConfig);
-                DocumentTable = Table.LoadTable(client, tableName);
-                DatabaseClient = client;
-            }
+            _client = dynamoDBClient.Client;
+
+            Console.WriteLine($"> setting DocumentTable: {tableName}");
+            DocumentTable = Table.LoadTable(_client, tableName);
+            DynamoDBClient = _client;
         }
 
-        public AmazonDynamoDBClient DatabaseClient { get; }
+        public AmazonDynamoDBClient DynamoDBClient { get; }
         public Table DocumentTable { get; }
     }
 }
