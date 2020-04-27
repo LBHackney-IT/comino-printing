@@ -16,6 +16,7 @@ namespace AwsDotnetCsharp
         private readonly IGetAllDocuments _getAllDocumentsUseCase;
         private IApproveDocument _approveDocumentUsecase;
         private IGeneratePdfInS3Url _generatePdfInS3UrlUsecase;
+        private IGetSingleDocumentInfo _getSingleDocumentInfoUseCase;
 
         public Api()
         {
@@ -25,6 +26,7 @@ namespace AwsDotnetCsharp
             _getAllDocumentsUseCase = serviceProvider.GetService<IGetAllDocuments>();
             _approveDocumentUsecase = serviceProvider.GetService<IApproveDocument>();
             _generatePdfInS3UrlUsecase = serviceProvider.GetService<IGeneratePdfInS3Url>();
+            _getSingleDocumentInfoUseCase = serviceProvider.GetService<IGetSingleDocumentInfo>();
         }
 
         public async Task<APIGatewayProxyResponse> GetAllDocuments(APIGatewayProxyRequest request, ILambdaContext context)
@@ -46,13 +48,15 @@ namespace AwsDotnetCsharp
             return response;
         }
 
-        public APIGatewayProxyResponse GetById(APIGatewayProxyRequest request, ILambdaContext context)
+        public async Task<APIGatewayProxyResponse> GetById(APIGatewayProxyRequest request, ILambdaContext context)
         {
+            var id = request.PathParameters["id"];
+            var documentInfo = await _getSingleDocumentInfoUseCase.Execute(id);
+            
             var response = new APIGatewayProxyResponse
             {
                 StatusCode = (int) HttpStatusCode.OK,
-                //TODO
-                Body = "Use Case Response Here",
+                Body = ConvertToCamelCasedJson(documentInfo),
                 Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}, {"Access-Control-Allow-Origin", "*"}}
             };
 
