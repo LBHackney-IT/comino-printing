@@ -1,6 +1,7 @@
 using Notify.Client;
 using Notify.Models.Responses;
 using System.Threading.Tasks;
+using Usecases.Domain;
 using UseCases.GatewayInterfaces;
 
 namespace Gateways
@@ -21,6 +22,11 @@ namespace Gateways
                 pdfBytes
                 // postage (optional, either "first" or "second", defaults to "second")
             );
+        }
+
+        public GovNotifyResponse GetStatusForLetter(string documentId, string govNotifyNotificationId)
+        {
+            return new GovNotifyResponse();
         }
     }
 }

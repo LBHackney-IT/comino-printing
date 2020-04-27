@@ -95,7 +95,6 @@ namespace Gateways
             return MapToDocumentDetails(response);
         }
 
-<<<<<<< HEAD
         public async Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify()
         {
             var scanFilter = new ScanFilter();
