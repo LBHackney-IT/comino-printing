@@ -65,7 +65,7 @@ namespace UnitTests
 
             foreach (var letter in letters)
             {
-                _localDbGateway.Verify(x => x.UpdateStatus(letter.SavedAt, newStatus));
+                _localDbGateway.Verify(x => x.UpdateStatus(letter.Id, newStatus));
             }
 
         }
@@ -83,7 +83,7 @@ namespace UnitTests
             await _subject.Execute();
             foreach (var letter in letters)
             {
-                _logger.Verify(l => l.LogMessage(letter.SavedAt, expectedMessage));
+                _logger.Verify(l => l.LogMessage(letter.Id, expectedMessage));
             }
         }
 
@@ -92,7 +92,7 @@ namespace UnitTests
         {
             foreach (var letter in letters)
             {
-                _localDbGateway.Setup(x => x.UpdateStatus(letter.SavedAt, status))
+                _localDbGateway.Setup(x => x.UpdateStatus(letter.Id, status))
                     .ReturnsAsync(new UpdateStatusResponse{StatusUpdated = statusUpdated}).Verifiable();
             }
         }
@@ -101,7 +101,7 @@ namespace UnitTests
         {
             foreach (var letter in letters)
             {
-                _govNotifyGateway.Setup(x => x.GetStatusForLetter(letter.SavedAt, letter.GovNotifyNotificationId))
+                _govNotifyGateway.Setup(x => x.GetStatusForLetter(letter.Id, letter.GovNotifyNotificationId))
                     .Returns(new GovNotifyResponse
                     {
                         Status = status,

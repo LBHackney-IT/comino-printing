@@ -35,7 +35,7 @@ namespace GatewayTests
             var response = await GetItemsFromDatabase();
 
             response
-                .Where(doc => doc["DocumentId"] == newDocument.DocumentId)
+                .Where(doc => doc["DocumentId"] == newDocument.CominoDocumentNumber)
                 .Where(doc => doc["LetterType"] == newDocument.LetterType)
                 .Where(doc => doc["DocumentType"] == newDocument.DocumentType)
                 .Count(doc => doc["DocumentCreatorUserName"] == newDocument.DocumentCreator)
@@ -83,7 +83,7 @@ namespace GatewayTests
 
             var expectedResponse = new List<DocumentDetails> {savedDocumentOne};
 
-            var response = await _dbGateway.GetAllRecords(2, savedDocumentTwo.SavedAt);
+            var response = await _dbGateway.GetAllRecords(2, savedDocumentTwo.Id);
 
             response.Should().BeEquivalentTo(expectedResponse, options => options.Excluding(d => d.Log));
         }
@@ -123,8 +123,8 @@ namespace GatewayTests
 
             var savedItems = await GetItemsFromDatabase();
 
-            savedItems.Count(doc => doc["DocumentId"] == document1.DocumentId).Should().Be(1);
-            savedItems.Count(doc => doc["DocumentId"] == document2.DocumentId).Should().Be(1);
+            savedItems.Count(doc => doc["DocumentId"] == document1.CominoDocumentNumber).Should().Be(1);
+            savedItems.Count(doc => doc["DocumentId"] == document2.CominoDocumentNumber).Should().Be(1);
         }
 
         [Test]
@@ -146,7 +146,7 @@ namespace GatewayTests
         {
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
 
-            var response = await _dbGateway.GetRecordByTimeStamp(savedDocument.SavedAt);
+            var response = await _dbGateway.GetRecordByTimeStamp(savedDocument.Id);
 
             response.Should().BeEquivalentTo(savedDocument);
         }
@@ -156,9 +156,9 @@ namespace GatewayTests
         {
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
 
-            await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.SavedAt);
+            await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.Id);
 
-            var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.SavedAt);
+            var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.Id);
             savedDoc["Status"].ToString().Should().Be(LetterStatusEnum.Processing.ToString());
         }
 
@@ -167,7 +167,7 @@ namespace GatewayTests
         {
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
 
-            var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.SavedAt);
+            var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.Id);
 
             response.Should().BeEquivalentTo(savedDocument);
         }
@@ -178,7 +178,7 @@ namespace GatewayTests
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails(),
                 status: LetterStatusEnum.Processing);
 
-            var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.SavedAt);
+            var response = await _dbGateway.RetrieveDocumentAndSetStatusToProcessing(savedDocument.Id);
 
             response.Should().BeNull();
         }
@@ -223,9 +223,9 @@ namespace GatewayTests
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
             var expectedStatus = LetterStatusEnum.ReadyForGovNotify;
 
-            await _dbGateway.SetStatusToReadyForNotify(savedDocument.SavedAt);
+            await _dbGateway.SetStatusToReadyForNotify(savedDocument.Id);
 
-            var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.SavedAt);
+            var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.Id);
             savedDoc["Status"].ToString().Should().Be(expectedStatus.ToString());
         }
 
@@ -235,9 +235,9 @@ namespace GatewayTests
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
             var newStatus = LetterStatusEnum.ProcessingError;
 
-            await _dbGateway.UpdateStatus(savedDocument.SavedAt, newStatus);
+            await _dbGateway.UpdateStatus(savedDocument.Id, newStatus);
 
-            var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.SavedAt);
+            var savedDoc = await DatabaseClient.DocumentTable.GetItemAsync(savedDocument.Id);
             savedDoc["Status"].ToString().Should().Be(newStatus.ToString());
         }
 
@@ -262,9 +262,9 @@ namespace GatewayTests
         {
             var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
             var logMessage = "Something has happened";
-            await _dbGateway.LogMessage(savedDocument.SavedAt, logMessage);
+            await _dbGateway.LogMessage(savedDocument.Id, logMessage);
             var savedItems = await GetItemsFromDatabase();
-            var log = GetLog(savedItems, savedDocument.SavedAt);
+            var log = GetLog(savedItems, savedDocument.Id);
 
             log.Values.Select(s => s.ToString()).Should().Contain(logMessage);
         }
@@ -284,10 +284,10 @@ namespace GatewayTests
             await UpdateLog(savedDocument, previousLog);
 
             var logMessage = "Something has happened";
-            await _dbGateway.LogMessage(savedDocument.SavedAt, logMessage);
+            await _dbGateway.LogMessage(savedDocument.Id, logMessage);
 
             var savedItems = await GetItemsFromDatabase();
-            var log = GetLog(savedItems, savedDocument.SavedAt);
+            var log = GetLog(savedItems, savedDocument.Id);
 
             log.Values.Select(s => s.ToString()).Should().Contain(logMessage);
         }
@@ -302,7 +302,7 @@ namespace GatewayTests
 
             var savedItems = await GetItemsFromDatabase();
 
-            savedItems.First(i => i["InitialTimestamp"] == savedDocument.SavedAt).Should().NotContainKey("Log");
+            savedItems.First(i => i["InitialTimestamp"] == savedDocument.Id).Should().NotContainKey("Log");
             savedItems.Count().Should().Be(1);
         }
 
@@ -331,7 +331,7 @@ namespace GatewayTests
                 {"earlier today", "then something else happened"},
                 {currentTime, "that was the end"}
             };
-            var receivedLog = _dbGateway.GetLogForDocument(savedDocument.SavedAt);
+            var receivedLog = _dbGateway.GetLogForDocument(savedDocument.Id);
             receivedLog.Entries.Should().BeEquivalentTo(expectedLog);
         }
 
@@ -342,7 +342,7 @@ namespace GatewayTests
                 TableName = DatabaseClient.DocumentTable.TableName,
                 UpdateExpression = "SET #atr = :val",
                 Key = new Dictionary<string, AttributeValue>
-                    {{"InitialTimestamp", new AttributeValue {S = savedDocument.SavedAt}}},
+                    {{"InitialTimestamp", new AttributeValue {S = savedDocument.Id}}},
                 ExpressionAttributeNames = new Dictionary<string, string> {{"#atr", "Log"}},
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue> {{":val", logEntries}}
             };
@@ -363,7 +363,7 @@ namespace GatewayTests
         {
             return new DocumentDetails
             {
-                DocumentId = _fixture.Create<string>(),
+                CominoDocumentNumber = _fixture.Create<string>(),
                 DocumentCreator = _fixture.Create<string>(),
                 LetterType = _fixture.Create<string>(),
                 DocumentType = _fixture.Create<string>(),
@@ -376,7 +376,7 @@ namespace GatewayTests
             var timestamp = currentTimestamp ?? GetCurrentTimestamp();
             var documentItem = new Document
             {
-                ["DocumentId"] = document.DocumentId,
+                ["DocumentId"] = document.CominoDocumentNumber,
                 ["DocumentCreatorUserName"] = document.DocumentCreator,
                 ["InitialTimestamp"] = timestamp,
                 ["LetterType"] = document.LetterType,
@@ -386,14 +386,14 @@ namespace GatewayTests
 
             await DatabaseClient.DocumentTable.PutItemAsync(documentItem);
 
-            document.SavedAt = timestamp;
+            document.Id = timestamp;
             document.Status = status;
             return document;
         }
 
         private static DateTime GetTimestampForDocumentId(List<Document> savedItems, DocumentDetails document)
         {
-            return DateTime.Parse(savedItems.First(doc => doc["DocumentId"] == document.DocumentId)["InitialTimestamp"]);
+            return DateTime.Parse(savedItems.First(doc => doc["DocumentId"] == document.CominoDocumentNumber)["InitialTimestamp"]);
         }
 
         private async Task<List<Document>> GetItemsFromDatabase()

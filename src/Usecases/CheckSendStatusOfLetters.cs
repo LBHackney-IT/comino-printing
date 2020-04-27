@@ -23,11 +23,11 @@ namespace Usecases
             var lettersToCheck = await _localDatabaseGateway.GetLettersWaitingForGovNotify();
             lettersToCheck.ForEach(async letter =>
             {
-                var govNotifyResponse = _govNotifyGateway.GetStatusForLetter(letter.SavedAt, letter.GovNotifyNotificationId);
-                var updateResponse = await _localDatabaseGateway.UpdateStatus(letter.SavedAt, govNotifyResponse.Status);
+                var govNotifyResponse = _govNotifyGateway.GetStatusForLetter(letter.Id, letter.GovNotifyNotificationId);
+                var updateResponse = await _localDatabaseGateway.UpdateStatus(letter.Id, govNotifyResponse.Status);
                 if (updateResponse.StatusUpdated)
                 {
-                    await _logger.LogMessage(letter.SavedAt, $"Gov Notify status: {govNotifyResponse.Status.PrettierStatusName()}");
+                    await _logger.LogMessage(letter.Id, $"Gov Notify status: {govNotifyResponse.Status.PrettierStatusName()}");
                 }
             });
         }

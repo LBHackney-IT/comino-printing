@@ -23,10 +23,10 @@ namespace UseCases
            var documentResponse = await _localDatabaseGateway.GetAllRecords(parsedLimit, cursor);
            var documentResponses = documentResponse.Select(record => new DocumentResponse
            {
-               Id = record.SavedAt,
-               DocNo = record.DocumentId,
+               Id = record.Id,
+               DocNo = record.CominoDocumentNumber,
                Sender = record.DocumentCreator,
-               Created = record.SavedAt,
+               Created = record.Id,
                Status = record.Status.ToString(),
                LetterType = record.LetterType,
                DocumentType = record.DocumentType,

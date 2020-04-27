@@ -29,7 +29,7 @@ namespace UnitTests
         public async Task ItPassesAllDocumentsToGateway()
         {
             var documentsToSave = _fixture.Build<DocumentDetails>()
-                .Without(doc => doc.SavedAt).CreateMany().ToList();
+                .Without(doc => doc.Id).CreateMany().ToList();
             await _subject.Execute(documentsToSave);
 
             foreach (var document in documentsToSave)
@@ -42,7 +42,7 @@ namespace UnitTests
         public async Task ItReturnsTheDocumentsDetailsWithPopulatedTimestamps()
         {
             var documentsToSave = _fixture.Build<DocumentDetails>()
-                .Without(doc => doc.SavedAt)
+                .Without(doc => doc.Id)
                 .Without(doc => doc.Log)
                 .Without(doc => doc.GovNotifyNotificationId)
                 .CreateMany().ToList();
@@ -55,8 +55,8 @@ namespace UnitTests
                 return new DocumentDetails
                 {
                     DocumentCreator = doc.DocumentCreator,
-                    DocumentId = doc.DocumentId,
-                    SavedAt = timestamp,
+                    CominoDocumentNumber = doc.CominoDocumentNumber,
+                    Id = timestamp,
                     DocumentType = doc.DocumentType,
                     LetterType = doc.LetterType,
                     Status = doc.Status,

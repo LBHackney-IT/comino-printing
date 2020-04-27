@@ -24,7 +24,7 @@ namespace UnitTests
         [Test]
         public void ExecuteWillCallTheGatewayToUpdateTheStatusOfTheDocumentAfterApproval()
         {
-            var putRequestId = _fixture.Create<DocumentDetails>().SavedAt;
+            var putRequestId = _fixture.Create<DocumentDetails>().Id;
             var requestedStatus = _fixture.Create<DocumentDetails>().Status;
 
             _subject.Execute(putRequestId);

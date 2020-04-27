@@ -48,8 +48,8 @@ namespace Gateways
             try
             {
                 queryResults = _database.Query<W2BatchPrintRow>(query).Select(row =>
-                    new DocumentDetails{
-                        DocumentId = row.DocumentNumber,
+                    new DocumentDetails {
+                        CominoDocumentNumber = row.DocumentNumber,
                         DocumentCreator = row.UserName,
                         LetterType = row.LetterType,
                         DocumentType = row.DocumentType

@@ -56,8 +56,8 @@ namespace Gateways
 
             var parsedRecords = ParseRecords(records);
 
-            return parsedRecords.OrderByDescending(doc => DateTime.Parse(doc.SavedAt))
-                .Where(doc => cursor == null || DateTime.Parse(doc.SavedAt) < DateTime.Parse(cursor))
+            return parsedRecords.OrderByDescending(doc => DateTime.Parse(doc.Id))
+                .Where(doc => cursor == null || DateTime.Parse(doc.Id) < DateTime.Parse(cursor))
                 .Take(limit).ToList();
         }
 
@@ -167,10 +167,10 @@ namespace Gateways
                 return new DocumentDetails
                 {
                     DocumentCreator = document["DocumentCreatorUserName"],
-                    DocumentId = document["DocumentId"],
+                    CominoDocumentNumber = document["DocumentId"],
                     DocumentType = document["DocumentType"],
                     LetterType = document["LetterType"],
-                    SavedAt = document["InitialTimestamp"],
+                    Id = document["InitialTimestamp"],
                     Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
                     Log = logEntries
                 };
@@ -200,10 +200,10 @@ namespace Gateways
             return results.Select(entry => new DocumentDetails
             {
                 DocumentCreator = entry["DocumentCreatorUserName"]?.S?.ToString(),
-                DocumentId = entry["DocumentId"]?.S?.ToString(),
+                CominoDocumentNumber = entry["DocumentId"]?.S?.ToString(),
                 DocumentType = entry["DocumentType"]?.S?.ToString(),
                 LetterType = entry["LetterType"]?.S?.ToString(),
-                SavedAt = entry["InitialTimestamp"]?.S?.ToString(),
+                Id = entry["InitialTimestamp"]?.S?.ToString(),
                 Status = Enum.Parse<LetterStatusEnum>(entry["Status"]?.S?.ToString())
             }).ToList();
         }
@@ -212,7 +212,7 @@ namespace Gateways
         {
             return new Document
             {
-                ["DocumentId"] = newDocument.DocumentId,
+                ["DocumentId"] = newDocument.CominoDocumentNumber,
                 ["DocumentCreatorUserName"] = newDocument.DocumentCreator,
                 ["LetterType"] = newDocument.LetterType,
                 ["DocumentType"] = newDocument.DocumentType,
@@ -226,10 +226,10 @@ namespace Gateways
             return new DocumentDetails
             {
                 DocumentCreator = document["DocumentCreatorUserName"],
-                DocumentId = document["DocumentId"],
+                CominoDocumentNumber = document["DocumentId"],
                 DocumentType = document["DocumentType"],
                 LetterType = document["LetterType"],
-                SavedAt = document["InitialTimestamp"],
+                Id = document["InitialTimestamp"],
             };
         }
 
