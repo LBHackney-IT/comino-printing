@@ -83,6 +83,17 @@ namespace GatewayTests
             File.Exists(expectedFilePath).Should().BeFalse();
         }
 
+        [Test]
+        public void GeneratePdfUrl_CallsGetPreSignedURLOnTheS3Client()
+        {
+            var date = new DateTime(2020, 02, 25, 12, 45, 27);
+            var documentId = date.ToString("O");
+
+            _subject.GeneratePdfUrl(documentId);
+
+            _mockAmazonS3.Verify(x => x.GetPreSignedURL(It.IsAny<GetPreSignedUrlRequest>()));
+        }
+
         private static Expression<Func<PutObjectRequest, bool>> Match(PutObjectRequest expectedPutRequest)
         {
             return p => p.BucketName == expectedPutRequest.BucketName

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -16,6 +15,7 @@ namespace AwsDotnetCsharp
     {
         private readonly IGetAllDocuments _getAllDocumentsUseCase;
         private IApproveDocument _approveDocumentUsecase;
+        private IGeneratePdfInS3Url _generatePdfInS3UrlUsecase;
 
         public Api()
         {
@@ -71,12 +71,19 @@ namespace AwsDotnetCsharp
             return response;
         }
 
-        public async Task<APIGatewayProxyResponse> ViewDocumentPdf(APIGatewayProxyRequest request, ILambdaContext context)
+        public APIGatewayProxyResponse ViewDocumentPdf(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            // Get s3 presigned Url from S3 client
-            // use Response.Redirect("")to redirect to the pdf in s3;
             
-            return null;
+            var id = request.PathParameters["id"];
+            var redirectUrl = _generatePdfInS3UrlUsecase.Execute(id);
+            
+            var response = new APIGatewayProxyResponse
+            {
+                StatusCode = (int)HttpStatusCode.Redirect,
+                Headers = new Dictionary<string, string>{ { "location", redirectUrl } }
+            };
+            
+            return response;
         }
 
         private static string ConvertToCamelCasedJson<T>(T responseBody)
