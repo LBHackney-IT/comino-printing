@@ -42,7 +42,10 @@ namespace UnitTests
         public async Task ItReturnsTheDocumentsDetailsWithPopulatedTimestamps()
         {
             var documentsToSave = _fixture.Build<DocumentDetails>()
-                .Without(doc => doc.SavedAt).Without(doc => doc.Log).CreateMany().ToList();
+                .Without(doc => doc.SavedAt)
+                .Without(doc => doc.Log)
+                .Without(doc => doc.GovNotifyNotificationId)
+                .CreateMany().ToList();
 
 
             var expectedDocuments = documentsToSave.Select(doc =>
@@ -56,7 +59,7 @@ namespace UnitTests
                     SavedAt = timestamp,
                     DocumentType = doc.DocumentType,
                     LetterType = doc.LetterType,
-                    Status = doc.Status
+                    Status = doc.Status,
                 };
             }).ToList();
             var response = await _subject.Execute(documentsToSave);
