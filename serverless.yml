@@ -63,7 +63,7 @@ functions:
     handler: Lambda::AwsDotnetCsharp.Handlers::GetSendStatusOfLetters
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
-      - schedule: rate(30 minute)
+      - schedule: rate(1 hour)
 
   get-all-documents-api:
     name: ${self:service}-${self:provider.stage}-get-all-documents-api
