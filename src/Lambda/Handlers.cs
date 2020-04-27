@@ -63,5 +63,19 @@ namespace AwsDotnetCsharp
                 throw;
             }
         }
+
+        public async Task GetSendStatusOfLetters(ILambdaContext context)
+        {
+            var getSendStatusOfLetters = _serviceProvider.GetService<ICheckSendStatusOfLetters>();
+            try
+            {
+                await getSendStatusOfLetters.Execute();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
     }
 }

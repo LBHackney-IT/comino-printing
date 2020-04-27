@@ -9,6 +9,7 @@ using Amazon.SQS;
 using Boundary.UseCaseInterfaces;
 using Gateways;
 using Microsoft.Extensions.DependencyInjection;
+using Usecases;
 using UseCases;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
@@ -60,6 +61,7 @@ namespace AwsDotnetCsharp
             services.AddScoped<IParseHtmlToPdf, HtmlToPdfConversionGateway>();
             services.AddScoped<IGetAllDocuments, GetAllDocuments>();
             services.AddScoped<IQueryDocumentsAndSendToNotify, QueryDocumentsAndSendToNotify>();
+            services.AddScoped<ICheckSendStatusOfLetters, CheckSendStatusOfLetters>();
         }
     }
 }
