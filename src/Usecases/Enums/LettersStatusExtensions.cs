@@ -24,6 +24,8 @@ namespace Usecases
                     return "Ready for Gov Notify";
                 case LetterStatusEnum.SentToGovNotify:
                     return "Sent to Gov Notify";
+                case LetterStatusEnum.Cancelled:
+                    return "Cancelled";
                 default:
                     return status.ToString();
             }

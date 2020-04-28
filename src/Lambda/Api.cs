@@ -18,6 +18,7 @@ namespace AwsDotnetCsharp
         private readonly IApproveDocument _approveDocumentUseCase;
         private readonly IGeneratePdfInS3Url _generatePdfInS3UrlUseCase;
         private readonly IGetSingleDocumentInfo _getSingleDocumentInfoUseCase;
+        private readonly ICancelDocument _cancelDocumentUseCase;
 
         public Api()
         {
@@ -28,6 +29,7 @@ namespace AwsDotnetCsharp
             _approveDocumentUseCase = serviceProvider.GetService<IApproveDocument>();
             _generatePdfInS3UrlUseCase = serviceProvider.GetService<IGeneratePdfInS3Url>();
             _getSingleDocumentInfoUseCase = serviceProvider.GetService<IGetSingleDocumentInfo>();
+            _cancelDocumentUseCase = serviceProvider.GetService<ICancelDocument>();
         }
 
         public async Task<APIGatewayProxyResponse> GetAllDocuments(APIGatewayProxyRequest request, ILambdaContext context)
@@ -78,6 +80,20 @@ namespace AwsDotnetCsharp
                 Headers = new Dictionary<string, string>{{"Access-Control-Allow-Origin", "*"}}
             };
 
+            return response;
+        }
+        
+        public async Task<APIGatewayProxyResponse> CancelDocument(APIGatewayProxyRequest request, ILambdaContext context)
+        {
+            var id = request.PathParameters["id"];
+            await _cancelDocumentUseCase.Execute(id);
+            
+            var response = new APIGatewayProxyResponse
+            {
+                StatusCode = (int) HttpStatusCode.OK,
+                Headers = new Dictionary<string, string>{{"Access-Control-Allow-Origin", "*"}}
+            };
+            
             return response;
         }
 

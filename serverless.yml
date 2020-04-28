@@ -109,6 +109,20 @@ functions:
               paths:
                 id: true
 
+  cancel-document:
+    name: ${self:service}-${self:provider.stage}-cancel-document
+    handler: Lambda::AwsDotnetCsharp.Api::CancelDocument
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    events:
+      - http:
+          path: /api/documents/{id}/cancel
+          method: post
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
+
   view-document-pdf:
     name: ${self:service}-${self:provider.stage}-view-document-pdf
     handler: Lambda::AwsDotnetCsharp.Api::ViewDocumentPdf

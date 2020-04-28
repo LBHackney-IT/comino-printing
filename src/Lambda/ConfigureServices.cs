@@ -72,6 +72,7 @@ namespace AwsDotnetCsharp
             services.AddScoped<IGetSingleDocumentInfo, GetSingleDocumentInfo>();
             services.AddScoped<IQueryDocumentsAndSendToNotify, QueryDocumentsAndSendToNotify>();
             services.AddScoped<ICheckSendStatusOfLetters, CheckSendStatusOfLetters>();
+            services.AddScoped<ICancelDocument, CancelDocument>();
         }
     }
 }
