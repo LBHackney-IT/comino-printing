@@ -21,6 +21,7 @@ provider:
   runtime: dotnetcore2.1
   region: eu-west-2
   stage: ${opt:stage}
+  timeout: 30
   vpc:
     securityGroupIds:
       - sg-022acccbebd7bca46
