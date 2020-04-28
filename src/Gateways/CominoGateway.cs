@@ -26,9 +26,8 @@ namespace Gateways
             var descriptions = documentConfig.Descriptions;
             var startTime = $"{time.Month}/{time.Day}/{time.Year} {time.Hour}:{time.Minute}:{time.Second}";
 
-            //TODO Remove top 5 when timespan is set to 1 minute
             var query =
-                $@"SELECT TOP 5 DocNo AS DocumentNumber,
+                $@"SELECT DocNo AS DocumentNumber,
                 StoreDate AS Date,
                 strDescription AS LetterType,
                 strUser AS UserName,
@@ -66,6 +65,39 @@ namespace Gateways
             return queryResults;
         }
 
+        public void MarkDocumentAsSent(string documentNumber)
+        {
+            var timeNow = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.zzz");
+
+            var updateLastPrintedDate = $@"UPDATE CCDocument SET LastPrinted = '{timeNow}' WHERE DocNo = '{documentNumber}';";
+            var deleteFromBatchPrint = $@"DELETE FROM W2BatchPrint WHERE nDocNo = '{documentNumber}'";
+
+            _database.Query(updateLastPrintedDate);
+            _database.Query(deleteFromBatchPrint);
+
+            Console.WriteLine($"Comino DB update {documentNumber} removed from batch print and LastPrintedDate updated to {timeNow}");
+        }
+
+        public CominoSentStatusCheck GetDocumentSentStatus(string documentNumber)
+        {
+            var getStatus = $@"
+SELECT TOP 1 LastPrinted, nDocNo
+FROM CCDocument
+LEFT JOIN W2BatchPrint ON nDocNo = DocNo
+WHERE CCDocument.DocNo = '{documentNumber}';
+";
+            var response = _database.Query<PrintStatusRow>(getStatus).FirstOrDefault();
+            if (response?.nDocNo == null || response.LastPrinted != null)
+            {
+                return new CominoSentStatusCheck
+                {
+                    Printed = true,
+                    PrintedAt = response.LastPrinted
+                };
+            }
+            return new CominoSentStatusCheck{ Printed = false };
+        }
+
         public class W2BatchPrintRow
         {
             public string DocumentNumber { get; set; }
@@ -86,6 +118,12 @@ namespace Gateways
             return JsonConvert.DeserializeObject<DocumentConfig>(
                 Environment.GetEnvironmentVariable("DOCUMENT_CONFIG")
             );
+        }
+
+        public class PrintStatusRow
+        {
+            public string LastPrinted { get; set; }
+            public string nDocNo { get; set; }
         }
     }
 }

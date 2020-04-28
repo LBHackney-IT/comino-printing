@@ -146,7 +146,7 @@ namespace UnitTests
             await _subject.Execute();
             foreach (var document in savedRecords)
             {
-                _cominoGateway.Verify(x => x.MarkDocumentAsSent(document.Id), Times.Once);
+                _cominoGateway.Verify(x => x.MarkDocumentAsSent(document.CominoDocumentNumber), Times.Once);
             }
         }
 

@@ -65,7 +65,7 @@ namespace GatewayTests
             var stubbedResponseFromDb = _fixture.CreateMany<CominoGateway.W2BatchPrintRow>().ToList();
             var expectedResponse = MapDatabaseRowToDomain(stubbedResponseFromDb);
 
-            SetupMockQueryToReturn(expectedQuery, stubbedResponseFromDb);
+            SetupMockQueryToReturnDocuments(expectedQuery, stubbedResponseFromDb);
 
             var response = _subject.GetDocumentsAfterStartDate(time);
 
@@ -95,7 +95,7 @@ namespace GatewayTests
             var stubbedResponseFromDb = _fixture.CreateMany<CominoGateway.W2BatchPrintRow>().ToList();
             var expectedResponse = MapDatabaseRowToDomain(stubbedResponseFromDb);
 
-            SetupMockQueryToReturn(expectedQuery, stubbedResponseFromDb);
+            SetupMockQueryToReturnDocuments(expectedQuery, stubbedResponseFromDb);
 
             var response = _subject.GetDocumentsAfterStartDate(time);
 
@@ -103,11 +103,90 @@ namespace GatewayTests
             _connection.Verify();
         }
 
-        private void SetupMockQueryToReturn(string expectedQuery, List<CominoGateway.W2BatchPrintRow> stubbedResponseFromDb)
+        [Test]
+        public void GetDocumentSentStatus_IfDocumentIsNotInBatchPrint_ReturnsPrintedAndPrintedAt()
+        {
+            var cominoDocumentNumber = _fixture.Create<string>();
+            var expectedLastPrintedAt = _fixture.Create<string>();
+
+            var expectedQuery = $@"
+SELECT TOP 1 LastPrinted, nDocNo
+FROM CCDocument
+LEFT JOIN W2BatchPrint ON nDocNo = DocNo
+WHERE CCDocument.DocNo = '{cominoDocumentNumber}';
+";
+
+            SetupMockQueryToPrintedDetails(expectedQuery, null, expectedLastPrintedAt);
+
+            var response = _subject.GetDocumentSentStatus(cominoDocumentNumber);
+            response.Should().BeEquivalentTo(new CominoSentStatusCheck
+            {
+                Printed = true,
+                PrintedAt = expectedLastPrintedAt
+            });
+        }
+
+        [Test]
+        public void GetDocumentSentStatus_IfDocumentLastPrintDateIsSet_ReturnsPrintedAndPrintedAt()
+        {
+            var cominoDocumentNumber = _fixture.Create<string>();
+            var expectedLastPrintedAt = _fixture.Create<string>();
+            var expectedQuery = $@"
+SELECT TOP 1 LastPrinted, nDocNo
+FROM CCDocument
+LEFT JOIN W2BatchPrint ON nDocNo = DocNo
+WHERE CCDocument.DocNo = '{cominoDocumentNumber}';
+";
+            SetupMockQueryToPrintedDetails(expectedQuery, cominoDocumentNumber, expectedLastPrintedAt);
+
+            var response = _subject.GetDocumentSentStatus(cominoDocumentNumber);
+            response.Should().BeEquivalentTo(new CominoSentStatusCheck
+            {
+                Printed = true,
+                PrintedAt = expectedLastPrintedAt
+            });
+            _connection.Verify();
+        }
+
+        [Test]
+        public void GetDocumentSentStatus_IfDocumentLastPrintDateIsNotSet_ReturnsNotPrinted()
+        {
+            var cominoDocumentNumber = _fixture.Create<string>();
+
+            var expectedQuery = $@"
+SELECT TOP 1 LastPrinted, nDocNo
+FROM CCDocument
+LEFT JOIN W2BatchPrint ON nDocNo = DocNo
+WHERE CCDocument.DocNo = '{cominoDocumentNumber}';
+";
+            SetupMockQueryToPrintedDetails(expectedQuery, cominoDocumentNumber, null);
+
+            var response = _subject.GetDocumentSentStatus(cominoDocumentNumber);
+            response.Should().BeEquivalentTo(new CominoSentStatusCheck
+            {
+                Printed = false,
+            });
+            _connection.Verify();
+        }
+
+        private void SetupMockQueryToReturnDocuments(string expectedQuery, List<CominoGateway.W2BatchPrintRow> stubbedResponseFromDb)
         {
             _connection
                 .SetupDapper(c => c.Query<CominoGateway.W2BatchPrintRow>(expectedQuery, null, null, true, null, null))
                 .Returns(stubbedResponseFromDb)
+                .Verifiable();
+        }
+
+        private void SetupMockQueryToPrintedDetails(string expectedQuery, string batchPrintNumber, string lastPrintedAt)
+        {
+            var response = new CominoGateway.PrintStatusRow
+            {
+                LastPrinted = lastPrintedAt,
+                nDocNo = batchPrintNumber
+            };
+            _connection
+                .SetupDapper(c => c.Query<CominoGateway.PrintStatusRow>(expectedQuery, null, null, true, null, null))
+                .Returns(new List<CominoGateway.PrintStatusRow>{response})
                 .Verifiable();
         }
 

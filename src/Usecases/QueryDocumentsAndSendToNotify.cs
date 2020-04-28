@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Boundary.UseCaseInterfaces;
 using Usecases.Enums;
@@ -48,7 +49,7 @@ namespace UseCases
                     await _localDatabaseGateway.SaveSendNotificationId(document.Id, govNotifyResponse.NotificationId);
                     await _logger.LogMessage(document.Id,
                         $"Sent to Gov Notify. Gov Notify Notification Id {document.GovNotifyNotificationId}.");
-                    _cominoGateway.MarkDocumentAsSent(document.Id);
+                    _cominoGateway.MarkDocumentAsSent(document.CominoDocumentNumber);
                     await _logger.LogMessage(document.Id, "Removed from batch print queue and print date set in comino");
                 }
                 else
