@@ -30,6 +30,11 @@ To install .NET Core SDK for WSL:
   3. Follow the steps for "Install the .NET Core SDK" (install SDK version 2.1 which is used in this project)
 3. After installation is complete, navigate to the solution folder and run 'sudo dotnet test'
 
+## Adding a letter type
+- Create a class to parse the letter ([example](src/Usecases/UntestedParsers/ChangesInCircsICL.cs)). This should inherit from the `ILetterParser` interface. The parser class should take HTML of the whole document and return HTML for the header, HTML for the body and any CSS to be applied to the whole document.
+- Go [here](src/Usecases/ParserLookup.cs) to link this new parser class with the letter type (also called `DocDesc` in the Comino DB).
+- Add the letter type to list of `Descriptions` in the `DOCUMENT_CONFIG` environment variable. Details on how to update this are in [Changing the Document Settings](#changing-the-document-settings).
+
 ## Changing the Document Settings
 
 The documents that are collected from BatchPrint are defined by category and description in the `DOCUMENT_CONFIG` environment variable. You should see a default value in the `.env.example` file in this project.
@@ -37,7 +42,7 @@ The documents that are collected from BatchPrint are defined by category and des
 To update this value for staging and production, the following command may be useful to avoid unpredictable results from the serialised JSON:
 
 ```
-aws ssm put-parameter --name "/hn-comino-printing/[stage]/DOCUMENT_CONFIG" --value "{\"Categories\":[\"Benefits/Out-Going\"],\"Descriptions\":[\"Income Verification Document\"]}" --type String --overwrite
+aws ssm put-parameter --name "/hn-comino-printing/[stage]/DOCUMENT_CONFIG" --value "{\"Categories\":[\"Benefits/Out-Going\"],\"Descriptions\":[\"Change in Circs ICL\"]}" --type String --overwrite
 ```
 
 Replace [stage] above with either `staging` or `production`.
