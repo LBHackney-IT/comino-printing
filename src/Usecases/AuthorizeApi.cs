@@ -16,6 +16,8 @@ namespace Usecases
         {
             var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
             var token = request.AuthorizationToken;
+            Console.Write(token);
+            
             var allowedGroupName = Environment.GetEnvironmentVariable("ALLOWED_USER_GROUP");
 
             var decodedToken = DecodeToken(secret, token);
