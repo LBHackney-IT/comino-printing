@@ -22,15 +22,13 @@ You do not need to create a serverless dashboard account to invoke these lambda 
 3. Go to [here](http://localhost:8001/)
 
 ## Running tests on Windows environment
-Due to specific filename format used with S3 documents, some tests will fail in Windows environment. GatewayTests group can be run successfully on Windows by using .NET SDK on WSL.
+Due to specific filename format used in S3 documents, some tests will fail on Windows environment. GatewayTests group can be run successfully on Windows by using .NET SDK on WSL.
 
 To install .NET Core SDK for WSL:
 1. [View instructions](https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1910)
   2. Follow the steps for "Add Microsoft repository key and feed"
   3. Follow the steps for "Install the .NET Core SDK" (install SDK version 2.1 which is used in this project)
 3. After installation is complete, navigate to the solution folder and run 'sudo dotnet test'
-
-ASP.NET Core runtime is not necessary for running tests only.
 
 ## Changing the Document Settings
 
