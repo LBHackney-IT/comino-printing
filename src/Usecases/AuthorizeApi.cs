@@ -16,11 +16,17 @@ namespace Usecases
         {
             var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
             var token = request.AuthorizationToken;
+            var substring = "Bearer";
+            int indexOfSubString = token.IndexOf(substring);
+            
+            var editToken = token.Remove(indexOfSubString, substring.Length).Trim();
+
+            
             Console.Write(token);
             
             var allowedGroupName = Environment.GetEnvironmentVariable("ALLOWED_USER_GROUP");
 
-            var decodedToken = DecodeToken(secret, token);
+            var decodedToken = DecodeToken(secret, editToken);
 
             if (decodedToken == null)
             {
