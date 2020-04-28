@@ -350,6 +350,18 @@ namespace GatewayTests
             receivedLog.Entries.Should().BeEquivalentTo(expectedLog);
         }
 
+        [Test]
+        public async Task SaveSendNotificationId_StoresTheGivenIdAgainstTheCorrectDbRecord()
+        {
+            var document = await AddDocumentToDatabase(RandomDocumentDetails());
+            var notificationIdToSave = _fixture.Create<string>();
+
+            await _dbGateway.SaveSendNotificationId(document.Id, notificationIdToSave);
+
+            var dbEntry = await DatabaseClient.DocumentTable.GetItemAsync(document.Id);
+            dbEntry["GovNotifyNotificationId"].ToString().Should().BeEquivalentTo(notificationIdToSave);
+        }
+
         private async Task UpdateLog(DocumentDetails savedDocument, AttributeValue logEntries)
         {
             var update = new UpdateItemRequest

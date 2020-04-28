@@ -88,7 +88,6 @@ namespace UnitTests
             }
         }
 
-        [Ignore("TO DO: Make this gateway method method")]
         [Test]
         public async Task IfGovNotifyReturnsSuccessfully_SavesGovNotifyId()
         {
@@ -98,7 +97,7 @@ namespace UnitTests
             await _subject.Execute();
             foreach (var document in savedRecords)
             {
-                _dbGatewayMock.Verify(x => x.SaveNotificationId(document.Id, document.GovNotifyNotificationId), Times.Once);
+                _dbGatewayMock.Verify(x => x.SaveSendNotificationId(document.Id, document.GovNotifyNotificationId), Times.Once);
             }
         }
 

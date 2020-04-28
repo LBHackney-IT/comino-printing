@@ -34,6 +34,7 @@ namespace UseCases
                 if (govNotifyResponse.Success)
                 {
                     await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.SentToGovNotify);
+                    await _localDatabaseGateway.SaveSendNotificationId(document.Id, govNotifyResponse.NotificationId);
                     await _logger.LogMessage(document.Id,
                         $"Sent to Gov Notify. Gov Notify Notification Id {document.GovNotifyNotificationId}");
                 }

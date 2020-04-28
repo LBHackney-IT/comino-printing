@@ -167,11 +167,15 @@ namespace Gateways
             return sentToGovNotifyStatus.Concat(pendingVirusCheckStatus).ToList();
         }
 
-        public Task SaveNotificationId(string documentId, string sentNotificationId)
+        public async Task SaveSendNotificationId(string documentId, string sentNotificationId)
         {
-            var task = Task.Run(() => { });
-            return task;
-            //TODO: Implement this method
+            var updateDetails = new Document
+            {
+                ["InitialTimestamp"] = documentId,
+                ["GovNotifyNotificationId"] = sentNotificationId
+            };
+
+            await _documentsTable.UpdateItemAsync(updateDetails);
         }
 
         private List<DocumentDetails> ParseRecords(List<Document> records)
@@ -217,12 +221,15 @@ namespace Gateways
             var results = await _databaseClient.QueryAsync(queryRequest);
             return results.Items.Select(entry => new DocumentDetails
             {
-                DocumentCreator = entry["DocumentCreatorUserName"]?.S?.ToString(),
-                CominoDocumentNumber = entry["CominoDocumentNumber"]?.S?.ToString(),
-                DocumentType = entry["DocumentType"]?.S?.ToString(),
-                LetterType = entry["LetterType"]?.S?.ToString(),
-                Id = entry["InitialTimestamp"]?.S?.ToString(),
-                Status = Enum.Parse<LetterStatusEnum>(entry["Status"]?.S?.ToString()),
+                DocumentCreator = entry["DocumentCreatorUserName"].S?.ToString(),
+                CominoDocumentNumber = entry["CominoDocumentNumber"].S?.ToString(),
+                DocumentType = entry["DocumentType"].S?.ToString(),
+                LetterType = entry["LetterType"].S?.ToString(),
+                Id = entry["InitialTimestamp"].S?.ToString(),
+                Status = Enum.Parse<LetterStatusEnum>(entry["Status"].S?.ToString()),
+                GovNotifyNotificationId = entry.ContainsKey("GovNotifyNotificationId")
+                    ? entry["GovNotifyNotificationId"].S?.ToString()
+                    : null,
             }).ToList();
         }
         private static Document ConstructDynamoDocument(DocumentDetails newDocument, string currentTimestamp)
