@@ -151,12 +151,12 @@ functions:
               paths:
                 id: true
 
-  query-documents-and-send-to-notify:
-    name: ${self:service}-${self:provider.stage}-query-documents-and-send-to-notify
+  send-to-notify:
+    name: ${self:service}-${self:provider.stage}-send-to-notify
     handler: Lambda::AwsDotnetCsharp.Handlers::QueryDocumentsAndSendToNotify
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
-      - schedule: cron(0 15 * * MON-FRI *) # every weekday at 3pm UTC
+      - schedule: cron(30 15 ? * MON-FRI *) # every weekday at 3:30pm UTC
 
 resources:
   Resources:
