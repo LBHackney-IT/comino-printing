@@ -58,8 +58,8 @@ namespace GatewayTests
                 AND CCDocument.DocDesc IN ('Income Verification Document')
                 AND CCDocument.DirectionFg = 'O'
                 AND CCDocument.DocSource = 'O'
-                AND CCDocument.DocDate > '12/30/6 0:38:54'
-                ORDER BY CCDocument.DocDate DESC;
+                AND W2BatchPrint.StoreDate > '12/30/6 0:38:54'
+                ORDER BY W2BatchPrint.StoreDate DESC;
                 ";
 
             var stubbedResponseFromDb = _fixture.CreateMany<CominoGateway.W2BatchPrintRow>().ToList();
@@ -89,8 +89,8 @@ namespace GatewayTests
                 AND CCDocument.DocDesc IN ('Income Verification Document')
                 AND CCDocument.DirectionFg = 'O'
                 AND CCDocument.DocSource = 'O'
-                AND CCDocument.DocDate > 11/25/12 6:13:45
-                ORDER BY CCDocument.DocDate DESC;
+                AND W2BatchPrint.StoreDate > 11/25/12 6:13:45
+                ORDER BY W2BatchPrint.StoreDate DESC;
                 ";
             var stubbedResponseFromDb = _fixture.CreateMany<CominoGateway.W2BatchPrintRow>().ToList();
             var expectedResponse = MapDatabaseRowToDomain(stubbedResponseFromDb);

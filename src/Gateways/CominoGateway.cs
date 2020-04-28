@@ -38,8 +38,8 @@ namespace Gateways
                 AND CCDocument.DocDesc IN ('{string.Join("','", descriptions)}')
                 AND CCDocument.DirectionFg = 'O'
                 AND CCDocument.DocSource = 'O'
-                AND CCDocument.DocDate > '{startTime}'
-                ORDER BY CCDocument.DocDate DESC;
+                AND W2BatchPrint.StoreDate > '{startTime}'
+                ORDER BY W2BatchPrint.StoreDate DESC;
                 ";
 
             List<DocumentDetails> queryResults;
