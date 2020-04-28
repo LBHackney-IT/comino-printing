@@ -26,9 +26,6 @@ namespace UseCases
 
             await File.WriteAllTextAsync($"/tmp/{documentId}.html", html);
 
-            //TODO Remove later - for troubleshooting PDF Generation
-            await _s3Gateway.SaveHtmlDocument(documentId);
-
             return html;
         }
     }
