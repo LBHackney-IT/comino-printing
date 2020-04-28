@@ -24,7 +24,7 @@ namespace UnitTests
         [Test]
         public void BenefitsBlankLetterReturnsCorrectParser()
         {
-            _subject.ForType("Benefits Blank Letter").Should().BeOfType<BlankBenefitsRtfParser>();
+            _subject.ForType("Benefits Blank Letter").Should().BeOfType<BlankBenefitsDetails>();
         }
     }
 }

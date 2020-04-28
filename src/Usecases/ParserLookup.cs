@@ -12,7 +12,7 @@ namespace UseCases
                 case "Change in Circs ICL":
                     return new ChangesInCircsICL();
                 case "Benefits Blank Letter":
-                    return new BlankBenefitsRtfParser();
+                    return new BlankBenefitsDetails();
                 default:
                     return null;
             }
