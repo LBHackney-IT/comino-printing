@@ -5,7 +5,7 @@ using Usecases.Interfaces;
 
 namespace Usecases.UntestedParsers
 {
-    public class BlankBenefitsRtfParser : ILetterParser
+    public class BlankBenefitsDetails : ILetterParser
     {
         public LetterTemplate Execute(string html)
         {
