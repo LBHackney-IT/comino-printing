@@ -8,4 +8,10 @@
     <PackageReference Include="Amazon.Lambda.SQSEvents" Version="1.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Amazon.Lambda.APIGatewayEvents, Version=1.0.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604">
+      <HintPath>..\..\..\..\..\.nuget\packages\amazon.lambda.apigatewayevents\2.0.0\lib\netstandard2.0\Amazon.Lambda.APIGatewayEvents.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

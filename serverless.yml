@@ -66,14 +66,23 @@ functions:
     events:
       - schedule: rate(1 hour)
 
-  get-all-documents-api:
-    name: ${self:service}-${self:provider.stage}-get-all-documents-api
+  authorize-api:
+    name: ${self:service}-${self:provider.stage}-authorize-api
+    handler: Lambda::AwsDotnetCsharp.Api::Authorizer
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    environment:
+      JWT_SECRET: ${ssm:/hn-comino-printing/${self:provider.stage}/JWT_SECRET}
+      ALLOWED_USER_GROUP: ${self:service}-${self:provider.stage}-group
+
+  get-all-documents:
+    name: ${self:service}-${self:provider.stage}-get-all-documents
     handler: Lambda::AwsDotnetCsharp.Api::GetAllDocuments
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
       - http:
           path: /api/documents
           method: GET
+          authorizer: authorize-api
           cors: true
           request:
             parameters:
@@ -89,6 +98,7 @@ functions:
       - http:
           path: /api/documents/{id}
           method: get
+          authorizer: authorize-api
           cors: true
           request:
             parameters:
@@ -103,6 +113,7 @@ functions:
       - http:
           path: /api/documents/{id}/approve
           method: post
+          authorizer: authorize-api
           cors: true
           request:
             parameters:
@@ -131,6 +142,7 @@ functions:
       - http:
           path: /api/documents/{id}/view
           method: get
+          authorizer: authorize-api
           cors: true
           request:
             parameters:

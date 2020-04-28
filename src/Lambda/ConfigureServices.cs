@@ -55,6 +55,7 @@ namespace AwsDotnetCsharp
             services.AddScoped<IGovNotifyGateway, GovNotifyGateway>();
 
             //UseCases
+            services.AddScoped<IAuthorizeApi, AuthorizeApi>();
             services.AddScoped<IGetDocumentsIds, GetDocumentsIds>();
             services.AddScoped<IPushIdsToSqs, PushIdsToSqs>();
             services.AddScoped<ISaveRecordsToLocalDatabase, SaveRecordsToLocalDatabase>();

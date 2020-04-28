@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using Amazon.Auth.AccessControlPolicy;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Boundary.UseCaseInterfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Usecases.Domain;
 using Usecases.Interfaces;
 
 namespace AwsDotnetCsharp
@@ -19,6 +25,7 @@ namespace AwsDotnetCsharp
         private readonly IGeneratePdfInS3Url _generatePdfInS3UrlUseCase;
         private readonly IGetSingleDocumentInfo _getSingleDocumentInfoUseCase;
         private readonly ICancelDocument _cancelDocumentUseCase;
+        private readonly IAuthorizeApi _authorizeApi;
 
         public Api()
         {
@@ -30,6 +37,12 @@ namespace AwsDotnetCsharp
             _generatePdfInS3UrlUseCase = serviceProvider.GetService<IGeneratePdfInS3Url>();
             _getSingleDocumentInfoUseCase = serviceProvider.GetService<IGetSingleDocumentInfo>();
             _cancelDocumentUseCase = serviceProvider.GetService<ICancelDocument>();
+            _authorizeApi = serviceProvider.GetService<IAuthorizeApi>();
+        }
+
+        public APIGatewayCustomAuthorizerResponse Authorizer(APIGatewayCustomAuthorizerRequest request, ILambdaContext context)
+        {
+            return _authorizeApi.Execute(request);
         }
 
         public async Task<APIGatewayProxyResponse> GetAllDocuments(APIGatewayProxyRequest request, ILambdaContext context)
@@ -58,7 +71,7 @@ namespace AwsDotnetCsharp
             var id = request.PathParameters["id"];
             Console.Write(id);
             var documentInfo = await _getSingleDocumentInfoUseCase.Execute(id);
-            
+
             var response = new APIGatewayProxyResponse
             {
                 StatusCode = (int) HttpStatusCode.OK,
@@ -82,33 +95,32 @@ namespace AwsDotnetCsharp
 
             return response;
         }
-        
+
         public async Task<APIGatewayProxyResponse> CancelDocument(APIGatewayProxyRequest request, ILambdaContext context)
         {
             var id = request.PathParameters["id"];
             await _cancelDocumentUseCase.Execute(id);
-            
+
             var response = new APIGatewayProxyResponse
             {
                 StatusCode = (int) HttpStatusCode.OK,
                 Headers = new Dictionary<string, string>{{"Access-Control-Allow-Origin", "*"}}
             };
-            
+
             return response;
         }
 
         public APIGatewayProxyResponse ViewDocumentPdf(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            
             var id = request.PathParameters["id"];
             var redirectUrl = _generatePdfInS3UrlUseCase.Execute(id);
-            
+
             var response = new APIGatewayProxyResponse
             {
                 StatusCode = (int)HttpStatusCode.Redirect,
                 Headers = new Dictionary<string, string>{ { "location", redirectUrl } }
             };
-            
+
             return response;
         }
 
