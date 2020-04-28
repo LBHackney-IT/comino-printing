@@ -26,7 +26,7 @@ namespace Usecases
                 DocNo = singleDocInfo.CominoDocumentNumber,
                 Sender = singleDocInfo.DocumentCreator,
                 Created = singleDocInfo.Id,
-                Status = singleDocInfo.Status.ToString(),
+                Status = singleDocInfo.Status.PrettierStatusName(),
                 LetterType = singleDocInfo.LetterType,
                 DocumentType = singleDocInfo.DocumentType,
                 Logs = singleDocInfo.Log?.Select(x => new Dictionary<string, string>

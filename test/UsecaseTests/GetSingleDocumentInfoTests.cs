@@ -38,7 +38,7 @@ namespace UnitTests
                 DocNo = savedRecord.CominoDocumentNumber,
                 Sender = savedRecord.DocumentCreator,
                 Created = savedRecord.Id,
-                Status = savedRecord.Status.ToString(),
+                Status = savedRecord.Status.PrettierStatusName(),
                 LetterType = savedRecord.LetterType,
                 DocumentType = savedRecord.DocumentType,
                 Logs = savedRecord.Log.Select(x => new Dictionary<string, string>
