@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
-import { fetchDocument } from "../../cominoPrintApi";
+import { fetchDocument } from "../../lib/cominoPrintApi";
 // import { createBrowserHistory } from "history";
 // const history = createBrowserHistory();
 
