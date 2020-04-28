@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
+import {hackneyToken } from '../../lib/Cookie'
 import {
   fetchDocument,
   approveDocument,
@@ -80,7 +81,7 @@ export default class DocumentView extends Component {
               <dt className="govuk-summary-list__key">Original document</dt>
               <dd className="govuk-summary-list__value">
                 <a
-                  href={`${process.env.REACT_APP_DOCUMENT_API_URL}/hncomino/documents/${d.docNo}/view`}
+                  href={`${process.env.REACT_APP_DOCUMENT_API_URL}/hncomino/documents/${d.docNo}/view?authToken=${hackneyToken()}`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
