@@ -72,7 +72,7 @@ namespace Gateways
             {
                 BucketName = bucketName,
                 Key = s3FilePath,
-                Expires = DateTime.Now.AddMinutes(5)
+                Expires = DateTime.UtcNow.AddMinutes(5)
             });
 
             return pdfUrl;

@@ -37,7 +37,7 @@ namespace UnitTests
         [Test]
         public void ExecuteQueriesAndReturnsCominoForNewDocumentsWithCorrectTime()
         {
-            var startDate = DateTime.Now.AddMinutes(-1);
+            var startDate = DateTime.UtcNow.AddMinutes(-1);
             var documentIds = _fixture.CreateMany<DocumentDetails>().ToList();
             _gatewayMock
                 .Setup(x => x.GetDocumentsAfterStartDate(CheckDateWithinASecond(startDate)))
@@ -53,7 +53,7 @@ namespace UnitTests
         {
             var previouslySetSpan = Environment.GetEnvironmentVariable("DOCUMENTS_QUERY_TIMESPAN_MINUTES");
             Environment.SetEnvironmentVariable("DOCUMENTS_QUERY_TIMESPAN_MINUTES", "10");
-            var startDate = DateTime.Now.AddMinutes(-10);
+            var startDate = DateTime.UtcNow.AddMinutes(-10);
             var documentIds = _fixture.CreateMany<DocumentDetails>().ToList();
             _gatewayMock
                 .Setup(x => x.GetDocumentsAfterStartDate(CheckDateWithinASecond(startDate)))

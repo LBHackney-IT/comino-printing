@@ -364,7 +364,7 @@ namespace GatewayTests
 
         private DocumentDetails RandomDocumentDetails()
         {
-            var date = DateTime.Now;
+            var date = DateTime.UtcNow;
             var documentDate = date.ToString("O");
 
             return new DocumentDetails

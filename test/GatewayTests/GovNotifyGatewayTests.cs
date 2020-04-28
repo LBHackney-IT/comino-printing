@@ -96,7 +96,7 @@ namespace GatewayTests
 
             var returnedNotification = _fixture.Create<Notification>();
             returnedNotification.status = null;
-            returnedNotification.completedAt = DateTime.Now.ToString("O");
+            returnedNotification.completedAt = DateTime.UtcNow.ToString("O");
 
             _govNotifyMockClient.Setup(x => x.GetNotificationById(notificationId)).Returns(returnedNotification);
 

@@ -67,7 +67,7 @@ namespace Gateways
 
         public void MarkDocumentAsSent(string documentNumber)
         {
-            var timeNow = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.zzz");
+            var timeNow = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.zzz");
 
             var updateLastPrintedDate = $@"UPDATE CCDocument SET LastPrinted = '{timeNow}' WHERE DocNo = '{documentNumber}';";
             var deleteFromBatchPrint = $@"DELETE FROM W2BatchPrint WHERE nDocNo = '{documentNumber}'";
