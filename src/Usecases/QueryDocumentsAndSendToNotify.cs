@@ -41,7 +41,7 @@ namespace UseCases
                 }
                 else
                 {
-                    await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.GovNotifySendError);
+                    await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.FailedToSend);
                     await _logger.LogMessage(document.Id, $"Error Sending to GovNotify: {govNotifyResponse.Error}");
                 }
             });

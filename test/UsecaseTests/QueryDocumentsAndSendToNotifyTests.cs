@@ -45,15 +45,6 @@ namespace UnitTests
         [Test]
         public async Task ExecuteSendsCorrectDocumentsToNotify()
         {
-            // this usecase:
-            // - gets the readytosend docs from localdb
-            // - for each readytosend doc, gets the pdf byte array from s3
-            //   and dispatches to notify
-
-            // to test:
-            // - are s3 gateway and govnotify gateway called with expected
-            //   response from localdb gateway?
-
             var savedRecords = SetupLocalDbGatewayToReturnRandomDocuments();
 
             foreach (var document in savedRecords)
@@ -114,7 +105,7 @@ namespace UnitTests
             await _subject.Execute();
             foreach (var document in savedRecords)
             {
-                _dbGatewayMock.Verify(x => x.UpdateStatus(document.Id, LetterStatusEnum.GovNotifySendError), Times.Once);
+                _dbGatewayMock.Verify(x => x.UpdateStatus(document.Id, LetterStatusEnum.FailedToSend), Times.Once);
                 _logger.Verify(x => x.LogMessage(document.Id, $"Error Sending to GovNotify: {errorMessageFromGovNotify}"));
             }
         }
