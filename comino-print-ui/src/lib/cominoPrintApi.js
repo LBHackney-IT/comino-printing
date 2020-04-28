@@ -41,3 +41,35 @@ export const fetchDocument = (id, cb) => {
     }
   );
 };
+
+export const approveDocument = (id, cb) => {
+  const req = {
+    method: "POST",
+    mode: "cors",
+    headers: {
+      Authorization: `Bearer ${hackneyToken()}`,
+    },
+  };
+  fetch(`${process.env.REACT_APP_API_URL}/documents/${id}/approve`, req).then(
+    async function (response) {
+      const json = await response.json();
+      cb();
+    }
+  );
+};
+
+export const cancelDocument = (id, cb) => {
+  const req = {
+    method: "POST",
+    mode: "cors",
+    headers: {
+      Authorization: `Bearer ${hackneyToken()}`,
+    },
+  };
+  fetch(`${process.env.REACT_APP_API_URL}/documents/${id}/cancel`, req).then(
+    async function (response) {
+      const json = await response.json();
+      cb();
+    }
+  );
+};

@@ -106,13 +106,17 @@ p {
   padding-bottom: 30px;
 }
 
-.DocumentListPage td.failed {
-  color: #d00;
+.DocumentListPage {
+  td.processing-error,
+  td.virus-scan-failed,
+  td.validation-failed {
+    color: #d00;
+  }
 }
-.DocumentListPage td.posted {
+.DocumentListPage td.letter-sent {
   color: #00664f;
 }
-.DocumentListPage td.approval-required {
+.DocumentListPage td.waiting-for-approval {
   color: #c76000;
 }
 .DocumentViewPage ul.logs li {

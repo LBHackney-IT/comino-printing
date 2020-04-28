@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
-import { fetchDocument } from "../../lib/cominoPrintApi";
+import {
+  fetchDocument,
+  approveDocument,
+  cancelDocument,
+} from "../../lib/cominoPrintApi";
 // import { createBrowserHistory } from "history";
 // const history = createBrowserHistory();
 
@@ -15,6 +19,7 @@ const LogRow = (props) => {
 
 export default class DocumentView extends Component {
   state = {
+    updating: false,
     document: null,
   };
 
@@ -23,6 +28,26 @@ export default class DocumentView extends Component {
       this.setState({ document });
     });
   }
+
+  approve = () => {
+    this.setState({ updating: true }, () => {
+      approveDocument(() => {
+        fetchDocument(this.props.match.params.id, (err, document) => {
+          this.setState({ document, updating: false });
+        });
+      });
+    });
+  };
+
+  approve = () => {
+    this.setState({ updating: true }, () => {
+      cancelDocument(() => {
+        fetchDocument(this.props.match.params.id, (err, document) => {
+          this.setState({ document, updating: false });
+        });
+      });
+    });
+  };
 
   render() {
     const d = this.state.document;
@@ -77,16 +102,22 @@ export default class DocumentView extends Component {
         </div>
 
         <div className="lbh-container buttons">
-          {d.status === "Approval required" ? (
-            <button className="govuk-button  lbh-button">
+          {d.status === "Waiting for Approval" ? (
+            <button
+              onClick={this.approve}
+              className="govuk-button  lbh-button"
+              disabled={this.state.updating}
+            >
               Approve for sending
             </button>
           ) : null}
-          {d.status === "Approval required" || d.status === "Ready to send" ? (
+          {d.status === "Waiting for Approval" ||
+          d.status === "Ready for Gov Notify" ? (
             <button
+              onClick={this.cancel}
               name="Warning"
               className="govuk-button  lbh-button govuk-button--warning lbh-button--warning"
-              data-module="govuk-button"
+              disabled={this.state.updating}
             >
               Cancel sending
             </button>
