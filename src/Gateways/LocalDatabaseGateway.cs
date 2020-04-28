@@ -23,28 +23,11 @@ namespace Gateways
             _databaseClient = database.DynamoDBClient;
         }
 
-        public async Task<string> SaveDocument(DocumentDetails newDocument)
+        public async Task SaveDocument(DocumentDetails newDocument)
         {
-            var currentTimestamp = CurrentUtcUnixTimestamp();
-            while (true)
-            {
-                var documentItem = ConstructDynamoDocument(newDocument, currentTimestamp);
-
-                try
-                {
-                    var putConfig = ConditionalOnTimestampUniqueness(currentTimestamp);
-                    await _documentsTable.PutItemAsync(documentItem, putConfig);
-                }
-                catch (ConditionalCheckFailedException)
-                {
-                    currentTimestamp = CurrentUtcUnixTimestamp();
-                    continue;
-                }
-
-                break;
-            }
-
-            return currentTimestamp;
+            var documentItem = ConstructDynamoDocument(newDocument);
+            var putConfig = ConditionalOnTimestampUniqueness(newDocument.Date);
+            await _documentsTable.PutItemAsync(documentItem, putConfig);
         }
 
         public async Task<List<DocumentDetails>> GetAllRecords(int limit, string cursor)
@@ -235,7 +218,7 @@ namespace Gateways
                     : null,
             }).ToList();
         }
-        private static Document ConstructDynamoDocument(DocumentDetails newDocument, string currentTimestamp)
+        private static Document ConstructDynamoDocument(DocumentDetails newDocument)
         {
             return new Document
             {
@@ -243,7 +226,7 @@ namespace Gateways
                 ["DocumentCreatorUserName"] = newDocument.DocumentCreator,
                 ["LetterType"] = newDocument.LetterType,
                 ["DocumentType"] = newDocument.DocumentType,
-                ["InitialTimestamp"] = currentTimestamp,
+                ["InitialTimestamp"] = newDocument.Date,
                 ["Status"] = "Waiting",
             };
         }

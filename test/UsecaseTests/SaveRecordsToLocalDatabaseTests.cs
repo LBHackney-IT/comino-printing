@@ -49,8 +49,6 @@ namespace UnitTests
 
             var expectedDocuments = documentsToSave.Select(doc =>
             {
-                var timestamp = _fixture.Create<string>();
-                _gatewayMock.Setup(x => x.SaveDocument(doc)).ReturnsAsync(timestamp);
                 return new DocumentDetails
                 {
                     DocumentCreator = doc.DocumentCreator,

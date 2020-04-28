@@ -198,8 +198,8 @@ WHERE CCDocument.DocNo = '{cominoDocumentNumber}';
                 CominoDocumentNumber = doc.DocumentNumber,
                 LetterType = doc.LetterType,
                 DocumentType = doc.DocumentType,
-                Date = doc.Date,
-                Id = doc.Date,
+                Date = doc.Date.ToString("O"),
+                Id = doc.Date.ToString("O"),
             });
         }
 

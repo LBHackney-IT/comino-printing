@@ -95,16 +95,6 @@ namespace GatewayTests
         }
 
         [Test]
-        public async Task AddRecordForDocumentId_ReturnsTheTimestampCreated()
-        {
-            var newDocument = RandomDocumentDetails();
-            var response = await _dbGateway.SaveDocument(newDocument);
-            var currentTimestamp = DateTime.Parse(GetCurrentTimestamp());
-
-            DateTime.Parse(response).Should().BeCloseTo(currentTimestamp, 1000);
-        }
-
-        [Test]
         public async Task AddRecordForDocumentId_IfTwoRecordsAddedAtTheSameTime_NeitherIsOverwritten()
         {
             var currentTimestamp = GetCurrentTimestamp();
@@ -119,20 +109,6 @@ namespace GatewayTests
 
             savedItems.Count(doc => doc["CominoDocumentNumber"] == document1.CominoDocumentNumber).Should().Be(1);
             savedItems.Count(doc => doc["CominoDocumentNumber"] == document2.CominoDocumentNumber).Should().Be(1);
-        }
-
-        [Test]
-        public async Task AddRecordForDocumentId_IfTwoRecordsAddedAtTheSameTime_ReturnsTimestampFromRetry()
-        {
-            var currentTimestamp = GetCurrentTimestamp();
-
-            var document1 = RandomDocumentDetails();
-            await AddDocumentToDatabase(document1, currentTimestamp);
-
-            var document2 = RandomDocumentDetails();
-            var response = await _dbGateway.SaveDocument(document2);
-
-            DateTime.Parse(response).Should().BeAfter(DateTime.Parse(currentTimestamp));
         }
 
         [Test]
