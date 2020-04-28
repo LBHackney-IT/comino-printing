@@ -1,9 +1,6 @@
 using AutoFixture;
-using comino_print_api.Responses;
-using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +20,7 @@ namespace UnitTests
         private QueryDocumentsAndSendToNotify _subject;
         private Fixture _fixture;
         private Mock<IDbLogger> _logger;
+        private Mock<ICominoGateway> _cominoGateway;
 
         [SetUp]
         public void Setup()
@@ -30,12 +28,14 @@ namespace UnitTests
             _dbGatewayMock = new Mock<ILocalDatabaseGateway>();
             _s3GatewayMock = new Mock<IS3Gateway>();
             _govNotifyGatewayMock = new Mock<IGovNotifyGateway>();
+            _cominoGateway = new Mock<ICominoGateway>();
             _logger = new Mock<IDbLogger>();
 
             _subject = new QueryDocumentsAndSendToNotify(
                 _dbGatewayMock.Object,
                 _s3GatewayMock.Object,
                 _govNotifyGatewayMock.Object,
+                _cominoGateway.Object,
                 _logger.Object
             );
 
@@ -43,7 +43,7 @@ namespace UnitTests
         }
 
         [Test]
-        public async Task ExecuteSendsCorrectDocumentsToNotify()
+        public async Task Execute_IfDocumentsHaveNOtAlreadyBeenSent_SendsCorrectDocumentsToNotify()
         {
             var savedRecords = SetupLocalDbGatewayToReturnRandomDocuments();
 
@@ -54,6 +54,8 @@ namespace UnitTests
                     .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
                     .ReturnsAsync(pdf)
                     .Verifiable();
+                _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
+                    .Returns(new CominoSentStatusCheck {Printed = false});
                 _govNotifyGatewayMock
                     .Setup(x => x.SendPdfDocumentForPostage(pdf, document.CominoDocumentNumber))
                     .Returns(new GovNotifySendResponse())
@@ -64,6 +66,49 @@ namespace UnitTests
             _s3GatewayMock.Verify();
         }
 
+        [Test]
+        public async Task IfCominoReturnsThatDocumentHasBeenSent_DoesNotCallGovNotify()
+        {
+            var savedRecords = SetupLocalDbGatewayToReturnRandomDocuments();
+
+            foreach (var document in savedRecords)
+            {
+                var pdf = _fixture.Create<byte[]>();
+                _s3GatewayMock
+                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
+                    .ReturnsAsync(pdf);
+
+                _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id)).Returns(new CominoSentStatusCheck{ Printed = true });
+            }
+
+            await _subject.Execute();
+            _govNotifyGatewayMock.Verify(x => x.SendPdfDocumentForPostage(It.IsAny<byte[]>(), It.IsAny<string>()), Times.Never);
+        }
+
+        [Test]
+        public async Task IfCominoReturnsThatDocumentHasBeenSent_UpdatesTheLogAndStatus()
+        {
+            var savedRecords = SetupLocalDbGatewayToReturnRandomDocuments();
+            var printedAtDate = _fixture.Create<string>();
+
+            foreach (var document in savedRecords)
+            {
+                var pdf = _fixture.Create<byte[]>();
+                _s3GatewayMock
+                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
+                    .ReturnsAsync(pdf);
+
+                _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
+                    .Returns(new CominoSentStatusCheck{ Printed = true, PrintedAt = printedAtDate});
+            }
+
+            await _subject.Execute();
+            foreach (var document in savedRecords)
+            {
+                _logger.Verify(x => x.LogMessage(document.Id, $"Not sent to GovNotify. Document already printed, printed at {printedAtDate}"), Times.Once);
+                _dbGatewayMock.Verify(x => x.UpdateStatus(document.Id, LetterStatusEnum.PrintedManually), Times.Once);
+            }
+        }
 
         [Test]
         public async Task IfGovNotifyReturnsSuccessfully_ChangesDocumentStatusToSentToGovNotify_AndWritesToLog()
@@ -75,7 +120,7 @@ namespace UnitTests
             foreach (var document in savedRecords)
             {
                 _dbGatewayMock.Verify(x => x.UpdateStatus(document.Id, LetterStatusEnum.SentToGovNotify), Times.Once);
-                _logger.Verify(x => x.LogMessage(document.Id, $"Sent to Gov Notify. Gov Notify Notification Id {document.GovNotifyNotificationId}"));
+                _logger.Verify(x => x.LogMessage(document.Id, $"Sent to Gov Notify. Gov Notify Notification Id {document.GovNotifyNotificationId}."));
             }
         }
 
@@ -89,8 +134,19 @@ namespace UnitTests
             foreach (var document in savedRecords)
             {
                 _dbGatewayMock.Verify(x => x.SaveSendNotificationId(document.Id, document.GovNotifyNotificationId), Times.Once);
-                _s3GatewayMock
-                    .Verify(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber), Times.Once);
+            }
+        }
+
+        [Test]
+        public async Task IfGovNotifyReturnsSuccessfully_UpdateCominoGateway()
+        {
+            var savedRecords = SetupLocalDbGatewayToReturnRandomDocuments();
+            SetUpGovNotifyGatewayToReturnSuccessfully(savedRecords);
+
+            await _subject.Execute();
+            foreach (var document in savedRecords)
+            {
+                _cominoGateway.Verify(x => x.MarkDocumentAsSent(document.Id), Times.Once);
             }
         }
 
@@ -107,6 +163,7 @@ namespace UnitTests
             {
                 _dbGatewayMock.Verify(x => x.UpdateStatus(document.Id, LetterStatusEnum.FailedToSend), Times.Once);
                 _logger.Verify(x => x.LogMessage(document.Id, $"Error Sending to GovNotify: {errorMessageFromGovNotify}"));
+                _cominoGateway.Verify(x => x.MarkDocumentAsSent(document.Id), Times.Never);
             }
         }
 
@@ -120,6 +177,8 @@ namespace UnitTests
                 _s3GatewayMock
                     .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
                     .ReturnsAsync(pdf);
+                _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
+                    .Returns(new CominoSentStatusCheck {Printed = false});
                 _govNotifyGatewayMock
                     .Setup(x => x.SendPdfDocumentForPostage(pdf, document.CominoDocumentNumber))
                     .Returns(new GovNotifySendResponse
@@ -141,6 +200,8 @@ namespace UnitTests
                 _s3GatewayMock
                     .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
                     .ReturnsAsync(pdf);
+                _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
+                    .Returns(new CominoSentStatusCheck {Printed = false});
                 _govNotifyGatewayMock
                     .Setup(x => x.SendPdfDocumentForPostage(pdf, document.CominoDocumentNumber))
                     .Returns(new GovNotifySendResponse

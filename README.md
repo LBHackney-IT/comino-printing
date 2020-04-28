@@ -79,7 +79,7 @@ The process of converting and sending a document is handled by a number of inter
 ### Send to notify task (runs once per day at 3pm)
 
 - Fetch all documents from Dynamo that have state = `ReadyForGovNotify`
-- Check Comino DB to ensure document has not already been printed
+- Check Comino DB to ensure document has not already been printed. If printed, Update state = `PrintedManually`.
 - Send to Notify
   - If successful:
     - Update Comino - remove from queue and update print date if successful

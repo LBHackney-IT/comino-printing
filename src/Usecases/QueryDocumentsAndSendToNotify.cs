@@ -12,13 +12,15 @@ namespace UseCases
         private readonly IS3Gateway _s3Gateway;
         private readonly IGovNotifyGateway _govNotifyGateway;
         private readonly IDbLogger _logger;
+        private readonly ICominoGateway _cominoGateway;
 
         public QueryDocumentsAndSendToNotify(ILocalDatabaseGateway localDatabaseGateway, IS3Gateway s3Gateway,
-            IGovNotifyGateway govNotifyGateway, IDbLogger logger)
+            IGovNotifyGateway govNotifyGateway, ICominoGateway cominoGateway, IDbLogger logger)
         {
             _localDatabaseGateway = localDatabaseGateway;
             _s3Gateway = s3Gateway;
             _govNotifyGateway = govNotifyGateway;
+            _cominoGateway = cominoGateway;
             _logger = logger;
         }
         public async Task Execute()
@@ -29,7 +31,15 @@ namespace UseCases
                 var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(
                     document.Id, document.CominoDocumentNumber
                 );
-                // log this response
+
+                var sentStatus = _cominoGateway.GetDocumentSentStatus(document.Id);
+                if (sentStatus.Printed)
+                {
+                    await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.PrintedManually);
+                    await _logger.LogMessage(document.Id,
+                        $"Not sent to GovNotify. Document already printed, printed at {sentStatus.PrintedAt}");
+                    return;
+                }
 
                 var govNotifyResponse = _govNotifyGateway.SendPdfDocumentForPostage(pdfBytesResponse, document.CominoDocumentNumber);
                 if (govNotifyResponse.Success)
@@ -37,7 +47,9 @@ namespace UseCases
                     await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.SentToGovNotify);
                     await _localDatabaseGateway.SaveSendNotificationId(document.Id, govNotifyResponse.NotificationId);
                     await _logger.LogMessage(document.Id,
-                        $"Sent to Gov Notify. Gov Notify Notification Id {document.GovNotifyNotificationId}");
+                        $"Sent to Gov Notify. Gov Notify Notification Id {document.GovNotifyNotificationId}.");
+                    _cominoGateway.MarkDocumentAsSent(document.Id);
+                    await _logger.LogMessage(document.Id, "Removed from batch print queue and print date set in comino");
                 }
                 else
                 {
