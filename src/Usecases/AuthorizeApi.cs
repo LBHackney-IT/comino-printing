@@ -20,9 +20,6 @@ namespace Usecases
             int indexOfSubString = token.IndexOf(substring);
             
             var editToken = token.Remove(indexOfSubString, substring.Length).Trim();
-
-            
-            Console.Write(token);
             
             var allowedGroupName = Environment.GetEnvironmentVariable("ALLOWED_USER_GROUP");
 
