@@ -62,8 +62,10 @@ The process of converting and sending a document is handled by a number of inter
 ### UI
 
 - Display all documents
-- User approves document in `WaitingForApproval` state
-- Update data in Dynamo (state = `ReadyForGovNotify`)
+- User can approve document in `WaitingForApproval` state
+  - Update data in Dynamo (state = `ReadyForGovNotify`)
+- User can cancel document in `WaitingForApproval` or `ReadyForGovNotify` states
+  - Update data in Dynamo (state = `Cancelled`)
 
 ### Send to notify task (runs once per day at 3pm)
 
