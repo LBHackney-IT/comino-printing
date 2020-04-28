@@ -71,7 +71,7 @@ functions:
     handler: Lambda::AwsDotnetCsharp.Api::Authorizer
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     environment:
-      JWT_SECRET: ${ssm:/hn-comino-printing/${self:provider.stage}/JWT_SECRET}
+      JWT_SECRET: ${ssm:/common/hackney-jwt-secret}
       ALLOWED_USER_GROUP: ${self:service}-${self:provider.stage}-group
 
   get-all-documents:
