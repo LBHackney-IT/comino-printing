@@ -19,7 +19,7 @@ namespace UnitTests
         {
             _fixture = new Fixture();
             _gatewayMock = new Mock<IW2DocumentsGateway>();
-            _getHtmlDocument = new GetHtmlDocument(_gatewayMock.Object);
+            _getHtmlDocument = new GetHtmlDocument(_gatewayMock.Object, new Mock<IS3Gateway>().Object);
         }
 
         [Test]

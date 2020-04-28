@@ -40,6 +40,29 @@ namespace Gateways
             return new Response { Success = true };
         }
 
+        //TODO Remove later - for troubleshooting PDF Generation
+        public async Task<Response> SaveHtmlDocument(string documentId)
+        {
+            var bucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME");
+
+            var tempFilePath =  $"/tmp/{documentId}.html";
+
+            var date = DateTime.Parse(documentId);
+            var s3FilePath = $"{date:yyyy}/{date:MM}/{date:dd}/{documentId}.html";
+
+            await _amazonS3.PutObjectAsync(new PutObjectRequest
+            {
+                Key = s3FilePath,
+                ContentType = "text/html",
+                FilePath = tempFilePath,
+                BucketName = bucketName
+            });
+
+            File.Delete(tempFilePath);
+            Console.WriteLine($"> S3Gateway HTML documentId: {documentId} to bucket: {bucketName} and path {s3FilePath}");
+            return new Response { Success = true };
+        }
+
         public string GeneratePdfUrl(string docId)
         {
             var bucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME");
