@@ -49,10 +49,12 @@ namespace Gateways
             {
                 queryResults = _database.Query<W2BatchPrintRow>(query).Select(row =>
                     new DocumentDetails {
+                        Id = row.Date,
                         CominoDocumentNumber = row.DocumentNumber,
                         DocumentCreator = row.UserName,
                         LetterType = row.LetterType,
-                        DocumentType = row.DocumentType
+                        DocumentType = row.DocumentType,
+                        Date = row.Date
                     }).ToList();
             }
             catch (Exception e)
@@ -70,6 +72,7 @@ namespace Gateways
             public string UserName { get; set; }
             public string LetterType { get; set; }
             public string DocumentType { get; set; }
+            public string Date { get; set; }
         }
 
         public class DocumentConfig

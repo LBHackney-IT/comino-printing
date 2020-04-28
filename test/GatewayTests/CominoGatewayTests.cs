@@ -119,6 +119,8 @@ namespace GatewayTests
                 CominoDocumentNumber = doc.DocumentNumber,
                 LetterType = doc.LetterType,
                 DocumentType = doc.DocumentType,
+                Date = doc.Date,
+                Id = doc.Date,
             });
         }
 

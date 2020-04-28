@@ -8,7 +8,7 @@ namespace Usecases.Domain
         public string CominoDocumentNumber { get; set; }
         public string DocumentCreator { get; set; }
         public string Id { get; set; }
-
+        public string Date { get; set; }
         public string LetterType { get; set; }
         public string DocumentType { get; set; }
         public LetterStatusEnum Status { get; set; }

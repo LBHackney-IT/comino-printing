@@ -388,12 +388,17 @@ namespace GatewayTests
 
         private DocumentDetails RandomDocumentDetails()
         {
+            var date = DateTime.Now;
+            var documentDate = date.ToString("O");
+
             return new DocumentDetails
             {
                 CominoDocumentNumber = _fixture.Create<string>(),
                 DocumentCreator = _fixture.Create<string>(),
                 LetterType = _fixture.Create<string>(),
                 DocumentType = _fixture.Create<string>(),
+                Date = documentDate,
+                Id = documentDate
             };
         }
 
@@ -405,15 +410,16 @@ namespace GatewayTests
             {
                 ["CominoDocumentNumber"] = document.CominoDocumentNumber,
                 ["DocumentCreatorUserName"] = document.DocumentCreator,
-                ["InitialTimestamp"] = timestamp,
+                ["InitialTimestamp"] = document.Date,
                 ["LetterType"] = document.LetterType,
                 ["DocumentType"] = document.DocumentType,
-                ["Status"] = status.ToString()
+                ["Status"] = status.ToString(),
+                ["Date"] = document.Date,
+                ["Id"] = document.Date
             };
 
             await DatabaseClient.DocumentTable.PutItemAsync(documentItem);
 
-            document.Id = timestamp;
             document.Status = status;
             document.Log = new Dictionary<string, string>();
             return document;

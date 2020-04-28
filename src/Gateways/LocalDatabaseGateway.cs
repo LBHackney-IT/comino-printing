@@ -95,6 +95,7 @@ namespace Gateways
                     LetterType = response.Attributes["LetterType"]?.S,
                     Id = response.Attributes["InitialTimestamp"]?.S,
                     Status = Enum.Parse<LetterStatusEnum>(response.Attributes["Status"]?.S),
+                    Date = response.Attributes["Date"]?.S
                 };
             }
             catch (ConditionalCheckFailedException)
@@ -198,6 +199,7 @@ namespace Gateways
                 DocumentType = document.ContainsKey("DocumentType") ? document["DocumentType"] : null,
                 LetterType = document.ContainsKey("LetterType") ? document["LetterType"] : null,
                 Id = document["InitialTimestamp"],
+                Date = document["Date"],
                 Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
                 Log = logEntries
             };
@@ -226,6 +228,7 @@ namespace Gateways
                 DocumentType = entry["DocumentType"].S?.ToString(),
                 LetterType = entry["LetterType"].S?.ToString(),
                 Id = entry["InitialTimestamp"].S?.ToString(),
+                Date = entry["Date"].S?.ToString(),
                 Status = Enum.Parse<LetterStatusEnum>(entry["Status"].S?.ToString()),
                 GovNotifyNotificationId = entry.ContainsKey("GovNotifyNotificationId")
                     ? entry["GovNotifyNotificationId"].S?.ToString()

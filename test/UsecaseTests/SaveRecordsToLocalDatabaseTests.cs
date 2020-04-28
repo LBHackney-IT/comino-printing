@@ -47,7 +47,6 @@ namespace UnitTests
                 .Without(doc => doc.GovNotifyNotificationId)
                 .CreateMany().ToList();
 
-
             var expectedDocuments = documentsToSave.Select(doc =>
             {
                 var timestamp = _fixture.Create<string>();
@@ -56,13 +55,16 @@ namespace UnitTests
                 {
                     DocumentCreator = doc.DocumentCreator,
                     CominoDocumentNumber = doc.CominoDocumentNumber,
-                    Id = timestamp,
+                    Id = doc.Date,
                     DocumentType = doc.DocumentType,
                     LetterType = doc.LetterType,
                     Status = doc.Status,
+                    Date = doc.Date
                 };
             }).ToList();
+
             var response = await _subject.Execute(documentsToSave);
+
             response.Should().BeEquivalentTo(expectedDocuments);
         }
     }
