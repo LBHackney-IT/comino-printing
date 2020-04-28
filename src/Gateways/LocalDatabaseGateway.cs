@@ -78,7 +78,7 @@ namespace Gateways
                     LetterType = response.Attributes["LetterType"]?.S,
                     Id = response.Attributes["InitialTimestamp"]?.S,
                     Status = Enum.Parse<LetterStatusEnum>(response.Attributes["Status"]?.S),
-                    Date = response.Attributes["Date"]?.S
+                    Date = response.Attributes["InitialTimestamp"]?.S
                 };
             }
             catch (ConditionalCheckFailedException)
