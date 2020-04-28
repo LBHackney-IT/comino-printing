@@ -79,13 +79,25 @@ export default class DocumentView extends Component {
             <div className="govuk-summary-list__row">
               <dt className="govuk-summary-list__key">Original document</dt>
               <dd className="govuk-summary-list__value">
-                <a href="#0">Download from Comino</a>
+                <a
+                  href={`${process.env.REACT_APP_DOCUMENT_API_URL}/hncomino/documents/${d.docNo}/view`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Download from Comino
+                </a>
               </dd>
             </div>
             <div className="govuk-summary-list__row">
               <dt className="govuk-summary-list__key">Converted document</dt>
               <dd className="govuk-summary-list__value">
-                <a href="#0">View PDF</a>
+                <a
+                  href={`${process.env.REACT_APP_API_URL}/documents/${d.id}/view`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  View PDF
+                </a>
               </dd>
             </div>
             <div className="govuk-summary-list__row">
