@@ -182,10 +182,10 @@ namespace Gateways
 
             return new DocumentDetails
             {
-                DocumentCreator = document["DocumentCreatorUserName"],
-                CominoDocumentNumber = document["CominoDocumentNumber"],
-                DocumentType = document["DocumentType"],
-                LetterType = document["LetterType"],
+                DocumentCreator = document.ContainsKey("DocumentCreatorUserName") ? document["DocumentCreatorUserName"] : null,
+                CominoDocumentNumber = document.ContainsKey("CominoDocumentNumber") ? document["CominoDocumentNumber"] : null,
+                DocumentType = document.ContainsKey("DocumentType") ? document["DocumentType"] : null,
+                LetterType = document.ContainsKey("LetterType") ? document["LetterType"] : null,
                 Id = document["InitialTimestamp"],
                 Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
                 Log = logEntries
