@@ -151,15 +151,12 @@ functions:
               paths:
                 id: true
 
-  # DISABLED UNTIL WORK COMPLETE
-  # query-documents-and-send-to-notify:
-  #   name: ${self:service}-${self:provider.stage}-query-documents-and-send-to-notify
-  #   handler: Lambda::AwsDotnetCsharp.Handlers::QueryDocumentsAndSendToNotify
-  #   role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
-  #   environment:
-  #     GOV_NOTIFY_API_KEY: ${ssm:/hn-comino-printing/${self:provider.stage}/GOV_NOTIFY_API_KEY}
-  #   events:
-  #     - schedule: cron(0 15 * * MON-FRI *) # every weekday at 3pm UTC
+  query-documents-and-send-to-notify:
+    name: ${self:service}-${self:provider.stage}-query-documents-and-send-to-notify
+    handler: Lambda::AwsDotnetCsharp.Handlers::QueryDocumentsAndSendToNotify
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    events:
+      - schedule: cron(0 15 * * MON-FRI *) # every weekday at 3pm UTC
 
 resources:
   Resources:
