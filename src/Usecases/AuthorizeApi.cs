@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using Amazon.Lambda.APIGatewayEvents;
 using Boundary.UseCaseInterfaces;
@@ -19,24 +20,26 @@ namespace Usecases
 
             var decodedToken = DecodeToken(secret, token);
 
-            if (decodedToken == null || !decodedToken.Identity.IsAuthenticated)
+            if (decodedToken == null)
             {
-                if (decodedToken != null)
+                return AccessDenied(request);
+            }
+            else
+            {
+                if (decodedToken.Identity.IsAuthenticated && decodedToken.IsInRole(allowedGroupName))
+                {
+                    return AccessAuthorized(request);
+                }
+                else
                 {
                     foreach (var claim in decodedToken.Claims)
                     {
                         Console.Write("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
                     }
+
+                    return AccessDenied(request);
                 }
-                
-                return AccessDenied(request);
             }
-
-
-            //TODO check user is in group
-
-
-            return AccessAuthorized(request);
         }
 
         private static ClaimsPrincipal DecodeToken(string secret, string token)
