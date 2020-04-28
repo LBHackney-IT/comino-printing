@@ -120,7 +120,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: apt-get install make && touch .env && STAGE=staging make deploy
+          command: apt-get install make && touch .env && STAGE=staging REACT_APP_API_URL=$STAGING_API_URL make deploy
 
   deploy-production:
     executor: dotnet-executor
@@ -145,7 +145,7 @@ jobs:
 
       - run:
           name: Deploy application
-          command: apt-get install make && touch .env && STAGE=production make deploy
+          command: apt-get install make && touch .env && STAGE=production  REACT_APP_API_URL=$PRODUCTION_API_URL make deploy
 
 workflows:
   version: 2
