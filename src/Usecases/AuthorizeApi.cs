@@ -52,6 +52,7 @@ namespace Usecases
             var tokenValidationParameters = new TokenValidationParameters
             {
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+                ValidateLifetime = false
             };
             var handler = new JwtSecurityTokenHandler();
             return handler.ValidateToken(token, tokenValidationParameters, out _);
