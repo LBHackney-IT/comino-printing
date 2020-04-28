@@ -52,7 +52,6 @@ export const approveDocument = (id, cb) => {
   };
   fetch(`${process.env.REACT_APP_API_URL}/documents/${id}/approve`, req).then(
     async function (response) {
-      const json = await response.json();
       cb();
     }
   );
@@ -68,7 +67,6 @@ export const cancelDocument = (id, cb) => {
   };
   fetch(`${process.env.REACT_APP_API_URL}/documents/${id}/cancel`, req).then(
     async function (response) {
-      const json = await response.json();
       cb();
     }
   );
