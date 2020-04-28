@@ -18,5 +18,6 @@ namespace UseCases.GatewayInterfaces
 
         Task<List<DocumentDetails>> GetDocumentsThatAreReadyForGovNotify();
         Task<List<DocumentDetails>> GetLettersWaitingForGovNotify();
+        Task SaveNotificationId(string documentId, string sentNotificationId);
     }
 }

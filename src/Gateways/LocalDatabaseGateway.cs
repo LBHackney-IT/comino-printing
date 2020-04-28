@@ -167,6 +167,13 @@ namespace Gateways
             return sentToGovNotifyStatus.Concat(pendingVirusCheckStatus).ToList();
         }
 
+        public Task SaveNotificationId(string documentId, string sentNotificationId)
+        {
+            var task = Task.Run(() => { });
+            return task;
+            //TODO: Implement this method
+        }
+
         private List<DocumentDetails> ParseRecords(List<Document> records)
         {
             return records.Select(ParseRecord).ToList();
