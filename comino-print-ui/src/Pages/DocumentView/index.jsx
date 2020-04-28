@@ -31,7 +31,7 @@ export default class DocumentView extends Component {
 
   approve = () => {
     this.setState({ updating: true }, () => {
-      approveDocument(() => {
+      approveDocument(this.props.match.params.id, () => {
         fetchDocument(this.props.match.params.id, (err, document) => {
           this.setState({ document, updating: false });
         });
@@ -39,9 +39,9 @@ export default class DocumentView extends Component {
     });
   };
 
-  approve = () => {
+  cancel = () => {
     this.setState({ updating: true }, () => {
-      cancelDocument(() => {
+      cancelDocument(this.props.match.params.id, () => {
         fetchDocument(this.props.match.params.id, (err, document) => {
           this.setState({ document, updating: false });
         });
