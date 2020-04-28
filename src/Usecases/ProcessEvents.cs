@@ -64,6 +64,8 @@ namespace UseCases
 
             await TryConvertToPdf(html, document, timestamp);
             await TryStoreInS3(document, timestamp);
+
+            await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.WaitingForApproval);
         }
 
         private async Task TryStoreInS3(DocumentDetails document, string timestamp)

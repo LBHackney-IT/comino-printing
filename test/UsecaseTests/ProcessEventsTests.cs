@@ -186,6 +186,21 @@ namespace UnitTests
         }
 
         [Test]
+        public async Task IfStoringInS3IsSuccessfulUpdatesStatus()
+        {
+            var timestamp = _fixture.Create<string>();
+            var sqsEventMock = CreateSqsEventForDocumentId(timestamp);
+            var document = SetupGetDocumentDetails(timestamp);
+
+            _mockGetHtmlDocument.Setup(x => x.Execute(document.CominoDocumentNumber)).ReturnsAsync(_fixture.Create<string>());
+            _logger.Setup(x => x.LogMessage(It.IsAny<string>(), It.IsAny<string>()));
+
+            await _processEvents.Execute(sqsEventMock);
+
+            _localDbGateway.Verify(x => x.UpdateStatus(document.Id, LetterStatusEnum.WaitingForApproval));
+        }
+
+        [Test]
         public void ExecuteLogsIfSavingInS3Fails()
         {
             var timestamp = _fixture.Create<string>();
