@@ -26,9 +26,10 @@ namespace UseCases
             var documents = await _localDatabaseGateway.GetDocumentsThatAreReadyForGovNotify();
 
             documents.ForEach(async document => {
-                var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(document.CominoDocumentNumber);
+                var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(
+                    document.Id, document.CominoDocumentNumber
+                );
                 // log this response
-
 
                 var govNotifyResponse = _govNotifyGateway.SendPdfDocumentForPostage(pdfBytesResponse, document.CominoDocumentNumber);
                 if (govNotifyResponse.Success)

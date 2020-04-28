@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
 using System.Threading;
@@ -95,14 +94,46 @@ namespace GatewayTests
         }
 
         [Test]
-        [Ignore("todo")]
-        public async Task GetPdfDocumentAsByteArray_GetsAPdf()
+        public async Task GetPdfDocumentAsByteArray_ThrowsIfNoPdfFound()
         {
+            var date = new DateTime(2020, 02, 25, 12, 45, 27);
+            var documentId = date.ToString("O");
             var cominoDocumentNumber = "123456";
+            var s3Key = $"2020/02/25/{cominoDocumentNumber}.pdf";
 
-            await _subject.GetPdfDocumentAsByteArray(cominoDocumentNumber);
+            Func<Task> act = async () => {
+                await  _subject.GetPdfDocumentAsByteArray(documentId, cominoDocumentNumber);
+            };
 
-            "todo".Should().BeEquivalentTo("done");
+            await act.Should().ThrowAsync<Exception>();
+        }
+
+        [Test]
+        public async Task GetPdfDocumentAsByteArray_ReturnsPdfByteArrayIfPdfFound()
+        {
+            var date = new DateTime(2020, 02, 25, 12, 45, 27);
+            var documentId = date.ToString("O");
+            var cominoDocumentNumber = "123456";
+            var s3Key = $"2020/02/25/{cominoDocumentNumber}.pdf";
+
+            // prep mock S3 client to return a successful response
+            var getObjectResponseMock = new GetObjectResponse() {
+                ResponseStream = new MemoryStream()
+            };
+
+            _mockAmazonS3.Setup(mockObj => mockObj.GetObjectAsync(
+                _testBucketName,
+                s3Key,
+                It.IsAny<CancellationToken>()
+            )).ReturnsAsync(getObjectResponseMock);
+
+            var expected = new byte[]{};
+            var received = await _subject.GetPdfDocumentAsByteArray(documentId, cominoDocumentNumber);
+
+            received.Should().BeEquivalentTo(expected);
+
+            _mockAmazonS3.Verify(x =>
+                x.GetObjectAsync(_testBucketName, s3Key, It.IsAny<CancellationToken>()));
         }
 
         private static Expression<Func<PutObjectRequest, bool>> Match(PutObjectRequest expectedPutRequest)

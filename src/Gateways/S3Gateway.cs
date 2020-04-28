@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Amazon.S3;
@@ -79,19 +78,35 @@ namespace Gateways
             return pdfUrl;
         }
 
-        public async Task<byte[]> GetPdfDocumentAsByteArray(string cominoDocumentNumber)
+        public async Task<byte[]> GetPdfDocumentAsByteArray(string documentId, string cominoDocumentNumber)
         {
-            var objReq = new GetObjectRequest
+            var date = DateTime.Parse(documentId);
+            var s3Key = $"{date:yyyy}/{date:MM}/{date:dd}/{cominoDocumentNumber}.pdf";
+            var bucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME");
+
+            GetObjectResponse response = await _amazonS3.GetObjectAsync(bucketName, s3Key);
+
+            using (Stream responseStream = response.ResponseStream)
             {
-                BucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME"),
-                Key = $"{cominoDocumentNumber}.pdf",
-            };
+                return ReadStream(responseStream);
+            }
+        }
 
-            var objResp = await _amazonS3.GetObjectAsync(objReq);
-            var ms = new MemoryStream();
-            await objResp.ResponseStream.CopyToAsync(ms);
+        private static byte[] ReadStream(Stream responseStream)
+        {
+            byte[] buffer = new byte[16 * 1024];
 
-            return ms.ToArray();
+            using (MemoryStream ms = new MemoryStream())
+            {
+                int read;
+
+                while ((read = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+
+                return ms.ToArray();
+            }
         }
     }
 }

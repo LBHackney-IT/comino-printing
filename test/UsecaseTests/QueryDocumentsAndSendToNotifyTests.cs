@@ -60,7 +60,7 @@ namespace UnitTests
             {
                 var pdf = _fixture.Create<byte[]>();
                 _s3GatewayMock
-                    .Setup(x => x.GetPdfDocumentAsByteArray(document.CominoDocumentNumber))
+                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
                     .ReturnsAsync(pdf)
                     .Verifiable();
                 _govNotifyGatewayMock
@@ -98,6 +98,8 @@ namespace UnitTests
             foreach (var document in savedRecords)
             {
                 _dbGatewayMock.Verify(x => x.SaveSendNotificationId(document.Id, document.GovNotifyNotificationId), Times.Once);
+                _s3GatewayMock
+                    .Verify(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber), Times.Once);
             }
         }
 
@@ -125,7 +127,7 @@ namespace UnitTests
                 var pdf = _fixture.Create<byte[]>();
 
                 _s3GatewayMock
-                    .Setup(x => x.GetPdfDocumentAsByteArray(document.CominoDocumentNumber))
+                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
                     .ReturnsAsync(pdf);
                 _govNotifyGatewayMock
                     .Setup(x => x.SendPdfDocumentForPostage(pdf, document.CominoDocumentNumber))
@@ -146,7 +148,7 @@ namespace UnitTests
                 var pdf = _fixture.Create<byte[]>();
 
                 _s3GatewayMock
-                    .Setup(x => x.GetPdfDocumentAsByteArray(document.CominoDocumentNumber))
+                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
                     .ReturnsAsync(pdf);
                 _govNotifyGatewayMock
                     .Setup(x => x.SendPdfDocumentForPostage(pdf, document.CominoDocumentNumber))

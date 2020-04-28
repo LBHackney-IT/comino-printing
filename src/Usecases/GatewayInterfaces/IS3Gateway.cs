@@ -10,6 +10,6 @@ namespace UseCases.GatewayInterfaces
         //TODO Remove later - for troubleshooting PDF Generation
         Task<Response> SaveHtmlDocument(string documentId);
         string GeneratePdfUrl(string docId);
-        Task<byte[]> GetPdfDocumentAsByteArray(string cominoDocumentNumber);
+        Task<byte[]> GetPdfDocumentAsByteArray(string documentId, string cominoDocumentNumber);
     }
 }
