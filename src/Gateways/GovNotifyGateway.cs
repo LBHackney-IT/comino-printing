@@ -1,6 +1,6 @@
-using Notify.Models.Responses;
-using System.Threading.Tasks;
+using Notify.Exceptions;
 using Notify.Interfaces;
+using Notify.Models.Responses;
 using Usecases.Domain;
 using Usecases.Enums;
 using UseCases.GatewayInterfaces;
@@ -16,20 +16,37 @@ namespace Gateways
             _govNotifyClient = govNotifyClient;
         }
 
-        public async Task<LetterNotificationResponse> SendPdfDocumentForPostage(byte[] pdfBytes, string uniqueRef)
+        public GovNotifySendResponse SendPdfDocumentForPostage(byte[] pdfBytes, string uniqueRef)
         {
-            return _govNotifyClient.SendPrecompiledLetter(
-                uniqueRef,
-                pdfBytes
-                // postage (optional, either "first" or "second", defaults to "second")
-            );
+            LetterNotificationResponse response;
+            try
+            {
+                response =  _govNotifyClient.SendPrecompiledLetter(
+                    uniqueRef,
+                    pdfBytes
+                );
+            }
+            catch (NotifyClientException e)
+            {
+                return new GovNotifySendResponse
+                {
+                    Error = e.Message,
+                    Success = false
+                };
+            }
+
+            return new GovNotifySendResponse
+            {
+                NotificationId = response.id,
+                Success = true,
+            };
         }
 
-        public GovNotifyResponse GetStatusForLetter(string documentId, string govNotifyNotificationId)
+        public GovNotifyStatusResponse GetStatusForLetter(string documentId, string govNotifyNotificationId)
         {
             var response = _govNotifyClient.GetNotificationById(govNotifyNotificationId);
 
-            return new GovNotifyResponse
+            return new GovNotifyStatusResponse
             {
                 Status = GetStatus(response.status),
                 SentAt = response.completedAt

@@ -4,6 +4,7 @@ using AutoFixture;
 using FluentAssertions;
 using Gateways;
 using Moq;
+using Notify.Exceptions;
 using Notify.Interfaces;
 using Notify.Models;
 using Notify.Models.Responses;
@@ -27,6 +28,45 @@ namespace GatewayTests
             _subject = new GovNotifyGateway(_govNotifyMockClient.Object);
         }
 
+        [Test]
+        public void SendPdfDocumentForPostage_CallsGovNotifyWithThePdf()
+        {
+            var pdfBytes = _fixture.Create<byte[]>();
+            var reference = _fixture.Create<string>();
+            _govNotifyMockClient.Setup(x => x.SendPrecompiledLetter(reference, pdfBytes, null))
+                .Returns(new LetterNotificationResponse());
+            _subject.SendPdfDocumentForPostage(pdfBytes, reference);
+        }
+
+        [Test]
+        public void SendPdfDocumentForPostage_IfSuccessful_ReturnsGovNotifyNotificationId()
+        {
+            var pdfBytes = _fixture.Create<byte[]>();
+            var reference = _fixture.Create<string>();
+            var returnNotificationId = _fixture.Create<string>();
+            _govNotifyMockClient.Setup(x => x.SendPrecompiledLetter(reference, pdfBytes, null))
+                .Returns(new LetterNotificationResponse{id = returnNotificationId});
+
+            var response = _subject.SendPdfDocumentForPostage(pdfBytes, reference);
+            response.NotificationId.Should().BeEquivalentTo(returnNotificationId);
+            response.Success.Should().BeTrue();
+        }
+
+        [Test]
+        public void SendPdfDocumentForPostage_IfError_ReturnsErrors()
+        {
+            var pdfBytes = _fixture.Create<byte[]>();
+            var reference = _fixture.Create<string>();
+            var errorMessage = "my error message";
+
+            _govNotifyMockClient.Setup(x => x.SendPrecompiledLetter(reference, pdfBytes, null))
+                .Throws(new NotifyClientException(errorMessage));
+
+            var response = _subject.SendPdfDocumentForPostage(pdfBytes, reference);
+            response.Success.Should().BeFalse();
+            response.Error.Should().Be(errorMessage);
+        }
+
         [TestCase("pending-virus-check", LetterStatusEnum.GovNotifyPendingVirusCheck)]
         [TestCase("virus-scan-failed", LetterStatusEnum.GovNotifyVirusScanFailed)]
         [TestCase("validation-failed", LetterStatusEnum.GovNotifyValidationFailed)]
@@ -42,7 +82,7 @@ namespace GatewayTests
             _govNotifyMockClient.Setup(x => x.GetNotificationById(notificationId)).Returns(returnedNotification);
 
             var response = _subject.GetStatusForLetter("doc ID", notificationId);
-            response.Should().BeEquivalentTo(new GovNotifyResponse
+            response.Should().BeEquivalentTo(new GovNotifyStatusResponse
             {
                 Status = expectedStatus,
                 SentAt = null
@@ -61,7 +101,7 @@ namespace GatewayTests
             _govNotifyMockClient.Setup(x => x.GetNotificationById(notificationId)).Returns(returnedNotification);
 
             var response = _subject.GetStatusForLetter("doc ID", notificationId);
-            response.Should().BeEquivalentTo(new GovNotifyResponse
+            response.Should().BeEquivalentTo(new GovNotifyStatusResponse
             {
                 Status = LetterStatusEnum.LetterSent,
                 SentAt = returnedNotification.completedAt

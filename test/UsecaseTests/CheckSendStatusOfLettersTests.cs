@@ -102,7 +102,7 @@ namespace UnitTests
             foreach (var letter in letters)
             {
                 _govNotifyGateway.Setup(x => x.GetStatusForLetter(letter.Id, letter.GovNotifyNotificationId))
-                    .Returns(new GovNotifyResponse
+                    .Returns(new GovNotifyStatusResponse
                     {
                         Status = status,
                         SentAt = null
