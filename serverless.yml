@@ -60,6 +60,13 @@ functions:
       - sqs: arn:aws:sqs:eu-west-2:775052747630:sqs-comino-printing-${self:provider.stage}
         batchSize: 1
 
+  send-to-notify:
+    name: ${self:service}-${self:provider.stage}-send-to-notify
+    handler: Lambda::AwsDotnetCsharp.Handlers::QueryDocumentsAndSendToNotify
+    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
+    events:
+      - schedule: cron(30 15 ? * MON-FRI *) # every weekday at 3:30pm UTC
+
   check-send-status-of-letters:
     name: ${self:service}-${self:provider.stage}-check-send-status-of-letters
     handler: Lambda::AwsDotnetCsharp.Handlers::GetSendStatusOfLetters
@@ -75,8 +82,8 @@ functions:
       JWT_SECRET: ${ssm:/common/hackney-jwt-secret}
       ALLOWED_USER_GROUP: ${self:service}-${self:provider.stage}-group
 
-  get-all-documents:
-    name: ${self:service}-${self:provider.stage}-get-all-documents
+  get-all-documents-api:
+    name: ${self:service}-${self:provider.stage}-get-all-documents-api
     handler: Lambda::AwsDotnetCsharp.Api::GetAllDocuments
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
@@ -91,8 +98,8 @@ functions:
                 - limit
                 - cursor
 
-  get-document:
-    name: ${self:service}-${self:provider.stage}-get-document
+  get-document-api:
+    name: ${self:service}-${self:provider.stage}-get-document-api
     handler: Lambda::AwsDotnetCsharp.Api::GetById
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
@@ -106,8 +113,8 @@ functions:
               paths:
                 id: true
 
-  approve-document:
-    name: ${self:service}-${self:provider.stage}-approve-document
+  approve-document-api:
+    name: ${self:service}-${self:provider.stage}-approve-document-api
     handler: Lambda::AwsDotnetCsharp.Api::ApproveDocument
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
@@ -121,8 +128,8 @@ functions:
               paths:
                 id: true
 
-  cancel-document:
-    name: ${self:service}-${self:provider.stage}-cancel-document
+  cancel-document-api:
+    name: ${self:service}-${self:provider.stage}-cancel-document-api
     handler: Lambda::AwsDotnetCsharp.Api::CancelDocument
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
@@ -136,8 +143,8 @@ functions:
               paths:
                 id: true
 
-  view-document-pdf:
-    name: ${self:service}-${self:provider.stage}-view-document-pdf
+  view-document-pdf-api:
+    name: ${self:service}-${self:provider.stage}-view-document-pdf-api
     handler: Lambda::AwsDotnetCsharp.Api::ViewDocumentPdf
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     events:
@@ -150,13 +157,6 @@ functions:
             parameters:
               paths:
                 id: true
-
-  send-to-notify:
-    name: ${self:service}-${self:provider.stage}-send-to-notify
-    handler: Lambda::AwsDotnetCsharp.Handlers::QueryDocumentsAndSendToNotify
-    role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
-    events:
-      - schedule: cron(30 15 ? * MON-FRI *) # every weekday at 3:30pm UTC
 
 resources:
   Resources:
