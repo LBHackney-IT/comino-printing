@@ -38,32 +38,44 @@ namespace UseCases
                     document.Id, document.CominoDocumentNumber
                 );
 
-                var sentStatus = _cominoGateway.GetDocumentSentStatus(document.Id);
-                if (sentStatus.Printed)
-                {
-                    LambdaLogger.Log($"Document already printed. ID: {document.Id}");
-                    await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.PrintedManually);
-                    await _logger.LogMessage(document.Id,
-                        $"Not sent to GovNotify. Document already printed, printed at {sentStatus.PrintedAt}");
-                    return;
+                try{
+                    var sentStatus = _cominoGateway.GetDocumentSentStatus(document.Id);
+
+                    if (sentStatus.Printed)
+                    {
+                        LambdaLogger.Log($"Document already printed. ID: {document.Id}");
+                        await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.PrintedManually);
+                        await _logger.LogMessage(document.Id,
+                            $"Not sent to GovNotify. Document already printed, printed at {sentStatus.PrintedAt}");
+                        return;
+                    }
+                }catch(Exception e){
+                    Console.WriteLine(e);
+                    throw;
                 }
 
-                var govNotifyResponse = _govNotifyGateway.SendPdfDocumentForPostage(pdfBytesResponse, document.CominoDocumentNumber);
-                if (govNotifyResponse.Success)
-                {
-                    LambdaLogger.Log($"Document sent to notify. ID: {document.Id}");
-                    await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.SentToGovNotify);
-                    await _localDatabaseGateway.SaveSendNotificationId(document.Id, govNotifyResponse.NotificationId);
-                    await _logger.LogMessage(document.Id,
-                        $"Sent to Gov Notify. Gov Notify Notification Id {document.GovNotifyNotificationId}.");
-                    _cominoGateway.MarkDocumentAsSent(document.CominoDocumentNumber);
-                    await _logger.LogMessage(document.Id, "Removed from batch print queue and print date set in comino");
-                }
-                else
-                {
-                    LambdaLogger.Log($"Error sending to notify. ID: {document.Id}");
-                    await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.FailedToSend);
-                    await _logger.LogMessage(document.Id, $"Error Sending to GovNotify: {govNotifyResponse.Error}");
+                try{
+                    var govNotifyResponse = _govNotifyGateway.SendPdfDocumentForPostage(pdfBytesResponse, document.CominoDocumentNumber);
+
+                    if (govNotifyResponse.Success)
+                    {
+                        LambdaLogger.Log($"Document sent to notify. ID: {document.Id}");
+                        await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.SentToGovNotify);
+                        await _localDatabaseGateway.SaveSendNotificationId(document.Id, govNotifyResponse.NotificationId);
+                        await _logger.LogMessage(document.Id,
+                            $"Sent to Gov Notify. Gov Notify Notification Id {document.GovNotifyNotificationId}.");
+                        _cominoGateway.MarkDocumentAsSent(document.CominoDocumentNumber);
+                        await _logger.LogMessage(document.Id, "Removed from batch print queue and print date set in comino");
+                    }
+                    else
+                    {
+                        LambdaLogger.Log($"Error sending to notify. ID: {document.Id}");
+                        await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.FailedToSend);
+                        await _logger.LogMessage(document.Id, $"Error Sending to GovNotify: {govNotifyResponse.Error}");
+                    }
+                }catch(Exception e){
+                    Console.WriteLine(e);
+                    throw;
                 }
             });
         }
