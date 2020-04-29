@@ -59,7 +59,7 @@ This repo contains a UML sequence diagram, which can be updated as follows:
 
 CI/CD pipeline is setup using CircleCI. Commits to master branch trigger automatic workflow where after successful build and test jobs, solution is automatically deployed to staging environment. After successful deployment to staging, manual approval is required to trigger deployment to production.
 
-![CircleCI](images/CircleCI.gif)
+![CircleCI](images/CICD.gif)
 
 ## Workflow
 
