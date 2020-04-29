@@ -107,6 +107,7 @@ p {
 }
 
 .DocumentListPage {
+  td.cancelled,
   td.processing-error,
   td.virus-scan-failed,
   td.validation-failed {
