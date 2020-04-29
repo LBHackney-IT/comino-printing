@@ -55,7 +55,7 @@ namespace UseCases
                 }
 
                 try{
-                    var govNotifyResponse = _govNotifyGateway.SendPdfDocumentForPostage(pdfBytesResponse, document.CominoDocumentNumber);
+                    var govNotifyResponse = _govNotifyGateway.SendPdfDocumentForPostage(pdfBytesResponse, document.Id);
 
                     if (govNotifyResponse.Success)
                     {
