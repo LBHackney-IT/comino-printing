@@ -67,7 +67,7 @@ namespace UnitTests
                 {
                     new Claim("groups", JsonConvert.SerializeObject(groups)),
                 }),
-                Expires = DateTime.Now,
+                Expires = DateTime.Now.AddHours(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             });
 
@@ -85,7 +85,7 @@ namespace UnitTests
             var token = _handler.CreateToken(new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(),
-                Expires = DateTime.Now,
+                Expires = DateTime.Now.AddHours(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             });
 
@@ -107,7 +107,7 @@ namespace UnitTests
                 {
                     new Claim("groups", wrongGroups)
                 }),
-                Expires = DateTime.Now,
+                Expires = DateTime.Now.AddHours(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             });
 
