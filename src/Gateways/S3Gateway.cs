@@ -86,14 +86,33 @@ namespace Gateways
             var s3Key = $"{date:yyyy}/{date:MM}/{date:dd}/{documentId}.pdf";
             var bucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME");
             LambdaLogger.Log($"S3 Key {s3Key} bucket name {bucketName}");
-            GetObjectResponse response = await _amazonS3.GetObjectAsync(bucketName, s3Key);
-            //TODO handle when the pdf isnt found
 
-            LambdaLogger.Log($"Response from S3 {JsonConvert.SerializeObject(response)}");
+            GetObjectResponse response = null;
 
-            using (Stream responseStream = response.ResponseStream)
+            //TODO: TK, REMOVE AFTER TOURBLESHOOTING
+            try
             {
-                return ReadStream(responseStream);
+                response = await _amazonS3.GetObjectAsync(bucketName, s3Key);
+                LambdaLogger.Log($"TK: Response status from S3 {JsonConvert.SerializeObject(response.HttpStatusCode)}");
+                //TODO handle when the pdf isnt found
+            }
+            catch (Exception ex)
+            {
+                LambdaLogger.Log($"TK: Exception thrown when connecting to S3 {JsonConvert.SerializeObject(ex.Message)}");
+                LambdaLogger.Log($"TK: Response status from S3, when exception thrown {JsonConvert.SerializeObject(response.HttpStatusCode)}");
+            }
+            LambdaLogger.Log($"Response from S3 {JsonConvert.SerializeObject(response)}");
+            
+            if (response != null)
+            {
+                using (Stream responseStream = response.ResponseStream)
+                {
+                    return ReadStream(responseStream);
+                }
+            }
+            else
+            {
+                return null;
             }
         }
 
