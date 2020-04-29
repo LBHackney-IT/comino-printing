@@ -2,16 +2,14 @@ import Cookies from "js-cookie";
 import jwt from "jsonwebtoken";
 
 export const isLoggedIn = function () {
-  return true;
-  // const hackneyToken = Cookies.get("hackneyToken");
-  // if (!hackneyToken) return false;
+  const hackneyToken = Cookies.get("hackneyToken");
+  if (!hackneyToken) return false;
 
-  // const payload = jwt.decode(hackneyToken);
-  // return (
-  //   payload &&
-  //   payload.groups &&
-  //   payload.groups.indexOf("housingneeds-singleview-beta") > -1
-  // );
+  const payload = jwt.decode(hackneyToken);
+  return payload;
+  //  &&
+  // payload.groups &&
+  // payload.groups.indexOf("housingneeds-singleview-beta") > -1
 };
 
 export const username = function () {
