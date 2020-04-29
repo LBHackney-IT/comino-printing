@@ -55,6 +55,12 @@ This repo contains a UML sequence diagram, which can be updated as follows:
 2. Edit `./sequenceDiagram/source.uml` as needed
 3. Run `cat sequenceDiagram/source.uml | docker run --rm -i think/plantuml -tpng > sequenceDiagram/source.png` to output
 
+## Deployment pipeline
+
+CI/CD pipeline is setup using CircleCI. Commits to master branch trigger automatic workflow where after successful build and test jobs, solution is automatically deployed to staging environment. After successful deployment to staging, manual approval is required to trigger deployment to production.
+
+![CircleCI](images/CircleCI.gif)
+
 ## Workflow
 
 The process of converting and sending a document is handled by a number of interrelated services:
