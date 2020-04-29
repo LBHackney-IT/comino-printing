@@ -12,7 +12,7 @@ namespace GatewayTests
     public class DynamoDbTests
     {
         protected DynamoDBHandler DatabaseClient;
-        protected string tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME") ?? "comino-printing-test-letters-2";
+        protected string tableName = Environment.GetEnvironmentVariable("LETTERS_TABLE_NAME") ?? "comino-printing-test-letters";
 
         [SetUp]
         public void DynamoDbSetUp()

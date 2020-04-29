@@ -31,7 +31,7 @@ provider:
   environment:
     HTML_TO_PDF_CONVERSION_ENDPOINT: ${ssm:/hn-comino-printing/${self:provider.stage}/HTML_TO_PDF_CONVERSION_ENDPOINT}
     DOCUMENT_CONFIG: ${ssm:/hn-comino-printing/${self:provider.stage}/DOCUMENT_CONFIG}
-    LETTERS_TABLE_NAME: "${self:service}-${self:provider.stage}-letters-2"
+    LETTERS_TABLE_NAME: "${self:service}-${self:provider.stage}-letters"
     W2_DOCUMENT_BASE_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/W2_DOCUMENTS_API}
     GENERATED_PDF_BUCKET_NAME: "${self:service}-${self:provider.stage}-generated-pdfs"
     DOCUMENTS_API_TOKEN: ${ssm:/hn-comino-printing/${self:provider.stage}/DOCUMENTS_API_TOKEN}
