@@ -57,8 +57,12 @@ namespace UnitTests
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
                     .Returns(new CominoSentStatusCheck {Printed = false});
                 _govNotifyGatewayMock
-                    .Setup(x => x.SendPdfDocumentForPostage(pdf, document.CominoDocumentNumber))
-                    .Returns(new GovNotifySendResponse())
+                    .Setup(x => x.SendPdfDocumentForPostage(pdf, document.Id))
+                    .Returns(new GovNotifySendResponse()
+                    {
+                        Success = true,
+                        NotificationId = _fixture.Create<string>()
+                    })
                     .Verifiable();
             }
 
@@ -180,7 +184,7 @@ namespace UnitTests
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
                     .Returns(new CominoSentStatusCheck {Printed = false});
                 _govNotifyGatewayMock
-                    .Setup(x => x.SendPdfDocumentForPostage(pdf, document.CominoDocumentNumber))
+                    .Setup(x => x.SendPdfDocumentForPostage(pdf, document.Id))
                     .Returns(new GovNotifySendResponse
                     {
                         Success = false,
@@ -203,7 +207,7 @@ namespace UnitTests
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
                     .Returns(new CominoSentStatusCheck {Printed = false});
                 _govNotifyGatewayMock
-                    .Setup(x => x.SendPdfDocumentForPostage(pdf, document.CominoDocumentNumber))
+                    .Setup(x => x.SendPdfDocumentForPostage(pdf, document.Id))
                     .Returns(new GovNotifySendResponse
                     {
                         Success = true,
