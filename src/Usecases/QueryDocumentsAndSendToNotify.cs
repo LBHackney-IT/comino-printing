@@ -34,11 +34,12 @@ namespace UseCases
 
             documents.ForEach(async document => {
                 LambdaLogger.Log($"Sending document. ID: {document.Id}");
-                var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(
-                    document.Id, document.CominoDocumentNumber
-                );
 
                 try{
+                    var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(
+                        document.Id, document.CominoDocumentNumber
+                    );
+
                     var sentStatus = _cominoGateway.GetDocumentSentStatus(document.Id);
 
                     if (sentStatus.Printed)
@@ -49,12 +50,7 @@ namespace UseCases
                             $"Not sent to GovNotify. Document already printed, printed at {sentStatus.PrintedAt}");
                         return;
                     }
-                }catch(Exception e){
-                    Console.WriteLine(e);
-                    throw;
-                }
-
-                try{
+                    
                     var govNotifyResponse = _govNotifyGateway.SendPdfDocumentForPostage(pdfBytesResponse, document.Id);
 
                     if (govNotifyResponse.Success)
