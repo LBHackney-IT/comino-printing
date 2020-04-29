@@ -4,6 +4,8 @@ using Boundary.UseCaseInterfaces;
 using Usecases.Enums;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
+using Amazon.Lambda.Core;
+using Newtonsoft.Json;
 
 namespace UseCases
 {
@@ -28,6 +30,8 @@ namespace UseCases
         {
             var documents = await _localDatabaseGateway.GetDocumentsThatAreReadyForGovNotify();
 
+            LambdaLogger.Log("Document ids retrieved: " + JsonConvert.SerializeObject(documents));
+
             documents.ForEach(async document => {
                 var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(
                     document.Id, document.CominoDocumentNumber
@@ -45,6 +49,7 @@ namespace UseCases
                 var govNotifyResponse = _govNotifyGateway.SendPdfDocumentForPostage(pdfBytesResponse, document.CominoDocumentNumber);
                 if (govNotifyResponse.Success)
                 {
+                    LambdaLogger.Log($"Document sent to notify. ID: {document.Id}");
                     await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.SentToGovNotify);
                     await _localDatabaseGateway.SaveSendNotificationId(document.Id, govNotifyResponse.NotificationId);
                     await _logger.LogMessage(document.Id,
@@ -54,6 +59,7 @@ namespace UseCases
                 }
                 else
                 {
+                    LambdaLogger.Log($"Error sending to notify. ID: {document.Id}");
                     await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.FailedToSend);
                     await _logger.LogMessage(document.Id, $"Error Sending to GovNotify: {govNotifyResponse.Error}");
                 }
