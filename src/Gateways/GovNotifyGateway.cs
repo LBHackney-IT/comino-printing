@@ -1,3 +1,4 @@
+using Amazon.Lambda.Core;
 using Notify.Exceptions;
 using Notify.Interfaces;
 using Notify.Models.Responses;
@@ -46,6 +47,7 @@ namespace Gateways
         {
             var response = _govNotifyClient.GetNotificationById(govNotifyNotificationId);
 
+            LambdaLogger.Log($"GovNotify responded successfully with status {response.status}");
             return new GovNotifyStatusResponse
             {
                 Status = GetStatus(response.status),

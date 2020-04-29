@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Lambda.Core;
 using Usecases.Domain;
 using Usecases.Enums;
 using Usecases.GatewayInterfaces;
@@ -106,6 +107,7 @@ namespace Gateways
             };
             var oldAttributes = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.UpdatedOldAttributes});
             var statusChange = oldAttributes["Status"].ToString() != newStatus.ToString();
+            LambdaLogger.Log($"Status change: {statusChange}. New status {newStatus}, old status {oldAttributes["Status"]}");
             return new UpdateStatusResponse
             {
                 StatusUpdated = statusChange
