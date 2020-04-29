@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using Amazon.Lambda.APIGatewayEvents;
 using Boundary.UseCaseInterfaces;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Usecases
 {
@@ -14,37 +16,27 @@ namespace Usecases
     {
         public APIGatewayCustomAuthorizerResponse Execute(APIGatewayCustomAuthorizerRequest request)
         {
-            var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
-            var token = request.AuthorizationToken;
-            var substring = "Bearer";
-            int indexOfSubString = token.IndexOf(substring);
-            
-            var editToken = token.Remove(indexOfSubString, substring.Length).Trim();
-            
-            var allowedGroupName = Environment.GetEnvironmentVariable("ALLOWED_USER_GROUP");
-
-            var decodedToken = DecodeToken(secret, editToken);
-
-            if (decodedToken == null)
+            if (request.AuthorizationToken == null)
             {
                 return AccessDenied(request);
             }
-            else
-            {
-                if (decodedToken.Identity.IsAuthenticated && decodedToken.IsInRole(allowedGroupName))
-                {
-                    return AccessAuthorized(request);
-                }
-                else
-                {
-                    foreach (var claim in decodedToken.Claims)
-                    {
-                        Console.Write("CLAIM TYPE: " + claim.Type + "; CLAIM VALUE: " + claim.Value + "</br>");
-                    }
 
-                    return AccessDenied(request);
-                }
+            var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+            var token = request.AuthorizationToken.Replace("Bearer ", "");
+            var decodedToken = DecodeToken(secret, token);
+
+            if (!decodedToken.Identity.IsAuthenticated) return AccessDenied(request);
+
+            var allowedGroup = Environment.GetEnvironmentVariable("ALLOWED_USER_GROUP");
+
+            var groups = decodedToken.Claims.FirstOrDefault(c => c.Type == "groups");
+            if (groups == null) return AccessDenied(request);
+
+            if (groups.Value.Contains(allowedGroup))
+            {
+                return AccessAuthorized(request);
             }
+            return AccessDenied(request);
         }
 
         private static ClaimsPrincipal DecodeToken(string secret, string token)
@@ -52,9 +44,12 @@ namespace Usecases
             var tokenValidationParameters = new TokenValidationParameters
             {
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+                ValidateAudience = false,
+                ValidateIssuer = false,
                 ValidateLifetime = false
             };
             var handler = new JwtSecurityTokenHandler();
+
             return handler.ValidateToken(token, tokenValidationParameters, out _);
         }
 
