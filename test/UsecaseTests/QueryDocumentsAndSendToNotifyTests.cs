@@ -51,7 +51,7 @@ namespace UnitTests
             {
                 var pdf = _fixture.Create<byte[]>();
                 _s3GatewayMock
-                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
+                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id))
                     .ReturnsAsync(pdf)
                     .Verifiable();
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
@@ -79,7 +79,7 @@ namespace UnitTests
             {
                 var pdf = _fixture.Create<byte[]>();
                 _s3GatewayMock
-                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
+                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id))
                     .ReturnsAsync(pdf);
 
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id)).Returns(new CominoSentStatusCheck{ Printed = true });
@@ -99,7 +99,7 @@ namespace UnitTests
             {
                 var pdf = _fixture.Create<byte[]>();
                 _s3GatewayMock
-                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
+                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id))
                     .ReturnsAsync(pdf);
 
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
@@ -179,7 +179,7 @@ namespace UnitTests
                 var pdf = _fixture.Create<byte[]>();
 
                 _s3GatewayMock
-                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
+                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id))
                     .ReturnsAsync(pdf);
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
                     .Returns(new CominoSentStatusCheck {Printed = false});
@@ -202,7 +202,7 @@ namespace UnitTests
                 var pdf = _fixture.Create<byte[]>();
 
                 _s3GatewayMock
-                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id, document.CominoDocumentNumber))
+                    .Setup(x => x.GetPdfDocumentAsByteArray(document.Id))
                     .ReturnsAsync(pdf);
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.Id))
                     .Returns(new CominoSentStatusCheck {Printed = false});

@@ -98,11 +98,10 @@ namespace GatewayTests
         {
             var date = new DateTime(2020, 02, 25, 12, 45, 27);
             var documentId = date.ToString("O");
-            var cominoDocumentNumber = "123456";
-            var s3Key = $"2020/02/25/{cominoDocumentNumber}.pdf";
+            var s3Key = $"2020/02/25/{documentId}.pdf";
 
             Func<Task> act = async () => {
-                await  _subject.GetPdfDocumentAsByteArray(documentId, cominoDocumentNumber);
+                await  _subject.GetPdfDocumentAsByteArray(documentId);
             };
 
             await act.Should().ThrowAsync<Exception>();
@@ -113,11 +112,11 @@ namespace GatewayTests
         {
             var date = new DateTime(2020, 02, 25, 12, 45, 27);
             var documentId = date.ToString("O");
-            var cominoDocumentNumber = "123456";
-            var s3Key = $"2020/02/25/{cominoDocumentNumber}.pdf";
+            var s3Key = $"2020/02/25/{documentId}.pdf";
 
             // prep mock S3 client to return a successful response
             var getObjectResponseMock = new GetObjectResponse() {
+                Expires = _fixture.Create<DateTime>(),
                 ResponseStream = new MemoryStream()
             };
 
@@ -128,7 +127,7 @@ namespace GatewayTests
             )).ReturnsAsync(getObjectResponseMock);
 
             var expected = new byte[]{};
-            var received = await _subject.GetPdfDocumentAsByteArray(documentId, cominoDocumentNumber);
+            var received = await _subject.GetPdfDocumentAsByteArray(documentId);
 
             received.Should().BeEquivalentTo(expected);
 

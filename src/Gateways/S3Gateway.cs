@@ -80,29 +80,25 @@ namespace Gateways
             return pdfUrl;
         }
 
-        public async Task<byte[]> GetPdfDocumentAsByteArray(string documentId, string cominoDocumentNumber)
+        public async Task<byte[]> GetPdfDocumentAsByteArray(string documentId)
         {
             var date = DateTime.Parse(documentId);
             var s3Key = $"{date:yyyy}/{date:MM}/{date:dd}/{documentId}.pdf";
             var bucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME");
+
             LambdaLogger.Log($"S3 Key {s3Key} bucket name {bucketName}");
 
-            GetObjectResponse response = null;
+            GetObjectResponse response = await _amazonS3.GetObjectAsync(bucketName, s3Key);
 
-            //TODO: TK, REMOVE AFTER TOURBLESHOOTING
-            try
-            {
-                response = await _amazonS3.GetObjectAsync(bucketName, s3Key);
-                LambdaLogger.Log($"TK: Response status from S3 {JsonConvert.SerializeObject(response.HttpStatusCode)}");
-                //TODO handle when the pdf isnt found
-            }
-            catch (Exception ex)
-            {
-                LambdaLogger.Log($"TK: Exception thrown when connecting to S3 {JsonConvert.SerializeObject(ex.Message)}");
-                LambdaLogger.Log($"TK: Response status from S3, when exception thrown {JsonConvert.SerializeObject(response.HttpStatusCode)}");
-            }
+            //TODO handle when the pdf isnt found
+
+            // SerializeObject here cannot convert the response's ResponseStream -
+            // temporary fix below (please improve as required)
+            var storedStream = response.ResponseStream;
+            response.ResponseStream = null;
             LambdaLogger.Log($"Response from S3 {JsonConvert.SerializeObject(response)}");
-            
+            response.ResponseStream = storedStream;
+
             if (response != null)
             {
                 using (Stream responseStream = response.ResponseStream)

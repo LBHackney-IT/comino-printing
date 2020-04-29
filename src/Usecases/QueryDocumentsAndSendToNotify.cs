@@ -37,9 +37,7 @@ namespace UseCases
 
                 try{
                     LambdaLogger.Log("Fetching PDF");
-                    var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(
-                        document.Id, document.CominoDocumentNumber
-                    );
+                    var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(document.Id);
                     LambdaLogger.Log("Fetched from S3");
 
                     var sentStatus = _cominoGateway.GetDocumentSentStatus(document.Id);
@@ -53,7 +51,7 @@ namespace UseCases
                             $"Not sent to GovNotify. Document already printed, printed at {sentStatus.PrintedAt}");
                         return;
                     }
-                    
+
                     var govNotifyResponse = _govNotifyGateway.SendPdfDocumentForPostage(pdfBytesResponse, document.Id);
 
                     if (govNotifyResponse.Success)
