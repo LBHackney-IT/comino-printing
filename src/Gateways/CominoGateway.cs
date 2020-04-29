@@ -78,13 +78,13 @@ namespace Gateways
             Console.WriteLine($"Comino DB update {documentNumber} removed from batch print and LastPrintedDate updated to {timeNow}");
         }
 
-        public CominoSentStatusCheck GetDocumentSentStatus(string documentNumber)
+        public CominoSentStatusCheck GetDocumentSentStatus(string cominoDocumentNumber)
         {
             var getStatus = $@"
 SELECT TOP 1 LastPrinted, nDocNo
 FROM CCDocument
 LEFT JOIN W2BatchPrint ON nDocNo = DocNo
-WHERE CCDocument.DocNo = '{documentNumber}';
+WHERE CCDocument.DocNo = '{cominoDocumentNumber}';
 ";
             var response = _database.Query<PrintStatusRow>(getStatus).FirstOrDefault();
             if (response?.nDocNo == null || response.LastPrinted != null)

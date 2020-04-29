@@ -8,6 +8,6 @@ namespace UseCases.GatewayInterfaces
     {
         List<DocumentDetails> GetDocumentsAfterStartDate(DateTime time);
         void MarkDocumentAsSent(string documentNumber);
-        CominoSentStatusCheck GetDocumentSentStatus(string documentId);
+        CominoSentStatusCheck GetDocumentSentStatus(string cominoDocumentNumber);
     }
 }
