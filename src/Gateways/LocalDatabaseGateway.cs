@@ -182,7 +182,7 @@ namespace Gateways
                 DocumentType = document.ContainsKey("DocumentType") ? document["DocumentType"] : null,
                 LetterType = document.ContainsKey("LetterType") ? document["LetterType"] : null,
                 Id = document["InitialTimestamp"],
-                Date = document["Date"],
+                Date = document["InitialTimestamp"],
                 Status = Enum.Parse<LetterStatusEnum>(document["Status"]),
                 Log = logEntries
             };
