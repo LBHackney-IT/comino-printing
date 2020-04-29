@@ -33,6 +33,7 @@ namespace UseCases
             LambdaLogger.Log("Document ids retrieved: " + JsonConvert.SerializeObject(documents));
 
             documents.ForEach(async document => {
+                LambdaLogger.Log($"Sending document. ID: {document.Id}");
                 var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(
                     document.Id, document.CominoDocumentNumber
                 );
@@ -40,6 +41,7 @@ namespace UseCases
                 var sentStatus = _cominoGateway.GetDocumentSentStatus(document.Id);
                 if (sentStatus.Printed)
                 {
+                    LambdaLogger.Log($"Document already printed. ID: {document.Id}");
                     await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.PrintedManually);
                     await _logger.LogMessage(document.Id,
                         $"Not sent to GovNotify. Document already printed, printed at {sentStatus.PrintedAt}");
