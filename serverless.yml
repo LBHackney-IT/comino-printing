@@ -36,6 +36,7 @@ provider:
     GENERATED_PDF_BUCKET_NAME: "${self:service}-${self:provider.stage}-generated-pdfs"
     DOCUMENTS_API_TOKEN: ${ssm:/hn-comino-printing/${self:provider.stage}/DOCUMENTS_API_TOKEN}
     GOV_NOTIFY_API_KEY: ${ssm:/hn-comino-printing/${self:provider.stage}/GOV_NOTIFY_API_KEY}
+    COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
 
 package:
   artifact: ./src/Lambda/bin/release/netcoreapp2.1/comino-printing.zip
@@ -48,7 +49,6 @@ functions:
     events:
       - schedule: rate(1 minute)
     environment:
-      COMINO_DB_CONN_STR: ${ssm:/hn-comino-printing/${self:provider.stage}/COMINO_DB_CONN_STR~true}
       SQS_URL: ${ssm:/hn-comino-printing/${self:provider.stage}/SQS_URL}
       ENV: ${self:provider.stage}
 
