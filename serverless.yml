@@ -90,7 +90,7 @@ functions:
       - http:
           path: /api/documents
           method: GET
-          authorizer: authorize-api
+          # authorizer: authorize-api
           cors: true
           request:
             parameters:
@@ -106,7 +106,7 @@ functions:
       - http:
           path: /api/documents/{id}
           method: get
-          authorizer: authorize-api
+          # authorizer: authorize-api
           cors: true
           request:
             parameters:
@@ -121,7 +121,7 @@ functions:
       - http:
           path: /api/documents/{id}/approve
           method: post
-          authorizer: authorize-api
+          # authorizer: authorize-api
           cors: true
           request:
             parameters:
@@ -136,7 +136,7 @@ functions:
       - http:
           path: /api/documents/{id}/cancel
           method: post
-          authorizer: authorize-api
+          # authorizer: authorize-api
           cors: true
           request:
             parameters:
@@ -151,7 +151,7 @@ functions:
       - http:
           path: /api/documents/{id}/view
           method: get
-          authorizer: authorize-api
+          # authorizer: authorize-api
           cors: true
           request:
             parameters:
