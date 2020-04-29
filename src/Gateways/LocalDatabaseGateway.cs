@@ -211,7 +211,7 @@ namespace Gateways
                 DocumentType = entry["DocumentType"].S?.ToString(),
                 LetterType = entry["LetterType"].S?.ToString(),
                 Id = entry["InitialTimestamp"].S?.ToString(),
-                Date = entry["Date"].S?.ToString(),
+                Date = entry["InitialTimestamp"].S?.ToString(),
                 Status = Enum.Parse<LetterStatusEnum>(entry["Status"].S?.ToString()),
                 GovNotifyNotificationId = entry.ContainsKey("GovNotifyNotificationId")
                     ? entry["GovNotifyNotificationId"].S?.ToString()

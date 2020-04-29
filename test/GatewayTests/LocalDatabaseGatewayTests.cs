@@ -390,7 +390,6 @@ namespace GatewayTests
                 ["LetterType"] = document.LetterType,
                 ["DocumentType"] = document.DocumentType,
                 ["Status"] = status.ToString(),
-                ["Date"] = document.Date,
                 ["Id"] = document.Date
             };
 
