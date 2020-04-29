@@ -94,28 +94,25 @@ namespace GatewayTests
         }
 
         [Test]
-        public async Task GetPdfDocumentAsByteArray_ThrowsIfNoPdfFound()
+        public void GetPdfDocumentAsByteArray_ThrowsIfNoPdfFound()
         {
             var date = new DateTime(2020, 02, 25, 12, 45, 27);
             var documentId = date.ToString("O");
-            var s3Key = $"2020/02/25/{documentId}.pdf";
 
-            Func<Task> act = async () => {
-                await  _subject.GetPdfDocumentAsByteArray(documentId);
-            };
+            Func<byte[]> act = () => _subject.GetPdfDocumentAsByteArray(documentId);
 
-            await act.Should().ThrowAsync<Exception>();
+            act.Should().Throw<Exception>();
         }
 
         [Test]
-        public async Task GetPdfDocumentAsByteArray_ReturnsPdfByteArrayIfPdfFound()
+        public void GetPdfDocumentAsByteArray_ReturnsPdfByteArrayIfPdfFound()
         {
             var date = new DateTime(2020, 02, 25, 12, 45, 27);
             var documentId = date.ToString("O");
             var s3Key = $"2020/02/25/{documentId}.pdf";
 
             // prep mock S3 client to return a successful response
-            var getObjectResponseMock = new GetObjectResponse() {
+            var getObjectResponseMock = new GetObjectResponse {
                 Expires = _fixture.Create<DateTime>(),
                 ResponseStream = new MemoryStream()
             };
@@ -127,10 +124,9 @@ namespace GatewayTests
             )).ReturnsAsync(getObjectResponseMock);
 
             var expected = new byte[]{};
-            var received = await _subject.GetPdfDocumentAsByteArray(documentId);
+            var received = _subject.GetPdfDocumentAsByteArray(documentId);
 
             received.Should().BeEquivalentTo(expected);
-
             _mockAmazonS3.Verify(x =>
                 x.GetObjectAsync(_testBucketName, s3Key, It.IsAny<CancellationToken>()));
         }

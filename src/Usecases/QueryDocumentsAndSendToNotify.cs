@@ -37,7 +37,7 @@ namespace UseCases
 
                 try{
                     LambdaLogger.Log("Fetching PDF");
-                    var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(document.Id);
+                    var pdfBytesResponse = _s3Gateway.GetPdfDocumentAsByteArray(document.Id);
                     LambdaLogger.Log("Fetched from S3");
 
                     var sentStatus = _cominoGateway.GetDocumentSentStatus(document.CominoDocumentNumber);

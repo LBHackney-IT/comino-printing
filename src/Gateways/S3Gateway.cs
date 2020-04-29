@@ -80,7 +80,7 @@ namespace Gateways
             return pdfUrl;
         }
 
-        public async Task<byte[]> GetPdfDocumentAsByteArray(string documentId)
+        public byte[] GetPdfDocumentAsByteArray(string documentId)
         {
             var date = DateTime.Parse(documentId);
             var s3Key = $"{date:yyyy}/{date:MM}/{date:dd}/{documentId}.pdf";
@@ -88,27 +88,15 @@ namespace Gateways
 
             LambdaLogger.Log($"S3 Key {s3Key} bucket name {bucketName}");
 
-            GetObjectResponse response = await _amazonS3.GetObjectAsync(bucketName, s3Key);
+            var getObjectTask = _amazonS3.GetObjectAsync(bucketName, s3Key);
+            getObjectTask.Wait();
+            var response = getObjectTask.Result;
 
-            //TODO handle when the pdf isnt found
+            LambdaLogger.Log($"S3 returned with status code {response.HttpStatusCode}");
 
-            // SerializeObject here cannot convert the response's ResponseStream -
-            // temporary fix below (please improve as required)
-            var storedStream = response.ResponseStream;
-            response.ResponseStream = null;
-            LambdaLogger.Log($"Response from S3 {JsonConvert.SerializeObject(response)}");
-            response.ResponseStream = storedStream;
-
-            if (response != null)
+            using (Stream responseStream = response.ResponseStream)
             {
-                using (Stream responseStream = response.ResponseStream)
-                {
-                    return ReadStream(responseStream);
-                }
-            }
-            else
-            {
-                return null;
+                return ReadStream(responseStream);
             }
         }
 

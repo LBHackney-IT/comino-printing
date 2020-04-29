@@ -52,7 +52,7 @@ namespace UnitTests
                 var pdf = _fixture.Create<byte[]>();
                 _s3GatewayMock
                     .Setup(x => x.GetPdfDocumentAsByteArray(document.Id))
-                    .ReturnsAsync(pdf)
+                    .Returns(pdf)
                     .Verifiable();
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.CominoDocumentNumber))
                     .Returns(new CominoSentStatusCheck {Printed = false});
@@ -80,7 +80,7 @@ namespace UnitTests
                 var pdf = _fixture.Create<byte[]>();
                 _s3GatewayMock
                     .Setup(x => x.GetPdfDocumentAsByteArray(document.Id))
-                    .ReturnsAsync(pdf);
+                    .Returns(pdf);
 
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.CominoDocumentNumber)).Returns(new CominoSentStatusCheck{ Printed = true });
             }
@@ -100,7 +100,7 @@ namespace UnitTests
                 var pdf = _fixture.Create<byte[]>();
                 _s3GatewayMock
                     .Setup(x => x.GetPdfDocumentAsByteArray(document.Id))
-                    .ReturnsAsync(pdf);
+                    .Returns(pdf);
 
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.CominoDocumentNumber))
                     .Returns(new CominoSentStatusCheck{ Printed = true, PrintedAt = printedAtDate});
@@ -180,7 +180,7 @@ namespace UnitTests
 
                 _s3GatewayMock
                     .Setup(x => x.GetPdfDocumentAsByteArray(document.Id))
-                    .ReturnsAsync(pdf);
+                    .Returns(pdf);
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.CominoDocumentNumber))
                     .Returns(new CominoSentStatusCheck {Printed = false});
                 _govNotifyGatewayMock
@@ -203,7 +203,7 @@ namespace UnitTests
 
                 _s3GatewayMock
                     .Setup(x => x.GetPdfDocumentAsByteArray(document.Id))
-                    .ReturnsAsync(pdf);
+                    .Returns(pdf);
                 _cominoGateway.Setup(x => x.GetDocumentSentStatus(document.CominoDocumentNumber))
                     .Returns(new CominoSentStatusCheck {Printed = false});
                 _govNotifyGatewayMock
