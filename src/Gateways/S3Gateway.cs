@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Newtonsoft.Json;
 using Usecases.Domain;
 using UseCases.GatewayInterfaces;
 
@@ -81,10 +83,13 @@ namespace Gateways
         public async Task<byte[]> GetPdfDocumentAsByteArray(string documentId, string cominoDocumentNumber)
         {
             var date = DateTime.Parse(documentId);
-            var s3Key = $"{date:yyyy}/{date:MM}/{date:dd}/{cominoDocumentNumber}.pdf";
+            var s3Key = $"{date:yyyy}/{date:MM}/{date:dd}/{documentId}.pdf";
             var bucketName = Environment.GetEnvironmentVariable("GENERATED_PDF_BUCKET_NAME");
-
+            LambdaLogger.Log($"S3 Key {s3Key} bucket name {bucketName}");
             GetObjectResponse response = await _amazonS3.GetObjectAsync(bucketName, s3Key);
+            //TODO handle when the pdf isnt found
+
+            LambdaLogger.Log($"Response from S3 {JsonConvert.SerializeObject(response)}");
 
             using (Stream responseStream = response.ResponseStream)
             {

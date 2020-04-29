@@ -36,12 +36,15 @@ namespace UseCases
                 LambdaLogger.Log($"Sending document. ID: {document.Id}");
 
                 try{
+                    LambdaLogger.Log("Fetching PDF");
                     var pdfBytesResponse = await _s3Gateway.GetPdfDocumentAsByteArray(
                         document.Id, document.CominoDocumentNumber
                     );
+                    LambdaLogger.Log("Fetched from S3");
 
                     var sentStatus = _cominoGateway.GetDocumentSentStatus(document.Id);
 
+                    LambdaLogger.Log($"Got send status from comino {JsonConvert.SerializeObject(sentStatus)}");
                     if (sentStatus.Printed)
                     {
                         LambdaLogger.Log($"Document already printed. ID: {document.Id}");
@@ -70,7 +73,7 @@ namespace UseCases
                         await _logger.LogMessage(document.Id, $"Error Sending to GovNotify: {govNotifyResponse.Error}");
                     }
                 }catch(Exception e){
-                    Console.WriteLine(e);
+                    LambdaLogger.Log(JsonConvert.SerializeObject(e));
                     throw;
                 }
             });
