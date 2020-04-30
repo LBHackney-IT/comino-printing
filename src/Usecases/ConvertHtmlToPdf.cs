@@ -1,10 +1,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Usecases;
 using Usecases.Domain;
 using Usecases.GatewayInterfaces;
 using Usecases.Interfaces;
-using Usecases.UntestedParsers;
 
 namespace UseCases
 {
@@ -57,7 +57,6 @@ namespace UseCases
                     width: 180mm;
                     min-height: 90mm;
                     table-layout:fixed;
-                    overflow: hidden;
                 }}
                 .header-table tr td:nth-child(1) {{
                     width: 110mm;
@@ -67,39 +66,17 @@ namespace UseCases
                     width: 70mm;
                     min-height: 90mm;
                 }}
-                .address-table {{
-                    width: 110mm;
-                    min-height: 90mm;
-                    overflow: hidden;
-                    table-layout: fixed;
-                }}
-                .address-table col  :nth-child(1) {{
-                    width: 9.6mm;
-                }}
-                .address-table col  :nth-child(2) {{
-                    width: 95.4mm;
-                }}
-                .address-table col  :nth-child(3) {{
-                    width: 5mm;
-                }}
-                .address-table tr:nth-child(1) td {{
-                    height: 25mm;
-                }}
-                .address-table tr:nth-child(2) td {{
-                    height: 4.5mm;
-                }}
-                .address-table tr:nth-child(3) td {{
-                    height: 26.8mm
-                }}
-                .address-table tr:nth-child(4) td {{
-                    min-height: 28.7mm
-                }}
                 .header-right {{
                     width:70mm;
                     min-height: 90mm;
                 }}
-                td {{
-                    overflow: hidden;
+                #address {{
+                    position: absolute;
+                    top: 34.5mm;
+                    left: 9.6mm;
+                    padding: 2mm;
+                    background: #eee;
+                    font-size: 10pt;
                 }}
                 {htmlInput.TemplateSpecificCss}
               }}";

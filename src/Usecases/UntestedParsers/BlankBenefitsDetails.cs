@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.Lambda.Core;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 using Usecases.Domain;
 using Usecases.Interfaces;
 
@@ -11,6 +14,7 @@ namespace Usecases.UntestedParsers
         public LetterTemplate Execute(string html)
         {
             var documentNode = GetDocumentNode(html);
+            var address = ParseAddressIntoLines(documentNode);
 
             var rightSideOfHeader = ParseSenderAddress(documentNode) + ContactDetails(documentNode);
 
@@ -21,7 +25,7 @@ namespace Usecases.UntestedParsers
             return new LetterTemplate
             {
                 TemplateSpecificCss = templateSpecificCss,
-                AddressLines = ParseAddressIntoLines(documentNode),
+                AddressLines = address,
                 RightSideOfHeader = rightSideOfHeader,
                 MainBody = mainBody.OuterHtml,
             };
@@ -48,7 +52,7 @@ namespace Usecases.UntestedParsers
         private static List<string> ParseAddressIntoLines(HtmlNode documentNode)
         {
             var addressList = new List<string>();
-            var name = documentNode.SelectSingleNode("/html/body/table[1]/tr[9]/td[1]");
+            var name = documentNode.SelectSingleNode("/html/body/table/tr[9]/td[1]");
 
             addressList.Add(name.InnerText);
 
