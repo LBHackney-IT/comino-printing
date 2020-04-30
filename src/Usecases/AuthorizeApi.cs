@@ -22,17 +22,15 @@ namespace Usecases
             }
 
             var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+            var authorisedGroup = Environment.GetEnvironmentVariable("ALLOWED_USER_GROUP");
             var token = request.AuthorizationToken.Replace("Bearer ", "");
             var decodedToken = DecodeToken(secret, token);
 
             if (!decodedToken.Identity.IsAuthenticated) return AccessDenied(request);
 
-            var allowedGroup = Environment.GetEnvironmentVariable("ALLOWED_USER_GROUP");
+            var groups = decodedToken.Claims.Where(c => c.Type == "groups").ToList();
 
-            var groups = decodedToken.Claims.FirstOrDefault(c => c.Type == "groups");
-            if (groups == null) return AccessDenied(request);
-
-            if (groups.Value.Contains(allowedGroup))
+            if (groups.Any(grp => grp.Value == authorisedGroup))
             {
                 return AccessAuthorized(request);
             }

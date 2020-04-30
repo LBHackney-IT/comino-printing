@@ -60,12 +60,12 @@ namespace UnitTests
         public void IfTokenIsValid_ReturnsAuthorized()
         {
             var key = Encoding.UTF8.GetBytes(_testSecret);
-            var groups = new List<string>{_testGroup};
             var token = _handler.CreateToken(new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new List<Claim>
                 {
-                    new Claim("groups", JsonConvert.SerializeObject(groups)),
+                    new Claim("groups", _fixtue.Create<string>()),
+                    new Claim("groups", _testGroup),
                 }),
                 Expires = DateTime.Now.AddHours(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
