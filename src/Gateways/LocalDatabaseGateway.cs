@@ -28,7 +28,13 @@ namespace Gateways
         {
             var documentItem = ConstructDynamoDocument(newDocument);
             var putConfig = ConditionalOnTimestampUniqueness(newDocument.Date);
-            await _documentsTable.PutItemAsync(documentItem, putConfig);
+            try{
+                await _documentsTable.PutItemAsync(documentItem, putConfig);
+            }
+            catch (ConditionalCheckFailedException)
+            {
+                Console.WriteLine($"Record already exists in local database: {newDocument.Id}");
+            }
         }
 
         public async Task<List<DocumentDetails>> GetAllRecords(int limit, string cursor)
