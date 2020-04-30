@@ -57,18 +57,18 @@ namespace UseCases
                     if (govNotifyResponse.Success)
                     {
                         LambdaLogger.Log($"Document sent to notify. ID: {document.Id}");
-                        await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.SentToGovNotify);
-                        await _localDatabaseGateway.SaveSendNotificationId(document.Id, govNotifyResponse.NotificationId);
-                        await _logger.LogMessage(document.Id,
-                            $"Sent to Gov Notify. Gov Notify Notification Id {document.GovNotifyNotificationId}.");
+                        _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.SentToGovNotify).Wait();
+                        _localDatabaseGateway.SaveSendNotificationId(document.Id, govNotifyResponse.NotificationId).Wait();
+                        _logger.LogMessage(document.Id,
+                            $"Sent to Gov Notify. Gov Notify Notification Id {govNotifyResponse.NotificationId}").Wait();
                         _cominoGateway.MarkDocumentAsSent(document.CominoDocumentNumber);
-                        await _logger.LogMessage(document.Id, "Removed from batch print queue and print date set in comino");
+                        _logger.LogMessage(document.Id, "Removed from batch print queue and print date set in comino").Wait();
                     }
                     else
                     {
                         LambdaLogger.Log($"Error sending to notify. ID: {document.Id}");
-                        await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.FailedToSend);
-                        await _logger.LogMessage(document.Id, $"Error Sending to GovNotify: {govNotifyResponse.Error}");
+                        _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.FailedToSend).Wait();
+                        _logger.LogMessage(document.Id, $"Error Sending to GovNotify: {govNotifyResponse.Error}").Wait();
                     }
                 }catch(Exception e){
                     LambdaLogger.Log(JsonConvert.SerializeObject(e));
