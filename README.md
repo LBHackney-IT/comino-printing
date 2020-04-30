@@ -31,7 +31,7 @@ To install .NET Core SDK for WSL:
 3. After installation is complete, navigate to the solution folder and run 'sudo dotnet test'
 
 ## Adding a letter type
-- Create a class to parse the letter ([example](src/Usecases/UntestedParsers/ChangesInCircsICL.cs)). This should inherit from the `ILetterParser` interface. The parser class should take HTML of the whole document and return HTML for the header, HTML for the body and any CSS to be applied to the whole document.
+- Create a class to parse the letter ([example](src/Usecases/UntestedParsers/ChangesInCircsICL.cs)). This should inherit from the `ILetterParser` interface. The parser class should take HTML of the whole document and return a list of address lines, HTML for the right hand side of the header, HTML for the body and any CSS to be applied to the whole document. (The right hand header is in reference to Gov Notify's [letter specification](https://docs.notifications.service.gov.uk/documentation/images/notify-pdf-letter-spec-v2.4.pdf).)
 - Go [here](src/Usecases/ParserLookup.cs) to link this new parser class with the letter type (also called `DocDesc` in the Comino DB).
 - Add the letter type to list of `Descriptions` in the `DOCUMENT_CONFIG` environment variable. Details on how to update this are in [Changing the Document Settings](#changing-the-document-settings).
 

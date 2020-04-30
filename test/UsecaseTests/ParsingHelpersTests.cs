@@ -45,15 +45,41 @@ namespace UnitTests
                 "      ",
                 "Address Line 1",
                 "        ",
-                "Address Line 2",
                 "\n",
-                "City",
                 "\n      ",
+                "Postcode"
+            };
+
+            var expectedAddressString = @"Name<br />Address Line 1<br />Postcode";
+
+            var result = ParsingHelpers.FormatLetterHeader(addressLines, "");
+            result.Should().Contain(expectedAddressString);
+        }
+
+        [Test]
+        public void FormatHeadersCompressesAddressesToMaxSevenLines()
+        {
+            var addressLines = new List<string>
+            {
+                "Name",
+                "Address Line 1",
+                "Address Line 2",
+                "Address Line 3",
+                "Address Line 4",
+                "Address Line 5",
+                "Address Line 6",
+                "City",
                 "County",
                 "Postcode"
             };
 
-            var expectedAddressString = @"Name<br />Address Line 1<br />Address Line 2<br />City<br />County<br />Postcode";
+            var expectedAddressString = "Name<br />" +
+                                        "Address Line 1<br />" +
+                                        "Address Line 2, Address Line 3<br />" +
+                                        "Address Line 4, Address Line 5, Address Line 6<br />" +
+                                        "City<br />" +
+                                        "County<br />" +
+                                        "Postcode";
 
             var result = ParsingHelpers.FormatLetterHeader(addressLines, "");
             result.Should().Contain(expectedAddressString);

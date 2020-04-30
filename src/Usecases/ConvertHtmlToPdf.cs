@@ -71,12 +71,13 @@ namespace UseCases
                     min-height: 90mm;
                 }}
                 #address {{
+                    x-overflow: hidden;
+                    width: 110mm;
                     position: absolute;
                     top: 34.5mm;
                     left: 9.6mm;
                     padding: 2mm;
-                    background: #eee;
-                    font-size: 10pt;
+                    font-size: 8pt;
                 }}
                 {htmlInput.TemplateSpecificCss}
               }}";
