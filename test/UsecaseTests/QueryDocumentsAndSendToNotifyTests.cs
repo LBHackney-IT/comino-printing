@@ -124,7 +124,7 @@ namespace UnitTests
             foreach (var document in savedRecords)
             {
                 _dbGatewayMock.Verify(x => x.UpdateStatus(document.Id, LetterStatusEnum.SentToGovNotify), Times.Once);
-                _logger.Verify(x => x.LogMessage(document.Id, $"Sent to Gov Notify. Gov Notify Notification Id {document.GovNotifyNotificationId}."));
+                _logger.Verify(x => x.LogMessage(document.Id, It.Is<string>(s => s.Contains(document.GovNotifyNotificationId))));
             }
         }
 

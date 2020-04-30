@@ -49,6 +49,7 @@ namespace UnitTests
 
             var expectedDocuments = documentsToSave.Select(doc =>
             {
+                _gatewayMock.Setup(x => x.SaveDocument(doc)).ReturnsAsync(true);
                 return new DocumentDetails
                 {
                     DocumentCreator = doc.DocumentCreator,
@@ -64,6 +65,24 @@ namespace UnitTests
             var response = await _subject.Execute(documentsToSave);
 
             response.Should().BeEquivalentTo(expectedDocuments);
+        }
+
+        [Test]
+        public async Task ItOnlyReturnsSavedDocumentsDetails()
+        {
+            var documents = _fixture.Build<DocumentDetails>()
+                .Without(doc => doc.Id)
+                .Without(doc => doc.Log)
+                .Without(doc => doc.GovNotifyNotificationId)
+                .CreateMany(2).ToList();
+            var savedDocument = documents.First();
+            var notSavedDocument = documents.Last();
+
+            _gatewayMock.Setup(x => x.SaveDocument(savedDocument)).ReturnsAsync(true);
+            _gatewayMock.Setup(x => x.SaveDocument(notSavedDocument)).ReturnsAsync(false);
+
+            var response = await _subject.Execute(documents);
+            response.Should().BeEquivalentTo(new List<DocumentDetails> {savedDocument});
         }
     }
 }

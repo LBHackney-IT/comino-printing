@@ -233,6 +233,33 @@ namespace GatewayTests
         }
 
         [Test]
+        public async Task IfStatusHasChanged_LogThis()
+        {
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails());
+            var newStatus = LetterStatusEnum.ProcessingError;
+
+            await _dbGateway.UpdateStatus(savedDocument.Id, newStatus);
+
+            var savedItems = await GetItemsFromDatabase();
+            var log = GetLog(savedItems, savedDocument.Id);
+
+            log.Values.Select(s => s.ToString()).Should().Contain("Status changed to ProcessingError");
+        }
+
+        [Test]
+        public async Task IfStatusHasNotChanged_DoesNotLog()
+        {
+            var savedDocument = await AddDocumentToDatabase(RandomDocumentDetails(), status: LetterStatusEnum.ProcessingError);
+            var newStatus = LetterStatusEnum.ProcessingError;
+
+            await _dbGateway.UpdateStatus(savedDocument.Id, newStatus);
+
+            var savedItems = await GetItemsFromDatabase();
+
+            savedItems.First(i => i["InitialTimestamp"] == savedDocument.Id).ContainsKey("Log").Should().BeFalse();
+        }
+
+        [Test]
         public async Task GetDocumentsThatAreReadyForGovNotify_GetsCorrectDocuments()
         {
 
