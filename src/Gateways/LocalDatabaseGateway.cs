@@ -24,16 +24,18 @@ namespace Gateways
             _databaseClient = database.DynamoDBClient;
         }
 
-        public async Task SaveDocument(DocumentDetails newDocument)
+        public async Task<bool> SaveDocument(DocumentDetails newDocument)
         {
             var documentItem = ConstructDynamoDocument(newDocument);
             var putConfig = ConditionalOnTimestampUniqueness(newDocument.Date);
             try{
                 await _documentsTable.PutItemAsync(documentItem, putConfig);
+                return true;
             }
             catch (ConditionalCheckFailedException)
             {
                 Console.WriteLine($"Record already exists in local database: {newDocument.Id}");
+                return false;
             }
         }
 

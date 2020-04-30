@@ -7,7 +7,7 @@ namespace UseCases.GatewayInterfaces
 {
     public interface ILocalDatabaseGateway
     {
-        Task SaveDocument(DocumentDetails newDocument);
+        Task<bool> SaveDocument(DocumentDetails newDocument);
 
         Task<DocumentDetails> GetRecordByTimeStamp(string id);
 

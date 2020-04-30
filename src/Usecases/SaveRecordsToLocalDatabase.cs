@@ -19,13 +19,17 @@ namespace UseCases
 
         public async Task<List<DocumentDetails>> Execute(List<DocumentDetails> documentsToSave)
         {
+            List<DocumentDetails> savedDocuments = new List<DocumentDetails>();
             foreach (var document in documentsToSave)
             {
-                await _databaseGateway.SaveDocument(document);
-                document.Id = document.Date;
+                var saved = await _databaseGateway.SaveDocument(document);
+                if(saved){
+                    document.Id = document.Date;
+                    savedDocuments.Add(document);
+                }
             }
 
-            return documentsToSave.ToList();
+            return savedDocuments.ToList();
         }
     }
 }
