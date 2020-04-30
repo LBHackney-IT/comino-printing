@@ -6,7 +6,7 @@ import { createBrowserHistory } from "history";
 const history = createBrowserHistory();
 
 const DocumentRow = (props) => {
-  const dateFormat = (date) => moment(date).format("DD/MM/YYYY HH:MM");
+  const dateFormat = (date) => moment(date).format("DD/MM/YYYY HH:mm");
   const d = props.document;
   return (
     <tr>
