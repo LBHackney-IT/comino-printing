@@ -76,7 +76,7 @@ namespace Usecases
                         {
                             Effect = authorized ? "Allow" : "Deny",
                             Resource = new HashSet<string> {request.MethodArn},
-                            Action = new HashSet<string> {"execute-api", "Invoke"},
+                            Action = new HashSet<string> {"execute-api: Invoke"},
                         }
                     }
                 }
