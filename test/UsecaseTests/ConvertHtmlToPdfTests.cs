@@ -130,7 +130,8 @@ namespace UnitTests
 
         private static bool AssertLetterDetailsIncludedIn(string receivedHtml, LetterTemplate parsedHtml)
         {
-            return receivedHtml.Contains(parsedHtml.Header)
+            return receivedHtml.Contains(parsedHtml.RightSideOfHeader)
+                   && parsedHtml.AddressLines.TrueForAll(receivedHtml.Contains)
                    && receivedHtml.Contains(parsedHtml.MainBody)
                    && receivedHtml.Contains(parsedHtml.TemplateSpecificCss);
         }

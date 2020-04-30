@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using HtmlAgilityPack;
 using Usecases.Domain;
@@ -11,7 +12,6 @@ namespace Usecases.UntestedParsers
         {
             var documentNode = GetDocumentNode(html);
 
-            var address = ParseAddress(documentNode);
             var rightSideOfHeader = ParseSenderAddress(documentNode) + ContactDetails(documentNode);
 
             var mainBody = documentNode.SelectSingleNode("html/body");
@@ -21,7 +21,8 @@ namespace Usecases.UntestedParsers
             return new LetterTemplate
             {
                 TemplateSpecificCss = templateSpecificCss,
-                Header = ParsingHelpers.FormatLetterHeader(address, rightSideOfHeader),
+                AddressLines = ParseAddressIntoLines(documentNode),
+                RightSideOfHeader = rightSideOfHeader,
                 MainBody = mainBody.OuterHtml,
             };
         }
@@ -44,12 +45,17 @@ namespace Usecases.UntestedParsers
             return $"<table> {rows.Aggregate("", (accRows, row) => accRows + row.OuterHtml)} </table>";
         }
 
-        private static string ParseAddress(HtmlNode documentNode)
+        private static List<string> ParseAddressIntoLines(HtmlNode documentNode)
         {
+            var addressList = new List<string>();
             var name = documentNode.SelectSingleNode("/html/body/table[1]/tr[9]/td[1]");
-            name.Name = "p";
-            return name.OuterHtml + documentNode.SelectSingleNode("/html/body/table[1]/tr[10]/td[1]").ChildNodes
-                       .Aggregate("", (agg, node) => agg + node.OuterHtml);
+
+            addressList.Add(name.InnerText);
+
+            documentNode.SelectSingleNode("/html/body/table[1]/tr[10]/td[1]").ChildNodes.ToList()
+                .ForEach(line => addressList.Add(line.InnerText));
+
+            return addressList;
         }
 
         private static HtmlNode GetDocumentNode(string html)

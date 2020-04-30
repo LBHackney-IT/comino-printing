@@ -1,9 +1,13 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Usecases.UntestedParsers
 {
     public static class ParsingHelpers
     {
-        public static string FormatLetterHeader(string address, string rightSideHeader)
+        public static string FormatLetterHeader(List<string> addressLines, string rightSideHeader)
         {
+            var address = string.Join("\n", addressLines);
             var addressTable = "<table class=\"address-table\" >" +
                                "<col width=\"9.6mm\" />" +
                                "<col width=\"95.4mm\" />" +

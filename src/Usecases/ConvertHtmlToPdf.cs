@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Usecases.Domain;
 using Usecases.GatewayInterfaces;
 using Usecases.Interfaces;
+using Usecases.UntestedParsers;
 
 namespace UseCases
 {
@@ -30,10 +31,12 @@ namespace UseCases
 
             var css = CompileCss(htmlInput);
 
+            var header = ParsingHelpers.FormatLetterHeader(htmlInput.AddressLines, htmlInput.RightSideOfHeader);
+
             var fullHtml = "<!DOCTYPE html><html><head><style>"
                            + css
                            + "</style></head><body>"
-                           + htmlInput.Header
+                           + header
                            + htmlInput.MainBody
                            + "</body></html>";
 
