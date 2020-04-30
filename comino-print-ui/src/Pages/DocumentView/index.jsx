@@ -13,7 +13,7 @@ import {
 const LogRow = (props) => {
   return (
     <li>
-      {moment(props.date).format("DD/MM/YYYY HH:MM")} - {props.message}
+      {moment(props.date).format("DD/MM/YYYY HH:mm")} - {props.message}
     </li>
   );
 };
