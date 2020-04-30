@@ -80,7 +80,7 @@ functions:
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
     environment:
       JWT_SECRET: ${ssm:/common/hackney-jwt-secret}
-      ALLOWED_USER_GROUP: ${self:service}-${self:provider.stage}-group
+      ALLOWED_USER_GROUP: ${self:service}-${self:provider.stage}
 
   get-all-documents-api:
     name: ${self:service}-${self:provider.stage}-get-all-documents-api
@@ -106,7 +106,7 @@ functions:
       - http:
           path: /api/documents/{id}
           method: get
-          # authorizer: authorize-api
+          authorizer: authorize-api
           cors: true
           request:
             parameters:
