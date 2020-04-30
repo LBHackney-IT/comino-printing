@@ -115,6 +115,8 @@ namespace Gateways
             };
             var oldAttributes = await _documentsTable.UpdateItemAsync(updateDoc, new UpdateItemOperationConfig{ReturnValues = ReturnValues.UpdatedOldAttributes});
             var statusChange = oldAttributes["Status"].ToString() != newStatus.ToString();
+            // TODO: Do this in one update operation
+            await LogMessage(id, $"Status changed to {newStatus}");
             LambdaLogger.Log($"Status change: {statusChange}. New status {newStatus}, old status {oldAttributes["Status"]}");
             return new UpdateStatusResponse
             {
