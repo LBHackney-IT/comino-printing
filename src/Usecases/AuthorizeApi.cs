@@ -81,9 +81,9 @@ namespace Usecases
             return (
                 from header in responseHeaders
                 where header.Trim().StartsWith($"{cookieName}=")
-                let p1 = header.IndexOf('=')
-                let p2 = header.IndexOf(';')
-                select header.Substring(p1 + 1, p2 - p1 - 1)).FirstOrDefault();
+                let start = header.IndexOf('=')
+                let end = header.Contains(';') ? header.IndexOf(';') : header.Length
+                select header.Substring(start + 1, end - start - 1)).FirstOrDefault();
         }
 
         private static string RemoveBearer(string token)
