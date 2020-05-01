@@ -72,7 +72,77 @@ namespace UnitTests
             });
 
             var request = _fixtue.Create<APIGatewayCustomAuthorizerRequest>();
-            request.AuthorizationToken = _handler.WriteToken(token);
+            request.AuthorizationToken = $"Bearer {_handler.WriteToken(token)}";
+
+            var expectedPolicy = AuthorizedPolicyForArn(request.MethodArn);
+            _subject.Execute(request).Should().BeEquivalentTo(expectedPolicy);
+        }
+
+        [Test]
+        public void IfValidTokenIsInTheHeaders_ReturnsAuthorized()
+        {
+            var key = Encoding.UTF8.GetBytes(_testSecret);
+            var token = _handler.CreateToken(new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new List<Claim>
+                {
+                    new Claim("groups", _fixtue.Create<string>()),
+                    new Claim("groups", _testGroup),
+                }),
+                Expires = DateTime.Now.AddHours(3),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            });
+
+            var request = _fixtue.Create<APIGatewayCustomAuthorizerRequest>();
+            request.AuthorizationToken = null;
+            request.Headers.Add(new KeyValuePair<string, string>("Authorization",  $"Bearer {_handler.WriteToken(token)}"));
+
+            var expectedPolicy = AuthorizedPolicyForArn(request.MethodArn);
+            _subject.Execute(request).Should().BeEquivalentTo(expectedPolicy);
+        }
+
+        [Test]
+        public void IfValidTokenIsInTheQueryStringParameters_ReturnsAuthorized()
+        {
+            var key = Encoding.UTF8.GetBytes(_testSecret);
+            var token = _handler.CreateToken(new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new List<Claim>
+                {
+                    new Claim("groups", _fixtue.Create<string>()),
+                    new Claim("groups", _testGroup),
+                }),
+                Expires = DateTime.Now.AddHours(3),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            });
+
+            var request = _fixtue.Create<APIGatewayCustomAuthorizerRequest>();
+            request.AuthorizationToken = null;
+            request.QueryStringParameters.Add(new KeyValuePair<string, string>("authToken", _handler.WriteToken(token)));
+
+            var expectedPolicy = AuthorizedPolicyForArn(request.MethodArn);
+            _subject.Execute(request).Should().BeEquivalentTo(expectedPolicy);
+        }
+
+        [Test]
+        public void IfTokenIsInCookies_ReturnsAuthorized()
+        {
+            var key = Encoding.UTF8.GetBytes(_testSecret);
+            var token = _handler.CreateToken(new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new List<Claim>
+                {
+                    new Claim("groups", _fixtue.Create<string>()),
+                    new Claim("groups", _testGroup),
+                }),
+                Expires = DateTime.Now.AddHours(3),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            });
+
+            var request = _fixtue.Create<APIGatewayCustomAuthorizerRequest>();
+            request.AuthorizationToken = null;
+            var cookieHeader = $"hackneyToken={_handler.WriteToken(token)};";
+            request.Headers.Add(new KeyValuePair<string, string>("Cookie", cookieHeader));
 
             var expectedPolicy = AuthorizedPolicyForArn(request.MethodArn);
             _subject.Execute(request).Should().BeEquivalentTo(expectedPolicy);
@@ -132,7 +202,7 @@ namespace UnitTests
                         {
                             Effect = "Deny",
                             Resource = new HashSet<string> {arn},
-                            Action = new HashSet<string> {"execute-api", "Invoke"},
+                            Action = new HashSet<string> {"execute-api:Invoke"},
                         }
                     }
                 }
@@ -153,7 +223,7 @@ namespace UnitTests
                         {
                             Effect = "Allow",
                             Resource = new HashSet<string> {arn},
-                            Action = new HashSet<string> {"execute-api", "Invoke"},
+                            Action = new HashSet<string> {"execute-api:Invoke"},
                         }
                     }
                 }

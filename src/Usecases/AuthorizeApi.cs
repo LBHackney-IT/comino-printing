@@ -6,9 +6,12 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
+using Amazon.Runtime;
 using Boundary.UseCaseInterfaces;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Usecases
 {
@@ -16,14 +19,15 @@ namespace Usecases
     {
         public APIGatewayCustomAuthorizerResponse Execute(APIGatewayCustomAuthorizerRequest request)
         {
-            if (request.AuthorizationToken == null)
+            var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+            var authorisedGroup = Environment.GetEnvironmentVariable("ALLOWED_USER_GROUP");
+            var token = FindToken(request);
+
+            if (token == null)
             {
                 return AccessDenied(request);
             }
 
-            var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
-            var authorisedGroup = Environment.GetEnvironmentVariable("ALLOWED_USER_GROUP");
-            var token = request.AuthorizationToken.Replace("Bearer ", "");
             var decodedToken = DecodeToken(secret, token);
 
             if (!decodedToken.Identity.IsAuthenticated) return AccessDenied(request);
@@ -35,6 +39,56 @@ namespace Usecases
                 return AccessAuthorized(request);
             }
             return AccessDenied(request);
+        }
+
+        private static string FindToken(APIGatewayCustomAuthorizerRequest request)
+        {
+            var authorizationHeader = GetAuthorizationHeaderValue(request);
+            if (authorizationHeader != null) return RemoveBearer(request.Headers["Authorization"]);
+
+            var queryAuthToken = GetAuthTokenFromQuery(request);
+            if (queryAuthToken != null)  return GetAuthTokenFromQuery(request);
+
+            var cookie = GetCookieValueFromRequest(request, "hackneyToken");
+            if (cookie != null) return cookie;
+
+            return request.AuthorizationToken != null
+                ? RemoveBearer(request.AuthorizationToken)
+                : null;
+        }
+
+        private static string GetAuthorizationHeaderValue(APIGatewayCustomAuthorizerRequest request)
+        {
+            if (request.Headers == null) return null;
+            return request.Headers.ContainsKey("Authorization")
+                ? request.Headers["Authorization"]
+                : null;
+        }
+
+        private static string GetAuthTokenFromQuery(APIGatewayCustomAuthorizerRequest request)
+        {
+            if (request.QueryStringParameters == null) return null;
+            return request.QueryStringParameters.ContainsKey("authToken")
+                ? request.QueryStringParameters["authToken"]
+                : null;
+        }
+
+        private static string GetCookieValueFromRequest(APIGatewayCustomAuthorizerRequest request, string cookieName)
+        {
+            if (request.Headers == null) return null;
+            if (!request.Headers.ContainsKey("Cookie")) return null;
+            var responseHeaders = request.Headers.Where(header => header.Key == "Cookie").Select(header => header.Value).ToList();
+            return (
+                from header in responseHeaders
+                where header.Trim().StartsWith($"{cookieName}=")
+                let p1 = header.IndexOf('=')
+                let p2 = header.IndexOf(';')
+                select header.Substring(p1 + 1, p2 - p1 - 1)).FirstOrDefault();
+        }
+
+        private static string RemoveBearer(string token)
+        {
+            return token.Replace("Bearer ", "");
         }
 
         private static ClaimsPrincipal DecodeToken(string secret, string token)
@@ -76,7 +130,7 @@ namespace Usecases
                         {
                             Effect = authorized ? "Allow" : "Deny",
                             Resource = new HashSet<string> {request.MethodArn},
-                            Action = new HashSet<string> {"execute-api: Invoke"},
+                            Action = new HashSet<string> {"execute-api:Invoke"},
                         }
                     }
                 }
