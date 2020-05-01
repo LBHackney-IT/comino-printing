@@ -11,6 +11,7 @@ namespace Usecases.UntestedParsers
         public LetterTemplate Execute(string html)
         {
             var documentNode = GetDocumentNode(html);
+            var address = ParseAddressIntoLines(documentNode);
 
             var rightSideOfHeader = ParseSenderAddress(documentNode) + ContactDetails(documentNode);
 
@@ -22,7 +23,7 @@ namespace Usecases.UntestedParsers
             return new LetterTemplate
             {
                 TemplateSpecificCss = templateSpecificCss,
-                AddressLines = ParseAddressIntoLines(documentNode),
+                AddressLines = address,
                 RightSideOfHeader = rightSideOfHeader,
                 MainBody = AddLineBreaks(mainBody).OuterHtml,
             };
