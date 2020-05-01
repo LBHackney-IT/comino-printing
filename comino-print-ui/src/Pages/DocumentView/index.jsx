@@ -1,14 +1,11 @@
 import React, { Component } from "react";
 import moment from "moment";
-import { Link } from "react-router-dom";
-import {hackneyToken } from '../../lib/Cookie'
+import { hackneyToken } from "../../lib/Cookie";
 import {
   fetchDocument,
   approveDocument,
   cancelDocument,
 } from "../../lib/cominoPrintApi";
-// import { createBrowserHistory } from "history";
-// const history = createBrowserHistory();
 
 const LogRow = (props) => {
   return (
@@ -50,6 +47,16 @@ export default class DocumentView extends Component {
     });
   };
 
+  back = (e) => {
+    if (this.props.history.length === 1) {
+      this.props.history.push("/");
+    } else {
+      this.props.history.goBack();
+    }
+    e.preventDefault();
+    return false;
+  };
+
   render() {
     const d = this.state.document;
     if (!d)
@@ -64,9 +71,13 @@ export default class DocumentView extends Component {
     return (
       <div className="DocumentViewPage">
         <div className="lbh-container">
-          <Link to="/" className="govuk-back-link lbh-back-link">
+          <a
+            href="#0"
+            className="govuk-back-link lbh-back-link"
+            onClick={this.back}
+          >
             Back
-          </Link>
+          </a>
         </div>
         <div className="lbh-container">
           <h2 className="govuk-heading-l">
@@ -81,7 +92,11 @@ export default class DocumentView extends Component {
               <dt className="govuk-summary-list__key">Original document</dt>
               <dd className="govuk-summary-list__value">
                 <a
-                  href={`${process.env.REACT_APP_DOCUMENT_API_URL}/hncomino/documents/${d.docNo}/view?authToken=${hackneyToken()}`}
+                  href={`${
+                    process.env.REACT_APP_DOCUMENT_API_URL
+                  }/hncomino/documents/${
+                    d.docNo
+                  }/view?authToken=${hackneyToken()}`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >

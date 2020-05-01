@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import { fetchDocuments } from "../../lib/cominoPrintApi";
-import { createBrowserHistory } from "history";
-const history = createBrowserHistory();
 
 const DocumentRow = (props) => {
   const dateFormat = (date) => moment(date).format("DD/MM/YYYY HH:mm");
@@ -14,9 +12,6 @@ const DocumentRow = (props) => {
         <Link to={`/documents/${d.id}`}>{d.docNo}</Link>
       </td>
       <td className="govuk-table__cell">{dateFormat(d.created)}</td>
-      <td className="govuk-table__cell">
-        {d.printed ? dateFormat(d.printed) : null}
-      </td>
       <td
         className={`govuk-table__cell ${d.status
           .replace(/ /g, "-")
@@ -32,35 +27,43 @@ const DocumentRow = (props) => {
 
 export default class DocumentListPage extends Component {
   state = {
-    cursor: null,
+    cursor: undefined,
     documents: [],
   };
 
   fetchDocuments = () => {
-    fetchDocuments(this.state.cursor, (err, documents) => {
-      this.setState({ documents });
-    });
+    const cursor = new URLSearchParams(this.props.location.search).get(
+      "cursor"
+    );
+    if (cursor !== this.state.cursor) {
+      this.setState({ cursor }, () => {
+        fetchDocuments(cursor, (err, documents) => {
+          this.setState({ documents });
+          window.scrollTo(0, 0);
+        });
+      });
+    }
   };
 
-  componentDidMount() {
-    const params = new URLSearchParams(this.props.location.search);
-
-    this.setState({ cursor: params.cursor }, () => {
-      this.fetchDocuments();
-    });
+  componentDidUpdate() {
+    this.fetchDocuments();
   }
 
-  prevPage = () => {
-    history.goBack();
+  componentDidMount() {
+    this.fetchDocuments();
+  }
+
+  prevPage = (e) => {
+    this.props.history.goBack();
+    e.preventDefault();
+    return false;
   };
 
-  nextPage = () => {
+  nextPage = (e) => {
     const cursor = this.state.documents.map((d) => d.id).sort()[0];
-    this.setState({ cursor }, () => {
-      history.push(`/?cursor=${cursor}`);
-      this.fetchDocuments();
-    });
-    window.scrollTo(0, 0);
+    this.props.history.push(`/?cursor=${cursor}`);
+    e.preventDefault();
+    return false;
   };
 
   render() {
@@ -79,9 +82,6 @@ export default class DocumentListPage extends Component {
                 </th>
                 <th scope="col" className="govuk-table__header">
                   Created
-                </th>
-                <th scope="col" className="govuk-table__header">
-                  Printed
                 </th>
                 <th scope="col" className="govuk-table__header">
                   Status
@@ -103,16 +103,18 @@ export default class DocumentListPage extends Component {
         </div>
         <div className="lbh-container">
           {this.state.cursor ? (
-            <>
-              <a onClick={this.prevPage} href="#0">
-                Previous 10 documents
-              </a>
-              {" | "}
-            </>
+            <a onClick={this.prevPage} href="#0">
+              Previous 10 documents
+            </a>
           ) : null}
-          <a onClick={this.nextPage} href="#0">
-            Next 10 documents
-          </a>
+          {this.state.cursor && this.state.documents.length === 10 ? (
+            <>{" | "}</>
+          ) : null}
+          {this.state.documents.length === 10 ? (
+            <a onClick={this.nextPage} href="#0">
+              Next 10 documents
+            </a>
+          ) : null}
         </div>
       </div>
     );
