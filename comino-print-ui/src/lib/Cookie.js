@@ -6,10 +6,12 @@ export const isLoggedIn = function () {
   if (!hackneyToken) return false;
 
   const payload = jwt.decode(hackneyToken);
-  return payload;
-  //  &&
-  // payload.groups &&
-  // payload.groups.indexOf("housingneeds-singleview-beta") > -1
+  return (
+    payload &&
+    payload.groups &&
+    (payload.groups.indexOf("comino-printing-production") > -1 ||
+      payload.groups.indexOf("comino-printing-staging") > -1)
+  );
 };
 
 export const username = function () {
