@@ -108,7 +108,7 @@ export default class DocumentView extends Component {
               <dt className="govuk-summary-list__key">Converted document</dt>
               <dd className="govuk-summary-list__value">
                 <a
-                  href={`${process.env.REACT_APP_API_URL}/documents/${d.id}/view`}
+                  href={`${process.env.REACT_APP_API_URL}/documents/${d.id}/view?authToken=${hackneyToken()}`}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
