@@ -28,7 +28,9 @@ namespace Usecases
                 try{
                     LambdaLogger.Log($"Checking status for letter {letter.Id}, doc no {letter.CominoDocumentNumber} Notify ID: {letter.GovNotifyNotificationId}");
                     var govNotifyResponse = _govNotifyGateway.GetStatusForLetter(letter.Id, letter.GovNotifyNotificationId);
-                    var updateResponse = await _localDatabaseGateway.UpdateStatus(letter.Id, govNotifyResponse.Status);
+                    var updateStatusTask = _localDatabaseGateway.UpdateStatus(letter.Id, govNotifyResponse.Status);
+                    updateStatusTask.Wait();
+                    var updateResponse = updateStatusTask.Result;
                     LambdaLogger.Log($"Updated status in Local DB to {govNotifyResponse.Status}");
                     if (updateResponse.StatusUpdated)
                     {
