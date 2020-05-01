@@ -13,6 +13,8 @@ namespace UseCases
                     return new ChangesInCircsICL();
                 case "Benefits Blank Letter":
                     return new BlankBenefitsDetails();
+                case "HB/CTR Invite to Claim":
+                    return new HBCTRInviteToClaim();
                 default:
                     return null;
             }
