@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Dapper;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Usecases;
 using Usecases.Domain;
 using UseCases.GatewayInterfaces;
 
@@ -21,7 +20,7 @@ namespace Gateways
 
         public List<DocumentDetails> GetDocumentsAfterStartDate(DateTime time)
         {
-            var documentConfig = GetDocumentConfig();
+            var documentConfig = ParsingHelpers.GetDocumentConfig();
             var categories = documentConfig.Categories;
             var descriptions = documentConfig.Descriptions;
             var startTime = $"{time.Month}/{time.Day}/{time.Year} {time.Hour}:{time.Minute}:{time.Second}";
@@ -105,19 +104,6 @@ WHERE CCDocument.DocNo = '{cominoDocumentNumber}';
             public string LetterType { get; set; }
             public string DocumentType { get; set; }
             public DateTime Date { get; set; }
-        }
-
-        public class DocumentConfig
-        {
-            public List<string> Categories { get; set; }
-            public List<string> Descriptions { get; set; }
-        }
-
-        public DocumentConfig GetDocumentConfig()
-        {
-            return JsonConvert.DeserializeObject<DocumentConfig>(
-                Environment.GetEnvironmentVariable("DOCUMENT_CONFIG")
-            );
         }
 
         public class PrintStatusRow

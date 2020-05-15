@@ -1,13 +1,21 @@
-using System.Collections.Generic;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using Usecases;
-using Usecases.UntestedParsers;
 
 namespace UnitTests
 {
     public class ParsingHelpersTests
     {
+
+        [SetUp]
+        public void Setup()
+        {
+            ConfigurationHelper.SetDocumentConfigEnvironmentVariable();
+        }
+
         [Test]
         public void FormatHeaderReturnsFormattedTableIncludingTheAddress()
         {
@@ -83,6 +91,6 @@ namespace UnitTests
 
             var result = ParsingHelpers.FormatLetterHeader(addressLines, "");
             result.Should().Contain(expectedAddressString);
-        }
+        }       
     }
 }

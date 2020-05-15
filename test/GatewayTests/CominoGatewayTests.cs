@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using AutoFixture;
 using Dapper;
 using FluentAssertions;
@@ -10,6 +6,11 @@ using Moq;
 using Moq.Dapper;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using UnitTests;
 using Usecases.Domain;
 
 namespace GatewayTests
@@ -27,21 +28,8 @@ namespace GatewayTests
             _subject = new CominoGateway(_connection.Object);
             _fixture = new Fixture();
 
-            Environment.SetEnvironmentVariable("DOCUMENT_CONFIG", DocConfig());
-        }
-
-        [Test]
-        public void GetsDocumentCategoriesFromEnvironmentVariable()
-        {
-            var expected = new {
-                Categories = new List<string>{ "Benefits/Out-Going" },
-                Descriptions = new List<string>{ "Income Verification Document" }
-            };
-
-            var received = _subject.GetDocumentConfig();
-
-            received.Should().BeEquivalentTo(expected);
-        }
+            ConfigurationHelper.SetDocumentConfigEnvironmentVariable();
+        }            
 
         [Test]
         public void GetDocumentsAfterStartDateSendsCorrectQueryToRepository()
@@ -201,16 +189,6 @@ WHERE CCDocument.DocNo = '{cominoDocumentNumber}';
                 Date = doc.Date.ToString("O"),
                 Id = doc.Date.ToString("O"),
             });
-        }
-
-        private string DocConfig()
-        {
-            var configObj = new {
-                Categories = new List<string>{"Benefits/Out-Going"},
-                Descriptions = new List<string>{"Income Verification Document"}
-            };
-
-            return JsonConvert.SerializeObject(configObj);
         }
     }
 }

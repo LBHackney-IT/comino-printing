@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.Lambda.Core;
@@ -51,6 +52,14 @@ namespace Usecases
         private static List<string> StripEmptyLines(List<string> addressLines)
         {
             return addressLines.Select(line => line.Trim()).Where(line => line != "").ToList();
+        }
+
+        //TODO: handle configuration in its own class/service
+        public static DocumentConfig GetDocumentConfig()
+        {
+            return JsonConvert.DeserializeObject<DocumentConfig>(
+                Environment.GetEnvironmentVariable("DOCUMENT_CONFIG")
+            );
         }
     }
 }
