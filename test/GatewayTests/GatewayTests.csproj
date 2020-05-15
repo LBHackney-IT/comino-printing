@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Gateways\Gateways.csproj" />
+      <ProjectReference Include="..\UsecaseTests\UsecaseTests.csproj" />
     </ItemGroup>
 
 </Project>

@@ -12,6 +12,7 @@ using Usecases.Enums;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
 using Usecases.Interfaces;
+using Newtonsoft.Json;
 
 namespace UnitTests
 {
@@ -38,6 +39,8 @@ namespace UnitTests
             _localDbGateway = new Mock<ILocalDatabaseGateway>();
             _processEvents = new ProcessEvents(_mockGetHtmlDocument.Object, _mockPdfParser.Object, _sendToS3.Object,
                 _mockGetDocDetails.Object, _logger.Object, _localDbGateway.Object);
+
+            ConfigurationHelper.SetDocumentConfigEnvironmentVariable();
         }
 
         [Test]
@@ -239,5 +242,6 @@ namespace UnitTests
             var testRun = new AsyncTestDelegate(async () => await _processEvents.Execute(sqsEventMock));
             Assert.ThrowsAsync<Exception>(testRun);
         }
+               
     }
 }

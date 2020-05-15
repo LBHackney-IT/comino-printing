@@ -10,6 +10,7 @@ using Usecases.Enums;
 using Usecases.GatewayInterfaces;
 using UseCases.GatewayInterfaces;
 using Usecases.Interfaces;
+using Usecases;
 
 namespace UseCases
 {
@@ -41,6 +42,10 @@ namespace UseCases
             // Messages will be removed from the queue upon successful response of this lambda.
             // If no successful response within 30sec then they will be available to pick up from the queue again.
 
+            Console.WriteLine("Getting document configuration");
+            var documentConfig = ParsingHelpers.GetDocumentConfig();
+            var automaticApprovals = documentConfig.AutomaticApprovals;
+
             var record = sqsEvent.Records.First();
             var timestamp = record.Body;
 
@@ -61,11 +66,17 @@ namespace UseCases
             var html = await TryGetDocumentAsHtml(document, timestamp);
             Console.WriteLine($"Received HTML: {(html == null ? "" : (html.Length < 100 ? html : html.Substring(0, 100)))}");
 
-
             await TryConvertToPdf(html, document, timestamp);
             await TryStoreInS3(document, timestamp);
 
-            await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.WaitingForApproval);
+            if (automaticApprovals != null && automaticApprovals.Contains(document.LetterType))
+            {
+                 await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.ReadyForGovNotify);
+            }
+            else
+            {
+                await _localDatabaseGateway.UpdateStatus(document.Id, LetterStatusEnum.WaitingForApproval);
+            }
         }
 
         private async Task TryStoreInS3(DocumentDetails document, string timestamp)
