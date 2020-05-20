@@ -17,6 +17,8 @@ namespace UseCases
                     return new HBCTRInviteToClaim();
                 case "Benefit ICL":
                     return new BenefitICL();
+                case "Review ICL":
+                    return new ReviewICL();
                 default:
                     return null;
             }
