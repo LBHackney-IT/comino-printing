@@ -15,6 +15,8 @@ namespace UseCases
                     return new BlankBenefitsDetails();
                 case "HB/CTR Invite to Claim":
                     return new HBCTRInviteToClaim();
+                case "Benefit ICL":
+                    return new BenefitICL();
                 default:
                     return null;
             }
