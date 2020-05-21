@@ -37,6 +37,8 @@ namespace UseCases
                     return new InviteToClaimCTRClaimedHBviaDWP();
                 case "HB/CTB Invite For Deceased Customer's Pa":
                     return new HBCTBInviteForDeceasedCustomersPa();
+                case "HB/CTB Invite For Deceased Cust Relative":
+                    return new HBCTBInviteForDeceasedCustRelative();
                 default:
                     return null;
             }
