@@ -23,6 +23,8 @@ namespace UseCases
                     return new AdverseInferenceBEN999();
                 case "Revision-decision upheld":
                     return new RevisionDecisionUpheld();
+                case "Backdate Accepted":
+                    return new BackdateAccepted();
                 default:
                     return null;
             }
