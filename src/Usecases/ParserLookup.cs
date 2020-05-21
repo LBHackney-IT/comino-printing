@@ -31,6 +31,8 @@ namespace UseCases
                     return new BackdateRefused();
                 case "Late Notification":
                     return new LateNotification();
+                case "Benefit Suspend Letter":
+                    return new BenefitSuspendLetter();
                 default:
                     return null;
             }
