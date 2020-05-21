@@ -27,6 +27,8 @@ namespace UseCases
                     return new BackdateAccepted();
                 case "Revision-decision revised":
                     return new RevisionDecisionRevised();
+                case "Backdate Refused":
+                    return new BackdateRefused();
                 default:
                     return null;
             }
