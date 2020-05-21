@@ -21,6 +21,8 @@ namespace UseCases
                     return new ReviewICL();
                 case "Adverse Inference (BEN 999)":
                     return new AdverseInferenceBEN999();
+                case "Revision-decision upheld":
+                    return new RevisionDecisionUpheld();
                 default:
                     return null;
             }
