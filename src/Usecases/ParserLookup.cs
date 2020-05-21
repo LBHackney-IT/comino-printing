@@ -43,6 +43,8 @@ namespace UseCases
                     return new HBTerminationOfClaimForHBCTB();
                 case "Revision-further info requested":
                     return new RevisionFurtherInfoRequested();
+                case "UC HB/CTR cancelled":
+                    return new UCHBCTRCancelled();
                 default:
                     return null;
             }
