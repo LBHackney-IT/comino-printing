@@ -33,6 +33,8 @@ namespace UseCases
                     return new LateNotification();
                 case "Benefit Suspend Letter":
                     return new BenefitSuspendLetter();
+                case "Invite To Claim CTR - Claimed HB via DWP":
+                    return new InviteToClaimCTRClaimedHBviaDWP();
                 default:
                     return null;
             }
