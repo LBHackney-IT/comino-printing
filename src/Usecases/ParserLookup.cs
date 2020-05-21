@@ -19,6 +19,8 @@ namespace UseCases
                     return new BenefitICL();
                 case "Review ICL":
                     return new ReviewICL();
+                case "Adverse Inference (BEN 999)":
+                    return new AdverseInferenceBEN999();
                 default:
                     return null;
             }
