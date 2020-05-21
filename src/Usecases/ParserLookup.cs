@@ -35,6 +35,8 @@ namespace UseCases
                     return new BenefitSuspendLetter();
                 case "Invite To Claim CTR - Claimed HB via DWP":
                     return new InviteToClaimCTRClaimedHBviaDWP();
+                case "HB/CTB Invite For Deceased Customer's Pa":
+                    return new HBCTBInviteForDeceasedCustomersPa();
                 default:
                     return null;
             }
