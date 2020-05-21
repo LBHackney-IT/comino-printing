@@ -41,6 +41,8 @@ namespace UseCases
                     return new HBCTBInviteForDeceasedCustRelative();
                 case "HB Termination of claim for HB/CTB":
                     return new HBTerminationOfClaimForHBCTB();
+                case "Revision-further info requested":
+                    return new RevisionFurtherInfoRequested();
                 default:
                     return null;
             }
