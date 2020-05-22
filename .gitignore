@@ -16,3 +16,4 @@ local
 *.testlog
 *.manifest
 *.suo
+*.v2
