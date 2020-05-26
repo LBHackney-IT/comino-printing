@@ -15,7 +15,7 @@ namespace Usecases
             return "<table class=\"header-table\">" +
                        "<tr>" +
                            "<td>" +
-                               "<div id=\"address\">" + address + "</ div>" +
+                               "<div id=\"address\">" + address + "</div>" +
                            "</td>" +
                            "<td>" +
                                "<div class=\"header-right\">" + rightSideHeader + "</div>" +
