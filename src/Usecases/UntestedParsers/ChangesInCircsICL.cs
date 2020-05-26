@@ -60,7 +60,7 @@ namespace Usecases.UntestedParsers
                 TemplateSpecificCss = templateSpecificCss,
                 AddressLines = address,
                 RightSideOfHeader = rightSideOfHeader,
-                MainBody = AddPageBreaks(mainBody).OuterHtml,
+                MainBody = AddPageBreaks(mainBody).InnerHtml,
             };
         }
 
