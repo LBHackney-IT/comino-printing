@@ -66,9 +66,31 @@ namespace UseCases
                     width: 70mm;
                     min-height: 90mm;
                 }}
+                .header-table table tr td:nth-child(1) {{
+                    height: 5mm !important;
+                }}
+                .header-table table tr td:nth-child(2) {{
+                    height: 5mm !important;
+                }}
+                .header-table table tr:nth-child(5) td {{
+                    height: 5mm !important;
+                }}
+                .header-table table tr:nth-child(7) td {{
+                    height: 5mm !important;
+                }}
                 .header-right {{
-                    width:70mm;
+                    width: 70mm;
                     min-height: 90mm;
+                }}
+                .header-right p {{
+                    margin-block-end: 1mm;
+                    margin-block-start: 0;
+                }}
+                .header-right p:last-of-type {{
+                    margin-block-end: 5mm;
+                }}
+                .header-right table {{
+                    border-spacing: 0;
                 }}
                 #address {{
                     x-overflow: hidden;

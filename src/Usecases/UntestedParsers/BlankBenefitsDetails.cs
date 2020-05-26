@@ -27,7 +27,7 @@ namespace Usecases.UntestedParsers
                 TemplateSpecificCss = templateSpecificCss,
                 AddressLines = address,
                 RightSideOfHeader = rightSideOfHeader,
-                MainBody = mainBody.OuterHtml,
+                MainBody = mainBody.InnerHtml,
             };
         }
 

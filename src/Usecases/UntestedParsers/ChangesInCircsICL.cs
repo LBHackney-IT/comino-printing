@@ -51,7 +51,7 @@ namespace Usecases.UntestedParsers
                 #parser-declaration-table tr:last-child td{height:auto !important;}
               
                 #parser-claim-reference-table {page-break-before: always;}
-                #parser-claim-reference-table td:last-child {width: 85mm !important; word-break:break-all;};
+                #parser-claim-reference-table td:last-child {width: 85mm !important; word-break:break-all;}
 
               -->");
 
@@ -60,7 +60,7 @@ namespace Usecases.UntestedParsers
                 TemplateSpecificCss = templateSpecificCss,
                 AddressLines = address,
                 RightSideOfHeader = rightSideOfHeader,
-                MainBody = AddPageBreaks(mainBody).OuterHtml,
+                MainBody = AddPageBreaks(mainBody).InnerHtml,
             };
         }
 
