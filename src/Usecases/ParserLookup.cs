@@ -52,6 +52,8 @@ namespace UseCases
                 //    return new BenefitDefectiveNewClaim();
                 case "ICL Reminder Letter":
                     return new ICLReminderLetter();
+                case "Support Exempt Accommodation":
+                    return new SupportExemptAccommodation();
                 default:
                     return null;
             }
