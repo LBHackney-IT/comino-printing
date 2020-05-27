@@ -15,8 +15,9 @@ namespace UseCases
                     return new BlankBenefitsDetails();
                 case "HB/CTR Invite to Claim":
                     return new HBCTRInviteToClaim();
-                case "Benefit ICL":
-                    return new BenefitICL();
+                //disabled due to rendering issues
+                //case "Benefit ICL":
+                //    return new BenefitICL();
                 case "Review ICL":
                     return new ReviewICL();
                 case "Adverse Inference (BEN 999)":
@@ -39,14 +40,18 @@ namespace UseCases
                     return new HBCTBInviteForDeceasedCustomersPa();
                 case "HB/CTB Invite For Deceased Cust Relative":
                     return new HBCTBInviteForDeceasedCustRelative();
-                case "HB Termination of claim for HB/CTB":
-                    return new HBTerminationOfClaimForHBCTB();
+                //disabled due to rendering issues 
+                //case "HB Termination of claim for HB/CTB":
+                //    return new HBTerminationOfClaimForHBCTB();
                 case "Revision-further info requested":
                     return new RevisionFurtherInfoRequested();
                 case "UC HB/CTR cancelled":
                     return new UCHBCTRCancelled();
-                case "Benefit Defective New Claim":
-                    return new BenefitDefectiveNewClaim();
+                //disabled due to rendering issues
+                //case "Benefit Defective New Claim":
+                //    return new BenefitDefectiveNewClaim();
+                case "ICL Reminder Letter":
+                    return new ICLReminderLetter();
                 default:
                     return null;
             }
