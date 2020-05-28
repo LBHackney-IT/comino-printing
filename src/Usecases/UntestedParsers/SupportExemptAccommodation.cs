@@ -37,7 +37,7 @@ namespace Usecases.UntestedParsers
                 #parser-tenant-table tr:nth-child(2) td:nth-child(4) p {margin-block-start: 0; margin-block-end: 0;}
                 #parser-tenant-table tr:nth-child(3) td {height:26mm !important;}
                 #parser-tenant-table tr:nth-child(4) td {height:40mm !important;}
-                #parser-tenant-table tr:nth-child(6) td {height:256mm !important;}
+                #parser-tenant-table tr:nth-child(6) td {height:300mm !important;}
               -->");
 
             return new LetterTemplate
