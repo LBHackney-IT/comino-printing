@@ -45,9 +45,8 @@ namespace UseCases
                     return new RevisionFurtherInfoRequested();
                 case "UC HB/CTR cancelled":
                     return new UCHBCTRCancelled();
-                //disabled due to rendering issues
-                //case "Benefit Defective New Claim":
-                //    return new BenefitDefectiveNewClaim();
+                case "Benefit Defective New Claim":
+                    return new BenefitDefectiveNewClaim();
                 case "ICL Reminder Letter":
                     return new ICLReminderLetter();
                 case "Support Exempt Accommodation":
