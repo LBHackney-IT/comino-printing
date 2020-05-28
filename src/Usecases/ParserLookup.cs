@@ -40,9 +40,8 @@ namespace UseCases
                     return new HBCTBInviteForDeceasedCustomersPa();
                 case "HB/CTB Invite For Deceased Cust Relative":
                     return new HBCTBInviteForDeceasedCustRelative();
-                //disabled due to rendering issues 
-                //case "HB Termination of claim for HB/CTB":
-                //    return new HBTerminationOfClaimForHBCTB();
+                case "HB Termination of claim for HB/CTB":
+                    return new HBTerminationOfClaimForHBCTB();
                 case "Revision-further info requested":
                     return new RevisionFurtherInfoRequested();
                 case "UC HB/CTR cancelled":
