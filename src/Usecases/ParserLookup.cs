@@ -51,6 +51,8 @@ namespace UseCases
                     return new ICLReminderLetter();
                 case "Support Exempt Accommodation":
                     return new SupportExemptAccommodation();
+                case "Review Suspend Letter ICL":
+                    return new ReviewSuspendLetterICL();
                 default:
                     return null;
             }
