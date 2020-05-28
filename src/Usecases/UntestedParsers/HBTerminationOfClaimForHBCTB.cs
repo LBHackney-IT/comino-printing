@@ -21,14 +21,31 @@ namespace Usecases.UntestedParsers
             mainBody.RemoveChild(mainBody.SelectSingleNode("table[1]"));
 
             var templateSpecificCss = documentNode.SelectSingleNode("html/head/style").InnerText;
+
+            templateSpecificCss = templateSpecificCss.Replace("-->",
+             @".warning-header {color: red;}
+              -->");
+
             return new LetterTemplate
             {
                 TemplateSpecificCss = templateSpecificCss,
                 AddressLines = address,
                 RightSideOfHeader = rightSideOfHeader,
-                MainBody = mainBody.InnerHtml,
+                MainBody = FormatContent(mainBody).InnerHtml
             };
         }
+
+        private static HtmlNode FormatContent(HtmlNode body)
+        {
+            //use CSS instead of font color tag to ensure it doesn't "leak" to therest of the page
+            var mainHeading = body.ChildNodes.ToList().Find(node => node.InnerText.Contains("Termination of claim for"));
+            var fontTag = mainHeading.SelectSingleNode("font");
+            fontTag.Attributes.Remove("color");
+            mainHeading.Attributes.Add("class", "warning-header");
+
+            return body;
+        }
+
 
         private static string ParseSenderAddress(HtmlNode documentNode)
         {
