@@ -88,6 +88,13 @@ namespace Usecases.UntestedParsers
                 #parser-appeal-table-1 tr:first-child td:nth-child(2) {font-size: 0px !important;}
                 #parser-appeal-table-1 tr:first-child td:nth-child(2)  font{font-family: sans-serif;font-size: 12pt}
                 #parser-appeal-table-1 tr:first-child td:nth-child(2)  font:nth-child(6) {padding-left:2pt;}
+
+                .parser-checkbox {
+                    border: 2px solid #000;
+                    width: 25px;
+                    height: 25px;
+                    margin-top: 20px;
+                }
               -->");
 
             return new LetterTemplate
@@ -120,6 +127,10 @@ namespace Usecases.UntestedParsers
             HtmlNode appealPageRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-request-table-1");
             FindTableAndAddCustomId(appealPageRef.NextSibling, "parser-request-table-2", true, true);
 
+            //replace checkbox unicode (can sometimes appear already ticked otherwise) with simple div with borders
+            var firstCheckbox = appealPageRef.SelectSingleNode("tr[1]/td[1]/font[1]");
+            ReplaceUnicodeBoxWithDiv(firstCheckbox);
+
             //reduce paragraph spacing on after claim reference page
             ReduceParagraphSpacing(claimReferenceTableRef, 6);
 
@@ -131,12 +142,20 @@ namespace Usecases.UntestedParsers
             var requestTableTwoRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-request-table-2"); ;
             FindTableAndAddCustomId(requestTableTwoRef.NextSibling, "parser-appeal-table-1", true, true);
 
+            //replace checkbox unicode (can sometimes appear already ticked otherwise) with simple div with borders
+            var secondCheckbox = requestTableTwoRef.SelectSingleNode("tr[1]/td[1]/font[1]");
+            ReplaceUnicodeBoxWithDiv(secondCheckbox);
+
             //reduce spacing after request table 2
             ReduceParagraphSpacing(requestTableTwoRef, 10);
 
             //find the second appeal table and add custom id for styling
             HtmlNode appealTableOneRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-appeal-table-1");
             FindTableAndAddCustomId(appealTableOneRef.NextSibling, "parser-appeal-table-2", true, true);
+
+            //replace checkbox unicode (can sometimes appear already ticked otherwise) with simple div with borders
+            var thirdCheckbox = appealTableOneRef.SelectSingleNode("tr[1]/td[1]/font[1]");
+            ReplaceUnicodeBoxWithDiv(thirdCheckbox);
 
             HtmlNode appealPageRef2 = body.ChildNodes.ToList().Find(node => node.Id == "parser-appeal-table-2");
             FindTableAndAddCustomId(appealPageRef2.NextSibling, "parser-signature-table", true, true);
@@ -146,6 +165,18 @@ namespace Usecases.UntestedParsers
             FindTableAndAddCustomId(signatureTableRef.NextSibling, "parser-address-table", true, true);
 
             return body;
+        }
+
+        private static void ReplaceUnicodeBoxWithDiv(HtmlNode node)
+        {
+            //check couple of properties for safety
+            if (node.Name == "font" && node.InnerHtml.Contains("&#x25A1;"))
+            {
+                node.Name = "div";
+                node.Attributes.RemoveAll();
+                node.Attributes.Add("class", "parser-checkbox");
+                node.InnerHtml = "";
+            }
         }
 
         private static void ReduceParagraphSpacing(HtmlNode referenceNode, int paragraphCount)
