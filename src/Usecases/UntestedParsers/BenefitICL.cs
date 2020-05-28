@@ -138,18 +138,19 @@ namespace Usecases.UntestedParsers
 
         private static string ContactDetails(HtmlNode documentNode)
         {
-            var phoneNumber = documentNode.SelectSingleNode("/html/body/table[1]/tr[9]");
-            phoneNumber.ChildNodes.RemoveAt(1);
+             var firstRow = documentNode.SelectNodes("/html/body/table[1]/tr")
+                                .ToList().GetRange(8, 1)[0];
+            var secondRow = documentNode.SelectNodes("/html/body/table[1]/tr")
+                                .ToList().GetRange(9, 1)[0];
 
-            var emailAddress = documentNode.SelectSingleNode("/html/body/table[1]/tr[10]");
-            emailAddress.ChildNodes.Remove(1);
+            firstRow.RemoveChild(firstRow.SelectSingleNode("td[1]"));
+            secondRow.RemoveChild(secondRow.SelectSingleNode("td[1]"));
 
-            var restOfTheContactDetails = documentNode.SelectNodes("/html/body/table[1]/tr").ToList().GetRange(10, 6)
-                .Aggregate("", (accRows, row) => accRows + row.OuterHtml);
+            string startAcc = $"{firstRow.OuterHtml + secondRow.OuterHtml}";
 
-            var output = $"<table>{phoneNumber.OuterHtml}{emailAddress.OuterHtml}{restOfTheContactDetails}</table>";
-
-            return output;
+            var remainingRows = documentNode.SelectNodes("/html/body/table[1]/tr")
+                .ToList().GetRange(10, 6);
+            return $"<table> {remainingRows.Aggregate(startAcc, (accRows, row) => accRows + row.OuterHtml)} </table>";
         }
 
         private static List<string> ParseAddressIntoLines(HtmlNode documentNode)
