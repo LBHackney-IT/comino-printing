@@ -21,6 +21,11 @@ namespace Usecases.UntestedParsers
             mainBody.RemoveChild(mainBody.SelectSingleNode("table[1]"));
 
             var templateSpecificCss = documentNode.SelectSingleNode("html/head/style").InnerText;
+
+            templateSpecificCss = templateSpecificCss.Replace("-->",
+             @".parser-lbx-ref {position:absolute;left:0;top:0;font-size:10pt}
+              -->");
+
             return new LetterTemplate
             {
                 TemplateSpecificCss = templateSpecificCss,
@@ -33,10 +38,30 @@ namespace Usecases.UntestedParsers
         private static string ParseSenderAddress(HtmlNode documentNode)
         {
             var table = documentNode.SelectNodes("html/body/table[1]/tr").ToList();
-            return table
+
+            //some letters have name of the borough at the top right hand corner. Handle this so it appears in the right place on print
+            //get borough name that's outside the address table
+
+            var boroughNode = documentNode.SelectNodes("html/body/p[1]").FirstOrDefault();
+            string lbx = "";
+
+            if (boroughNode != null && boroughNode.InnerText != null)
+            {
+                if (boroughNode.InnerText.StartsWith("London Borough of"))
+                {
+                    //grab the name for positioning later
+                    lbx = boroughNode.InnerText;
+                    //hide the initial content, this won't have any effect if the content is something else
+                    boroughNode.Attributes.Add("style", "display:none");
+                }
+            }
+
+            string customAddress = table
                 .GetRange(1, 7)
-                .Aggregate("", (accString, node) =>
-                    accString + $"<p> {node.SelectNodes("td").Last().InnerHtml} </p>");
+                .Aggregate($"<div class=\"parser-lbx-ref\">{lbx}</div>", (accString, node) =>
+                    accString + $"<p>{node.SelectNodes("td").Last().InnerHtml}</p>");
+
+            return customAddress;
         }
 
         private static string ContactDetails(HtmlNode documentNode)
