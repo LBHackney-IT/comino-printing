@@ -1,9 +1,6 @@
-using System;
+using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.Lambda.Core;
-using HtmlAgilityPack;
-using Newtonsoft.Json;
 using Usecases.Domain;
 using Usecases.Interfaces;
 
@@ -22,6 +19,12 @@ namespace Usecases.UntestedParsers
             mainBody.RemoveChild(mainBody.SelectSingleNode("table[1]"));
 
             var templateSpecificCss = documentNode.SelectSingleNode("html/head/style").InnerText;
+
+            templateSpecificCss = templateSpecificCss.Replace("-->",
+            @".header-table ~ p {margin-block-start: 0; margin-block-end: 0;}
+              .header-table + p {margin-block-start: 1em; margin-block-end: 1em;}
+              -->");
+
             return new LetterTemplate
             {
                 TemplateSpecificCss = templateSpecificCss,

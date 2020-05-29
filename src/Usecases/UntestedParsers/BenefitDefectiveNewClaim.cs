@@ -21,12 +21,10 @@ namespace Usecases.UntestedParsers
             var templateSpecificCss = documentNode.SelectSingleNode("html/head/style").InnerText;
 
             //add custom table styles for print
-            //1. fix checkbox sizes on the last page and ensure the lines are of equal height
-            //2. reduce the height of signature table
-            //3. make sure that content that has to fit on one page is laid out properly and don't overflow to next page 
-            //4. using IDs instead of classes to ensure individual styles for each element
             templateSpecificCss = templateSpecificCss.Replace("-->",
-              @"p.paragraph-no-margins {margin-block-start: 0; margin-block-end: 0;}
+              @".header-table ~ p {margin-block-start: 0; margin-block-end: 0;}
+                .header-table + p {margin-block-start: 1em; margin-block-end: 1em;}
+                p.paragraph-no-margins {margin-block-start: 0; margin-block-end: 0;}
                 
                 #parser-claim-reference-table td:last-child {width: 85mm !important; word-break:break-all;}
                 #parser-claim-reference-table  {page-break-before: always;}
@@ -120,9 +118,6 @@ namespace Usecases.UntestedParsers
             var claimReferenceTableRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-claim-reference-table");
             FindTableAndAddCustomId(claimReferenceTableRef.NextSibling, "parser-request-table-1");
 
-            //reduce paragraph spacing on after claim reference page
-            ReduceParagraphSpacing(claimReferenceTableRef, 6);
-
             //find the second appeal table and add custom id for styling
             HtmlNode appealPageRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-request-table-1");
             FindTableAndAddCustomId(appealPageRef.NextSibling, "parser-request-table-2", true, true);
@@ -130,9 +125,6 @@ namespace Usecases.UntestedParsers
             //replace checkbox unicode (can sometimes appear already ticked otherwise) with simple div with borders
             var firstCheckbox = appealPageRef.SelectSingleNode("tr[1]/td[1]/font[1]");
             ReplaceUnicodeBoxWithDiv(firstCheckbox);
-
-            //reduce paragraph spacing on after claim reference page
-            ReduceParagraphSpacing(claimReferenceTableRef, 6);
 
             //add page break between forms
             var appealPage = body.ChildNodes.ToList().Find(node => node.InnerText.Contains("Request to Appeal against your Housing Benefit Decision to an Independent Tribunal."));
@@ -145,9 +137,6 @@ namespace Usecases.UntestedParsers
             //replace checkbox unicode (can sometimes appear already ticked otherwise) with simple div with borders
             var secondCheckbox = requestTableTwoRef.SelectSingleNode("tr[1]/td[1]/font[1]");
             ReplaceUnicodeBoxWithDiv(secondCheckbox);
-
-            //reduce spacing after request table 2
-            ReduceParagraphSpacing(requestTableTwoRef, 10);
 
             //find the second appeal table and add custom id for styling
             HtmlNode appealTableOneRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-appeal-table-1");
@@ -177,23 +166,6 @@ namespace Usecases.UntestedParsers
                 node.Attributes.Add("class", "parser-checkbox");
                 node.InnerHtml = "";
             }
-        }
-
-        private static void ReduceParagraphSpacing(HtmlNode referenceNode, int paragraphCount)
-        {
-            int count = 0;
-
-            while (count < paragraphCount)
-            {
-                if (referenceNode == null) break;
-
-                if (referenceNode.Name == "p")
-                {
-                    referenceNode.Attributes.Add("class", "paragraph-no-margins");
-                    count++;
-                }
-                referenceNode = referenceNode.NextSibling;
-            };
         }
 
         private static void FindTableAndAddCustomId(HtmlNode referenceNode, string id, bool searchForward = true, bool skipFirstTable = false)

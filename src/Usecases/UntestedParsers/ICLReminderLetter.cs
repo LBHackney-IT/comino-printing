@@ -22,7 +22,9 @@ namespace Usecases.UntestedParsers
 
             //add custom table styles for print
             templateSpecificCss = templateSpecificCss.Replace("-->",
-              @"p.paragraph-no-margins {margin-block-start: 0; margin-block-end: 0;}
+              @".header-table ~ p {margin-block-start: 0; margin-block-end: 0;}
+                .header-table + p {margin-block-start: 1em; margin-block-end: 1em;}
+                p.paragraph-no-margins {margin-block-start: 0; margin-block-end: 0;}
                 #parser-claim-reference-table td:last-child {width: 85mm !important; word-break:break-all;}
                 #parser-claim-reference-table  {page-break-before: always;}
                 #parser-signature-table tr td {padding-left: 5mm !important;}
@@ -46,23 +48,13 @@ namespace Usecases.UntestedParsers
             //find information table
             FindTableAndAddCustomId(informationPage, "parser-information-table");
 
-            //reduce paragraph spacing on information page
-            ReduceParagraphSpacing(informationPage, 21);
-
             //find claim reference table
             var informationTableRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-information-table");
             FindTableAndAddCustomId(informationTableRef.NextSibling, "parser-claim-reference-table");
 
-            //reduce paragraph spacing after information table to adjust page break location
-            ReduceParagraphSpacing(informationTableRef, 6);
-
             //find signature table
             var claimReferenceTableRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-claim-reference-table");
             FindTableAndAddCustomId(claimReferenceTableRef.NextSibling, "parser-signature-table");
-
-            //reduce paragraph spacing on last page
-            var signatureTableRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-signature-table");
-            ReduceParagraphSpacing(signatureTableRef, 21);
 
             return body;
         }
@@ -90,23 +82,6 @@ namespace Usecases.UntestedParsers
                     referenceNode = searchForward ? referenceNode.NextSibling : referenceNode.PreviousSibling;
                 }
             }
-        }
-
-        private static void ReduceParagraphSpacing(HtmlNode referenceNode, int paragraphCount)
-        {
-            int count = 0;
-
-            while (count < paragraphCount)
-            {
-                if (referenceNode == null) break;
-
-                if (referenceNode.Name == "p")
-                {
-                    referenceNode.Attributes.Add("class", "paragraph-no-margins");
-                    count++;
-                }
-                referenceNode = referenceNode.NextSibling;
-            };
         }
 
         private static string ParseSenderAddress(HtmlNode documentNode)

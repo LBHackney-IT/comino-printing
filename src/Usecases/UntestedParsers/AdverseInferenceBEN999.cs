@@ -21,12 +21,10 @@ namespace Usecases.UntestedParsers
             var templateSpecificCss = documentNode.SelectSingleNode("html/head/style").InnerText;
 
             //add custom table styles for print
-            //1. fix checkbox sizes on the last page and ensure the lines are of equal height
-            //2. reduce the height of signature table
-            //3. make sure that content that has to fit on one page is laid out properly and don't overflow to next page 
-            //4. using IDs instead of classes to ensure individual styles for each element
             templateSpecificCss = templateSpecificCss.Replace("-->",
-              @"#parser-declaration-table tr:last-child td{height:auto !important;}
+              @".header-table ~ p {margin-block-start: 0; margin-block-end: 0;}
+                .header-table + p {margin-block-start: 1em; margin-block-end: 1em;}
+                #parser-declaration-table tr:last-child td{height:auto !important;}
                 
                 #parser-appeal-table-1 tr td {height:7mm !important;}
                 #parser-appeal-table-1 td:last-child {page-break-before: always;}
@@ -93,9 +91,6 @@ namespace Usecases.UntestedParsers
             HtmlNode claimReferencePageRefNode = informationPage.NextSibling;
             FindNextTableAndAddCustomId(claimReferencePageRefNode, "parser-claim-reference-table", true);
 
-            //reduce paragraph spacing on request page
-            ReduceParagraphSpacing(claimReferencePageRefNode, 6);
-
             //locate first request table
             var requestPage = body.ChildNodes.ToList().Find(node => node.InnerText.Contains("Request for a Revision of your Housing Benefit and/or Council Tax Reduction Decision"));
             FindNextTableAndAddCustomId(requestPage, "parser-request-table-1");
@@ -103,8 +98,6 @@ namespace Usecases.UntestedParsers
             //locate second request table
             var requestTableOneRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-request-table-1");
             FindNextTableAndAddCustomId(requestTableOneRef.NextSibling, "parser-request-table-2");
-
-            ReduceParagraphSpacing(requestTableOneRef.NextSibling, 12);
 
             //page page for appeal page
             var appealPage = body.ChildNodes.ToList().Find(node => node.InnerText.Contains("Request to Appeal against your Housing Benefit Decision to an Independent Tribunal"));
@@ -123,33 +116,11 @@ namespace Usecases.UntestedParsers
 
             var parserSignatureTableRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-signature-table");
 
-            ReduceParagraphSpacing(parserSignatureTableRef, 1);
-
             //find attachment information table
             HtmlNode signatureTableRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-signature-table");
             FindNextTableAndAddCustomId(signatureTableRef.NextSibling, "parser-attachments-table", true);
 
-            HtmlNode lastPageRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-attachments-table");
-            ReduceParagraphSpacing(lastPageRef, 51);
-
             return body;
-        }
-
-        private static void ReduceParagraphSpacing(HtmlNode referenceNode, int paragraphCount)
-        {
-            int count = 0;
-
-            while (count < paragraphCount)
-            {
-                if (referenceNode == null) break;
-
-                if (referenceNode.Name == "p")
-                {
-                    referenceNode.Attributes.Add("class", "paragraph-no-margins");
-                    count++;
-                }
-                referenceNode = referenceNode.NextSibling;
-            };
         }
 
         private static void FindNextTableAndAddCustomId(HtmlNode referenceNode, string id, bool skipFirstTable = false)

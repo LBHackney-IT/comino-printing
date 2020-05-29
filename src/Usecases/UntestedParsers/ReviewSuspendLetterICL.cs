@@ -22,7 +22,9 @@ namespace Usecases.UntestedParsers
 
             //add custom table styles for print
             templateSpecificCss = templateSpecificCss.Replace("-->",
-              @"#parser-signature-table tr td
+              @".header-table ~ p {margin-block-start: 0; margin-block-end: 0;}
+                .header-table + p {margin-block-start: 1em; margin-block-end: 1em;}
+                #parser-signature-table tr td
                 {height:10mm !important; padding-left: 5mm !important;}
                 
                 #parser-reply-table td {height: 5mm !important;}
