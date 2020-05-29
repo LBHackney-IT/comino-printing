@@ -21,11 +21,10 @@ namespace Usecases.UntestedParsers
             var templateSpecificCss = documentNode.SelectSingleNode("html/head/style").InnerText;
 
             //add custom table styles for print
-            //1. fix checkbox sizes on the last page and ensure the lines are of equal height
-            //2. reduce the height of signature table
-            //3. make sure that content that has to fit on one page is laid out properly and don't overflow to next page 
             templateSpecificCss = templateSpecificCss.Replace("-->",
-              @"#parser-signature-table tr td
+              @".header-table ~ p {margin-block-start: 0; margin-block-end: 0;}
+                .header-table + p {margin-block-start: 1em; margin-block-end: 1em;}
+                #parser-signature-table tr td
                 {height:10mm !important; padding-left: 5mm !important;}
                 
                 #parser-declaration-table td {height: 5mm !important;}

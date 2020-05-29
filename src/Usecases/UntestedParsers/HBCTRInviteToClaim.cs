@@ -20,6 +20,11 @@ namespace Usecases.UntestedParsers
 
             var templateSpecificCss = documentNode.SelectSingleNode("html/head/style").InnerText;
 
+            templateSpecificCss = templateSpecificCss.Replace("-->",
+              @".header-table ~ p {margin-block-start: 0; margin-block-end: 0;}
+                .header-table + p {margin-block-start: 1em; margin-block-end: 1em;}
+              -->");
+
             return new LetterTemplate
             {
                 TemplateSpecificCss = templateSpecificCss,

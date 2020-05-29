@@ -1,8 +1,6 @@
 ﻿using HtmlAgilityPack;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Usecases.Domain;
 using Usecases.Interfaces;
 
@@ -23,7 +21,9 @@ namespace Usecases.UntestedParsers
             var templateSpecificCss = documentNode.SelectSingleNode("html/head/style").InnerText;
 
             templateSpecificCss = templateSpecificCss.Replace("-->",
-             @".parser-lbx-ref {position:absolute;left:0;top:0;font-size:10pt}
+             @".header-table ~ p {margin-block-start: 0; margin-block-end: 0;}
+               .header-table + p {margin-block-start: 1em; margin-block-end: 1em;}
+               .parser-lbx-ref {position:absolute;left:0;top:0;font-size:10pt}
               -->");
 
             return new LetterTemplate
