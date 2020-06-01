@@ -70,6 +70,8 @@ namespace Usecases.UntestedParsers
                 #parser-signature-table tr td {padding-left: 5mm !important;}
                 #parser-attachments-table td:first-child p:nth-child(3) {padding-left: 5mm !important; padding-right: 5mm !important;}
                 #parser-attachments-table {page-break-before: always;}
+
+                .parser-checkbox {border: 2px solid #000; width: 25px; height: 25px; margin-top: 20px;}
               -->");
 
             return new LetterTemplate
@@ -99,6 +101,15 @@ namespace Usecases.UntestedParsers
             var requestTableOneRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-request-table-1");
             FindNextTableAndAddCustomId(requestTableOneRef.NextSibling, "parser-request-table-2");
 
+            //replace checkbox unicode (can sometimes appear already ticked otherwise) with simple div with borders
+            var firstCheckbox = requestTableOneRef.SelectSingleNode("tr[1]/td[1]/font[1]");
+            ReplaceUnicodeBoxWithDiv(firstCheckbox);
+
+            //replace checkbox unicode (can sometimes appear already ticked otherwise) with simple div with borders
+            var requestTableTwoRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-request-table-2");
+            var secondCheckbox = requestTableTwoRef.SelectSingleNode("tr[1]/td[1]/font[1]");
+            ReplaceUnicodeBoxWithDiv(secondCheckbox);
+
             //page page for appeal page
             var appealPage = body.ChildNodes.ToList().Find(node => node.InnerText.Contains("Request to Appeal against your Housing Benefit Decision to an Independent Tribunal"));
 
@@ -110,6 +121,10 @@ namespace Usecases.UntestedParsers
             HtmlNode appealPageRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-appeal-table-1");
             FindNextTableAndAddCustomId(appealPageRef.NextSibling, "parser-appeal-table-2", true);
 
+            //replace checkbox unicode (can sometimes appear already ticked otherwise) with simple div with borders
+            var thirdCheckbox = appealPageRef.SelectSingleNode("tr[1]/td[1]/font[1]");
+            ReplaceUnicodeBoxWithDiv(thirdCheckbox);
+
             //find signature table
             HtmlNode appealPageRef2 = body.ChildNodes.ToList().Find(node => node.Id == "parser-appeal-table-2");
             FindNextTableAndAddCustomId(appealPageRef2.NextSibling, "parser-signature-table", true);
@@ -120,7 +135,21 @@ namespace Usecases.UntestedParsers
             HtmlNode signatureTableRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-signature-table");
             FindNextTableAndAddCustomId(signatureTableRef.NextSibling, "parser-attachments-table", true);
 
+            HtmlNode lastPageRef = body.ChildNodes.ToList().Find(node => node.Id == "parser-attachments-table");
+
             return body;
+        }
+
+        private static void ReplaceUnicodeBoxWithDiv(HtmlNode node)
+        {
+            //check couple of properties for safety
+            if (node.Name == "font" && node.InnerHtml.Contains("&#x25A1;"))
+            {
+                node.Name = "div";
+                node.Attributes.RemoveAll();
+                node.Attributes.Add("class", "parser-checkbox");
+                node.InnerHtml = "";
+            }
         }
 
         private static void FindNextTableAndAddCustomId(HtmlNode referenceNode, string id, bool skipFirstTable = false)
