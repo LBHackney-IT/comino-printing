@@ -19,8 +19,8 @@ const DocumentRow = (props) => {
       >
         {d.status}
       </td>
-      <td className="govuk-table__cell">{dateFormat(d.statusUpdated)}</td>
       <td className="govuk-table__cell">{d.sender}</td>
+      <td className="govuk-table__cell">{d.letterType}</td>
     </tr>
   );
 };
@@ -73,7 +73,7 @@ export default class DocumentListPage extends Component {
           <h2 className="govuk-heading-xl">Letters</h2>
           <table className="govuk-table  lbh-table">
             <caption className="govuk-table__caption">
-              View sent letters and check their status
+              View sent letters and check their status (page last updated {moment().format("DD/MM/YYYY HH:mm")}))
             </caption>
             <thead className="govuk-table__head">
               <tr className="govuk-table__row">
@@ -87,10 +87,10 @@ export default class DocumentListPage extends Component {
                   Status
                 </th>
                 <th scope="col" className="govuk-table__header">
-                  Status updated
+                  Sent by
                 </th>
                 <th scope="col" className="govuk-table__header">
-                  Sent by
+                  Letter type
                 </th>
               </tr>
             </thead>
