@@ -78,7 +78,7 @@ export default class DocumentListPage extends Component {
             <thead className="govuk-table__head">
               <tr className="govuk-table__row">
                 <th scope="col" className="govuk-table__header">
-                  Document No
+                  Doc No
                 </th>
                 <th scope="col" className="govuk-table__header">
                   Created
