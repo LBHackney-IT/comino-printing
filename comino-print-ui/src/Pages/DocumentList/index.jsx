@@ -73,7 +73,7 @@ export default class DocumentListPage extends Component {
           <h2 className="govuk-heading-xl">Letters</h2>
           <table className="govuk-table  lbh-table">
             <caption className="govuk-table__caption">
-              View sent letters and check their status (page last updated {moment().format("DD/MM/YYYY HH:mm")}))
+              View sent letters and check their status (page last updated on {moment().format("DD/MM/YYYY HH:mm")}))
             </caption>
             <thead className="govuk-table__head">
               <tr className="govuk-table__row">
