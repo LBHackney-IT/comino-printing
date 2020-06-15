@@ -17,7 +17,7 @@ export const fetchDocuments = (cursor, cb) => {
   let cursorStr = cursor ? `&cursor=${cursor}` : "";
 
   fetch(
-    `${process.env.REACT_APP_API_URL}/documents?limit=20${cursorStr}`,
+    `${process.env.REACT_APP_API_URL}/documents?limit=${limit}{${cursorStr}`,
     options
   ).then(async (response) => {
     const json = await response.json();
