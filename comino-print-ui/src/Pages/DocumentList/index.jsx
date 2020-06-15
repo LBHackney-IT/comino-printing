@@ -104,15 +104,15 @@ export default class DocumentListPage extends Component {
         <div className="lbh-container">
           {this.state.cursor ? (
             <a onClick={this.prevPage} href="#0">
-              Previous 10 documents
+              Previous 20 documents
             </a>
           ) : null}
-          {this.state.cursor && this.state.documents.length === 10 ? (
+          {this.state.cursor && this.state.documents.length === 20 ? (
             <>{" | "}</>
           ) : null}
-          {this.state.documents.length === 10 ? (
+          {this.state.documents.length === 20 ? (
             <a onClick={this.nextPage} href="#0">
-              Next 10 documents
+              Next 20 documents
             </a>
           ) : null}
         </div>
