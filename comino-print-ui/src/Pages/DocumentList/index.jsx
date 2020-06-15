@@ -3,6 +3,8 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import { fetchDocuments } from "../../lib/cominoPrintApi";
 
+const limit = 20;
+
 const DocumentRow = (props) => {
   const dateFormat = (date) => moment(date).format("DD/MM/YYYY HH:mm");
   const d = props.document;
@@ -104,15 +106,15 @@ export default class DocumentListPage extends Component {
         <div className="lbh-container">
           {this.state.cursor ? (
             <a onClick={this.prevPage} href="#0">
-              Previous 10 documents
+              Previous {limit} documents
             </a>
           ) : null}
-          {this.state.cursor && this.state.documents.length === 10 ? (
+          {this.state.cursor && this.state.documents.length === limit ? (
             <>{" | "}</>
           ) : null}
-          {this.state.documents.length === 10 ? (
+          {this.state.documents.length === limit ? (
             <a onClick={this.nextPage} href="#0">
-              Next 10 documents
+              Next {limit} documents
             </a>
           ) : null}
         </div>
