@@ -1,5 +1,5 @@
 import { hackneyToken } from "./Cookie";
-const limit = 10;
+const limit = 20;
 const allDocs = {};
 
 export const fetchDocuments = (cursor, cb) => {
@@ -17,7 +17,7 @@ export const fetchDocuments = (cursor, cb) => {
   let cursorStr = cursor ? `&cursor=${cursor}` : "";
 
   fetch(
-    `${process.env.REACT_APP_API_URL}/documents?limit=10${cursorStr}`,
+    `${process.env.REACT_APP_API_URL}/documents?limit=${limit}{${cursorStr}`,
     options
   ).then(async (response) => {
     const json = await response.json();
