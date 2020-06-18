@@ -9,6 +9,7 @@ namespace UseCases
         {
             switch (letterType)
             {
+                //Benefits
                 case "Change in Circs ICL":
                     return new ChangesInCircsICL();
                 case "Benefits Blank Letter":
@@ -53,10 +54,12 @@ namespace UseCases
                     return new SupportExemptAccommodation();
                 case "Review Suspend Letter ICL":
                     return new ReviewSuspendLetterICL();
+                //Council Tax
+                case "General Letter template":
+                    return new GeneralLetterTemplate();
                 default:
                     return null;
             }
-
         }
     }
 }
