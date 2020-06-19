@@ -31,7 +31,7 @@ namespace UseCases
 
             var css = CompileCss(htmlInput);
 
-            var header = ParsingHelpers.FormatLetterHeader(htmlInput.AddressLines, htmlInput.RightSideOfHeader);
+            var header = ParsingHelpers.FormatLetterHeader(htmlInput.AddressLines, htmlInput.RightSideOfHeader, htmlInput.LetterHead);
 
             var fullHtml = "<!DOCTYPE html><html><head><style>"
                            + css
