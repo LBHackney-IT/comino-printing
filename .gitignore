@@ -17,3 +17,8 @@ local
 *.manifest
 *.suo
 *.v2
+*.lock
+*.ide
+*.ide-shm
+*.ide-wal
+*.dtbcache
