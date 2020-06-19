@@ -8,20 +8,21 @@ namespace Usecases
 {
     public static class ParsingHelpers
     {
-        public static string FormatLetterHeader(List<string> addressLines, string rightSideHeader)
+        public static string FormatLetterHeader(List<string> addressLines, string rightSideHeader, string letterHead = "")
         {
             var address = CompileAddressHtml(addressLines);
 
-            return "<table class=\"header-table\">" +
-                       "<tr>" +
-                           "<td>" +
-                               "<div id=\"address\">" + address + "</div>" +
-                           "</td>" +
-                           "<td>" +
-                               "<div class=\"header-right\">" + rightSideHeader + "</div>" +
-                           "</td>" +
-                       "</tr>" +
-                   "</table>";
+            return (letterHead == "" ? "" : letterHead) +
+                    "<table class=\"header-table\">" +
+                           "<tr>" +
+                               "<td>" +
+                                   "<div id=\"address\">" + address + "</div>" +
+                               "</td>" +
+                               "<td>" +
+                                   "<div class=\"header-right\">" + rightSideHeader + "</div>" +
+                               "</td>" +
+                           "</tr>" +
+                       "</table>";
         }
 
         private static string CompileAddressHtml(List<string> addressLines)

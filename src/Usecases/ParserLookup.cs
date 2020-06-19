@@ -57,6 +57,8 @@ namespace UseCases
                 //Council Tax
                 case "General Letter template":
                     return new GeneralLetterTemplate();
+                case "CTax Enquiry Form":
+                    return new CTaxEnquiryForm();
                 default:
                     return null;
             }
