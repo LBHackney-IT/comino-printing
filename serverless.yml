@@ -64,7 +64,7 @@ functions:
     name: ${self:service}-${self:provider.stage}-send-to-notify
     handler: Lambda::AwsDotnetCsharp.Handlers::QueryDocumentsAndSendToNotify
     role: arn:aws:iam::775052747630:role/LBH_Lambda_Execution
-    timeout: 90
+    timeout: 900
     events:
       - schedule: cron(30 15 ? * MON-FRI *) # every weekday at 3:30pm UTC
 
