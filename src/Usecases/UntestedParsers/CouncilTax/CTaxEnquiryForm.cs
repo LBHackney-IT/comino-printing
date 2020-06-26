@@ -188,35 +188,35 @@ namespace Usecases.UntestedParsers
                                     });
                             });
                             break;
-                        case "3":
-                            HtmlNode faultyRowspanRow = null;
-                            foreach (var (row, r_index) in questionRows.Select((r, i) => (r, i)))
-                            {
-                                var cols = row.SelectNodes("td").ToList();
+                        //case "3":
+                        //    HtmlNode faultyRowspanRow = null;
+                        //    foreach (var (row, r_index) in questionRows.Select((r, i) => (r, i)))
+                        //    {
+                        //        var cols = row.SelectNodes("td").ToList();
 
-                                foreach (var (col, c_index) in cols.Select((c, i) => (c, i)))
-                                {
-                                    //ChangeAttributeIfExists(col, "rowspan", "1");
-                                    var nodeAttribute = col.Attributes.FirstOrDefault(a => a.Name == "rowspan");
-                                    if (nodeAttribute != null) nodeAttribute.Remove();
+                        //        foreach (var (col, c_index) in cols.Select((c, i) => (c, i)))
+                        //        {
+                        //            //ChangeAttributeIfExists(col, "rowspan", "1");
+                        //            var nodeAttribute = col.Attributes.FirstOrDefault(a => a.Name == "rowspan");
+                        //            if (nodeAttribute != null) nodeAttribute.Remove();
 
-                                    if (col.InnerText.Contains("Date purchased/rented/leased:"))
-                                        AddAppendAttribute(col, "style", "border-bottom-style: solid; border-bottom-width: 1pt; ");
+                        //            if (col.InnerText.Contains("Date purchased/rented/leased:"))
+                        //                AddAppendAttribute(col, "style", "; border-bottom-style: solid; border-bottom-width: 1pt; ");
 
 
-                                    if (cols.Count.Equals(3) && col.InnerText.Contains("Student? (Yes / No)") && ContainsBorder(cols[c_index + 1]))
-                                    {
-                                        var nextRowCols = questionRows[r_index + 1].ChildNodes;
+                        //            if (cols.Count.Equals(3) && col.InnerText.Contains("Student? (Yes / No)") && ContainsBorder(cols[c_index + 1]))
+                        //            {
+                        //                var nextRowCols = questionRows[r_index + 1].ChildNodes;
 
-                                        nextRowCols.Insert(nextRowCols.Count - 2, col);
-                                        nextRowCols.Insert(nextRowCols.Count - 2, cols[c_index + 1]);
+                        //                nextRowCols.Insert(nextRowCols.Count - 2, col);
+                        //                nextRowCols.Insert(nextRowCols.Count - 2, cols[c_index + 1]);
 
-                                        faultyRowspanRow = row;
-                                    }
-                                }
-                            }
-                            faultyRowspanRow.Remove();
-                            break;
+                        //                faultyRowspanRow = row;
+                        //            }
+                        //        }
+                        //    }
+                        //    faultyRowspanRow.Remove();
+                        //    break;
                         case "4":
                             questionRows
                                 .ForEach(row => row.SelectNodes("td").ToList()
