@@ -158,7 +158,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - Test/Sorting-Out-Template-Environment-Differences
       - permit-deploy-production:
           type: approval
           requires:

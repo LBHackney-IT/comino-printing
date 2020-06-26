@@ -196,7 +196,9 @@ namespace Usecases.UntestedParsers
 
                                 foreach (var (col, c_index) in cols.Select((c, i) => (c, i)))
                                 {
-                                    ChangeAttributeIfExists(col, "rowspan", "1");
+                                    //ChangeAttributeIfExists(col, "rowspan", "1");
+                                    var nodeAttribute = col.Attributes.FirstOrDefault(a => a.Name == "rowspan");
+                                    if (nodeAttribute != null) nodeAttribute.Remove();
 
                                     if (col.InnerText.Contains("Date purchased/rented/leased:"))
                                         AddAppendAttribute(col, "style", "border-bottom-style: solid; border-bottom-width: 1pt; ");
