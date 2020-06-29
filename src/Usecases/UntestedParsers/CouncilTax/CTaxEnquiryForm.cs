@@ -58,6 +58,7 @@ namespace Usecases.UntestedParsers
                 - Remove default body margins.
                 - Reduce main body table cell (td) heights, and reduce row (tr) sizes by removing the default unexplainable height increase, by adding font-size:0;
                 - Add padding to some table cells, where the text was touching the border.
+                - Fix allignment and thickness of cell borders.
                 - Add page break before question 6, as it wouldn't have fit inside the page.
             */
             templateSpecificCss = templateSpecificCss.Replace("-->",
@@ -106,7 +107,91 @@ namespace Usecases.UntestedParsers
               }}
 
               table#question-3 tr td {{
-                  height: 20px !Important;
+                  height: 0px !Important;
+              }}
+
+              table#question-2 tr:nth-child(3) td:nth-child(3),
+              table#question-2 tr:nth-child(3) td:nth-child(4),
+              table#question-2 tr:nth-child(3) td:nth-child(5),
+              table#question-2 tr:nth-child(4) td:nth-child(3),
+              table#question-2 tr:nth-child(4) td:nth-child(4),
+              table#question-2 tr:nth-child(4) td:nth-child(5),
+              table#question-2 tr:nth-child(6) td:nth-child(3),
+              table#question-2 tr:nth-child(6) td:nth-child(4),
+              table#question-2 tr:nth-child(6) td:nth-child(5),
+              table#question-2 tr:nth-child(8) td:nth-child(3),
+              table#question-2 tr:nth-child(8) td:nth-child(4),
+              table#question-2 tr:nth-child(8) td:nth-child(5),
+              table#question-3 tr:nth-child(1) td:last-child,
+              table#question-3 tr:nth-child(2) td:last-child,
+              table#question-3 tr:nth-child(1) td:nth-child(4),
+              table#question-3 tr:nth-child(2) td:nth-child(5),
+              table#question-3 tr:nth-child(3) td:nth-child(5),
+              table#question-3 tr:nth-child(3) td:nth-child(1),
+              table#question-3 tr:nth-child(4) td:nth-child(5),
+              table#question-6 tr:nth-child(3) td:nth-child(3),
+              table#question-6 tr:nth-child(3) td:nth-child(4) {{
+                  border-left: none !Important;
+              }}
+
+              table#question-3 tr:nth-child(1) td:nth-child(4),
+              table#question-3 tr:nth-child(2) td:nth-child(5),
+              table#question-3 tr:nth-child(3) td:nth-child(5),
+              table#question-5 tr:nth-child(3) td:nth-child(2),
+              table#question-7b tr:nth-child(2) td:nth-child(1), 
+              table#question-7b tr:nth-child(2) td:nth-child(2), 
+              table#question-7b tr:nth-child(2) td:nth-child(3),
+              table#question-7b tr:nth-child(3) td:nth-child(1), 
+              table#question-7b tr:nth-child(3) td:nth-child(2),
+              table#student-info tr:nth-child(1) td:nth-child(1),
+              table#student-info tr:nth-child(2) td:nth-child(2),
+              table#student-info tr:nth-child(3) td:nth-child(2),
+              table#student-info tr:nth-child(4) td:nth-child(2),
+              table#student-info tr:nth-child(5) td:nth-child(2),
+              table#other-info tr:nth-child(1) td:nth-child(1) {{
+                  border-right: none !Important;
+              }}
+
+              table#question-2 tr:nth-child(4) td:nth-child(2),
+              table#question-2 tr:nth-child(4) td:nth-child(3),
+              table#question-2 tr:nth-child(4) td:nth-child(4),
+              table#question-2 tr:nth-child(4) td:nth-child(5),
+              table#question-3 tr:nth-child(3) td:nth-child(2),
+              table#question-7 tr:nth-child(2) td:nth-child(4),
+              table#question-7 tr:nth-child(3) td:nth-child(4),
+              table#student-info tr:nth-child(2) td:nth-child(1),
+              table#student-info tr:nth-child(2) td:nth-child(2),
+              table#student-info tr:nth-child(2) td:nth-child(3),
+              table#student-info tr:nth-child(3) td:nth-child(1),
+              table#student-info tr:nth-child(3) td:nth-child(2),
+              table#student-info tr:nth-child(3) td:nth-child(3),
+              table#student-info tr:nth-child(4) td:nth-child(1),
+              table#student-info tr:nth-child(4) td:nth-child(2),
+              table#student-info tr:nth-child(4) td:nth-child(3),
+              table#student-info tr:nth-child(5) td:nth-child(1),
+              table#student-info tr:nth-child(5) td:nth-child(2),
+              table#student-info tr:nth-child(5) td:nth-child(3),
+              table#other-info tr:nth-child(2) td:nth-child(1),
+              table#other-info tr:nth-child(2) td:nth-child(2), 
+              table#other-info tr:nth-child(3) td:nth-child(1),
+              table#other-info tr:nth-child(3) td:nth-child(2) {{
+                  border-top: none !Important;
+              }}
+
+              table#question-3 tr:nth-child(3) td:nth-child(2),
+              table#question-6 tr:nth-child(3) td:nth-child(2),
+              table#question-6 tr:nth-child(3) td:nth-child(3) {{
+                  border-right-style: solid;
+                  border-right-width: 1pt;
+              }}
+
+              table#question-5 tr:nth-child(3) td:nth-child(3) {{
+                  border-left-style: solid;
+                  border-left-width: 1pt;
+              }}
+
+              table#question-3 tr:nth-child(4) td:nth-child(4) {{
+                  height: 15px !Important;
               }}
 
               #question-6 {{
@@ -188,35 +273,6 @@ namespace Usecases.UntestedParsers
                                     });
                             });
                             break;
-                        //case "3":
-                        //    HtmlNode faultyRowspanRow = null;
-                        //    foreach (var (row, r_index) in questionRows.Select((r, i) => (r, i)))
-                        //    {
-                        //        var cols = row.SelectNodes("td").ToList();
-
-                        //        foreach (var (col, c_index) in cols.Select((c, i) => (c, i)))
-                        //        {
-                        //            //ChangeAttributeIfExists(col, "rowspan", "1");
-                        //            var nodeAttribute = col.Attributes.FirstOrDefault(a => a.Name == "rowspan");
-                        //            if (nodeAttribute != null) nodeAttribute.Remove();
-
-                        //            if (col.InnerText.Contains("Date purchased/rented/leased:"))
-                        //                AddAppendAttribute(col, "style", "; border-bottom-style: solid; border-bottom-width: 1pt; ");
-
-
-                        //            if (cols.Count.Equals(3) && col.InnerText.Contains("Student? (Yes / No)") && ContainsBorder(cols[c_index + 1]))
-                        //            {
-                        //                var nextRowCols = questionRows[r_index + 1].ChildNodes;
-
-                        //                nextRowCols.Insert(nextRowCols.Count - 2, col);
-                        //                nextRowCols.Insert(nextRowCols.Count - 2, cols[c_index + 1]);
-
-                        //                faultyRowspanRow = row;
-                        //            }
-                        //        }
-                        //    }
-                        //    faultyRowspanRow.Remove();
-                        //    break;
                         case "4":
                             questionRows
                                 .ForEach(row => row.SelectNodes("td").ToList()
