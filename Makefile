@@ -41,7 +41,7 @@ deploy-lambda: build-lambda
 	sls deploy --aws-profile hackney --stage ${STAGE}
 
 .PHONY: deploy
-deploy: deploy-lambda deploy-ui
+deploy: deploy-lambda
 
 .PHONY: build-ui
 build-ui:
