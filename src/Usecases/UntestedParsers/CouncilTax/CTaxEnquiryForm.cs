@@ -13,6 +13,15 @@ namespace Usecases.UntestedParsers
     {
         public LetterTemplate Execute(string html)
         {
+            // Wrap up the council name into p HTML node so it could be targetted.
+            var cnCases = new Regex(@"(?<=>)\s*Hackney\s*(?=<i>Rev)|(?<=>)\s*Hackney\s*(?=</font>)", RegexOptions.Singleline);
+
+            html = cnCases.Replace(
+                    html,
+                    @"<b id=""council-name"">Hackney </b>",
+                    1
+                );
+
             var documentNode = GetDocumentNode(html);
             var address = ParseAddressIntoLines(documentNode);
 
@@ -65,7 +74,7 @@ namespace Usecases.UntestedParsers
             $@".header-table ~ p {{margin-block-start: 0; margin-block-end: 0; margin: 0}}
               .header-table + p {{margin-block-start: 1em; margin-block-end: 1em; margin: 0}}
               .header-right font.c6, .header-right font.c10 {{font-size: {(int)Math.Floor(10 * rightTableRatio)}pt}}
-              /*.header-right p {{margin-block-start: 0; margin-block-end: 0; margin: 0;}}*/
+              #letter-header b#council-name {{font-family: impact; font-size: {(int)Math.Floor(22 * headerRatio)}pt}}
               #letter-header > p {{margin-block-start: 0; margin-block-end: 0; margin: 0; font-size: 0}}
               #letter-header p font.c1, #letter-header p font.c3 {{font-size: {(int)Math.Floor(22 * headerRatio)}pt}}
               #letter-header p font.c2, #letter-header p font.c4, #letter-header p font.c5, #letter-header p font.c6 {{font-size: {(int)Math.Floor(11 * headerRatio)}pt}}
