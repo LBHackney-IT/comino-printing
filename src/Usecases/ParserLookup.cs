@@ -62,6 +62,8 @@ namespace UseCases
                     return new CTaxEnquiryForm();
                 case "Occupier-Letter to occ req owner details":
                     return new OccupierLetterToOccReqOwnerDetails();
+                case "Disc/exe-ltr to hosp,care home or hostel":
+                    return new DiscExeLtrToHospCareHomeOrHostel();
                 default:
                     return null;
             }
