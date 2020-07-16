@@ -13,6 +13,15 @@ namespace Usecases.UntestedParsers
     {
         public LetterTemplate Execute(string html)
         {
+            // Wrap up the council name into p HTML node so it could be targetted.
+            var cnCases = new Regex(@"(?<=>)\s*Hackney\s*(?=<i>Rev)|(?<=>)\s*Hackney\s*(?=</font>)", RegexOptions.Singleline);
+
+            html = cnCases.Replace(
+                    html,
+                    @"<b id=""council-name"">Hackney </b>",
+                    1
+                );
+
             var documentNode = GetDocumentNode(html);
             var address = ParseAddressIntoLines(documentNode);
 
@@ -51,6 +60,7 @@ namespace Usecases.UntestedParsers
 
                 - Make pre-form legal info (header-table) scale with its child elements by the same proportion.
                 - Make letter header (#letter-header) scale with its child elements by the same proportion.
+                - Fix the [council name] text size (when issue is present).
                 - Override the general CSS for element (mm) positioning (adress, header-table) as the existence of letter header changes the layout
                   dramatically. New values were recalculated out of GovNotify letter template example just as the original general CSS was.
                 - Added the hard @page margins as they were not in general CSS, making some margins too small (after removing default margins), and some too large when comparing to 
@@ -58,13 +68,14 @@ namespace Usecases.UntestedParsers
                 - Remove default body margins.
                 - Reduce main body table cell (td) heights, and reduce row (tr) sizes by removing the default unexplainable height increase, by adding font-size:0;
                 - Add padding to some table cells, where the text was touching the border.
+                - Fix allignment and thickness of cell borders.
                 - Add page break before question 6, as it wouldn't have fit inside the page.
             */
             templateSpecificCss = templateSpecificCss.Replace("-->",
             $@".header-table ~ p {{margin-block-start: 0; margin-block-end: 0; margin: 0}}
               .header-table + p {{margin-block-start: 1em; margin-block-end: 1em; margin: 0}}
               .header-right font.c6, .header-right font.c10 {{font-size: {(int)Math.Floor(10 * rightTableRatio)}pt}}
-              /*.header-right p {{margin-block-start: 0; margin-block-end: 0; margin: 0;}}*/
+              #letter-header b#council-name {{font-family: impact; font-size: {(int)Math.Floor(22 * headerRatio)}pt}}
               #letter-header > p {{margin-block-start: 0; margin-block-end: 0; margin: 0; font-size: 0}}
               #letter-header p font.c1, #letter-header p font.c3 {{font-size: {(int)Math.Floor(22 * headerRatio)}pt}}
               #letter-header p font.c2, #letter-header p font.c4, #letter-header p font.c5, #letter-header p font.c6 {{font-size: {(int)Math.Floor(11 * headerRatio)}pt}}
@@ -106,7 +117,91 @@ namespace Usecases.UntestedParsers
               }}
 
               table#question-3 tr td {{
-                  height: 20px !Important;
+                  height: 0px !Important;
+              }}
+
+              table#question-2 tr:nth-child(3) td:nth-child(3),
+              table#question-2 tr:nth-child(3) td:nth-child(4),
+              table#question-2 tr:nth-child(3) td:nth-child(5),
+              table#question-2 tr:nth-child(4) td:nth-child(3),
+              table#question-2 tr:nth-child(4) td:nth-child(4),
+              table#question-2 tr:nth-child(4) td:nth-child(5),
+              table#question-2 tr:nth-child(6) td:nth-child(3),
+              table#question-2 tr:nth-child(6) td:nth-child(4),
+              table#question-2 tr:nth-child(6) td:nth-child(5),
+              table#question-2 tr:nth-child(8) td:nth-child(3),
+              table#question-2 tr:nth-child(8) td:nth-child(4),
+              table#question-2 tr:nth-child(8) td:nth-child(5),
+              table#question-3 tr:nth-child(1) td:last-child,
+              table#question-3 tr:nth-child(2) td:last-child,
+              table#question-3 tr:nth-child(1) td:nth-child(4),
+              table#question-3 tr:nth-child(2) td:nth-child(5),
+              table#question-3 tr:nth-child(3) td:nth-child(5),
+              table#question-3 tr:nth-child(3) td:nth-child(1),
+              table#question-3 tr:nth-child(4) td:nth-child(5),
+              table#question-6 tr:nth-child(3) td:nth-child(3),
+              table#question-6 tr:nth-child(3) td:nth-child(4) {{
+                  border-left: none !Important;
+              }}
+
+              table#question-3 tr:nth-child(1) td:nth-child(4),
+              table#question-3 tr:nth-child(2) td:nth-child(5),
+              table#question-3 tr:nth-child(3) td:nth-child(5),
+              table#question-5 tr:nth-child(3) td:nth-child(2),
+              table#question-7b tr:nth-child(2) td:nth-child(1), 
+              table#question-7b tr:nth-child(2) td:nth-child(2), 
+              table#question-7b tr:nth-child(2) td:nth-child(3),
+              table#question-7b tr:nth-child(3) td:nth-child(1), 
+              table#question-7b tr:nth-child(3) td:nth-child(2),
+              table#student-info tr:nth-child(1) td:nth-child(1),
+              table#student-info tr:nth-child(2) td:nth-child(2),
+              table#student-info tr:nth-child(3) td:nth-child(2),
+              table#student-info tr:nth-child(4) td:nth-child(2),
+              table#student-info tr:nth-child(5) td:nth-child(2),
+              table#other-info tr:nth-child(1) td:nth-child(1) {{
+                  border-right: none !Important;
+              }}
+
+              table#question-2 tr:nth-child(4) td:nth-child(2),
+              table#question-2 tr:nth-child(4) td:nth-child(3),
+              table#question-2 tr:nth-child(4) td:nth-child(4),
+              table#question-2 tr:nth-child(4) td:nth-child(5),
+              table#question-3 tr:nth-child(3) td:nth-child(2),
+              table#question-7 tr:nth-child(2) td:nth-child(4),
+              table#question-7 tr:nth-child(3) td:nth-child(4),
+              table#student-info tr:nth-child(2) td:nth-child(1),
+              table#student-info tr:nth-child(2) td:nth-child(2),
+              table#student-info tr:nth-child(2) td:nth-child(3),
+              table#student-info tr:nth-child(3) td:nth-child(1),
+              table#student-info tr:nth-child(3) td:nth-child(2),
+              table#student-info tr:nth-child(3) td:nth-child(3),
+              table#student-info tr:nth-child(4) td:nth-child(1),
+              table#student-info tr:nth-child(4) td:nth-child(2),
+              table#student-info tr:nth-child(4) td:nth-child(3),
+              table#student-info tr:nth-child(5) td:nth-child(1),
+              table#student-info tr:nth-child(5) td:nth-child(2),
+              table#student-info tr:nth-child(5) td:nth-child(3),
+              table#other-info tr:nth-child(2) td:nth-child(1),
+              table#other-info tr:nth-child(2) td:nth-child(2), 
+              table#other-info tr:nth-child(3) td:nth-child(1),
+              table#other-info tr:nth-child(3) td:nth-child(2) {{
+                  border-top: none !Important;
+              }}
+
+              table#question-3 tr:nth-child(3) td:nth-child(2),
+              table#question-6 tr:nth-child(3) td:nth-child(2),
+              table#question-6 tr:nth-child(3) td:nth-child(3) {{
+                  border-right-style: solid;
+                  border-right-width: 1pt;
+              }}
+
+              table#question-5 tr:nth-child(3) td:nth-child(3) {{
+                  border-left-style: solid;
+                  border-left-width: 1pt;
+              }}
+
+              table#question-3 tr:nth-child(4) td:nth-child(4) {{
+                  height: 15px !Important;
               }}
 
               #question-6 {{
@@ -187,33 +282,6 @@ namespace Usecases.UntestedParsers
                                             col.InnerHtml = "&nbsp;"; // The table cells have no height unless you add content.
                                     });
                             });
-                            break;
-                        case "3":
-                            HtmlNode faultyRowspanRow = null;
-                            foreach (var (row, r_index) in questionRows.Select((r, i) => (r, i)))
-                            {
-                                var cols = row.SelectNodes("td").ToList();
-
-                                foreach (var (col, c_index) in cols.Select((c, i) => (c, i)))
-                                {
-                                    ChangeAttributeIfExists(col, "rowspan", "1");
-
-                                    if (col.InnerText.Contains("Date purchased/rented/leased:"))
-                                        AddAppendAttribute(col, "style", "border-bottom-style: solid; border-bottom-width: 1pt; ");
-
-
-                                    if (cols.Count.Equals(3) && col.InnerText.Contains("Student? (Yes / No)") && ContainsBorder(cols[c_index + 1]))
-                                    {
-                                        var nextRowCols = questionRows[r_index + 1].ChildNodes;
-
-                                        nextRowCols.Insert(nextRowCols.Count - 2, col);
-                                        nextRowCols.Insert(nextRowCols.Count - 2, cols[c_index + 1]);
-
-                                        faultyRowspanRow = row;
-                                    }
-                                }
-                            }
-                            faultyRowspanRow.Remove();
                             break;
                         case "4":
                             questionRows

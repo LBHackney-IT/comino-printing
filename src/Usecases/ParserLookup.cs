@@ -1,5 +1,6 @@
 using Usecases.Interfaces;
 using Usecases.UntestedParsers;
+using Usecases.UntestedParsers.CouncilTax;
 
 namespace UseCases
 {
@@ -59,6 +60,10 @@ namespace UseCases
                     return new GeneralLetterTemplate();
                 case "CTax Enquiry Form":
                     return new CTaxEnquiryForm();
+                case "Occupier-Letter to occ req owner details":
+                    return new OccupierLetterToOccReqOwnerDetails();
+                case "Disc/exe-ltr to hosp,care home or hostel":
+                    return new DiscExeLtrToHospCareHomeOrHostel();
                 default:
                     return null;
             }
